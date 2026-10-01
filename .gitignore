@@ -44,3 +44,6 @@ artifacts/
 .codex-remote-attachments/
 .agy-staff/
 output/
+
+# Project-local development skills; never ship in the investment SkillHub.
+.agents/skills/

@@ -1,0 +1,46 @@
+## UI Pro Max Stack Guidelines
+**Stack:** react | **Query:** React state preservation
+**Source:** stacks/react.csv | **Found:** 3 results
+
+### Result 1
+- **Category:** State
+- **Guideline:** Use useState for local state
+- **Description:** Simple component state should use useState hook in current React apps.
+- **Do:** useState for form inputs toggles counters
+- **Don't:** Class components this.state
+- **Code Good:** const [count, setCount] = useState(0)
+- **Code Bad:** this.state = { count: 0 }
+- **Severity:** Medium
+- **Docs URL:** https://react.dev/reference/react/useState
+- **Applies To:** react 19.2.x
+- **Status:** active
+- **Verified At:** 2026-08-13
+
+### Result 2
+- **Category:** Concurrency
+- **Guideline:** Use Actions with async startTransition
+- **Description:** React 19 Actions let async state updates run as one transition and include side effects.
+- **Do:** Wrap background state updates and async work in startTransition
+- **Don't:** Assume Actions are only for synchronous state updates
+- **Code Good:** startTransition(async () => { await save(); setState(next) })
+- **Code Bad:** await save(); setState(next)
+- **Severity:** Medium
+- **Docs URL:** https://react.dev/reference/react/startTransition
+- **Applies To:** react 19.2.x
+- **Status:** active
+- **Verified At:** 2026-08-13
+
+### Result 3
+- **Category:** Security
+- **Guideline:** Require React 19.2.1+ for RSC code paths
+- **Description:** React Server Components had an unauthenticated RCE in 19.2.0; treat 19.2.1+ as the security floor.
+- **Do:** Pin React RSC stacks to 19.2.1 or newer
+- **Don't:** Ship 19.2.0 or older on any RSC endpoint
+- **Code Good:** react@19.2.1+ react-dom@19.2.1+
+- **Code Bad:** react@19.2.0
+- **Severity:** Critical
+- **Docs URL:** https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components
+- **Applies To:** react 19.2.x
+- **Status:** active
+- **Verified At:** 2026-08-13
+

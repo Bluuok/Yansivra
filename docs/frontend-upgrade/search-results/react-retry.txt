@@ -1,0 +1,46 @@
+## UI Pro Max Stack Guidelines
+**Stack:** react | **Query:** component key preserve state
+**Source:** stacks/react.csv | **Found:** 3 results
+
+### Result 1
+- **Category:** Rendering
+- **Guideline:** Use keys properly
+- **Description:** Stable unique keys for list items
+- **Do:** Use stable IDs as keys
+- **Don't:** Array index as key for dynamic lists
+- **Code Good:** key={item.id}
+- **Code Bad:** key={index}
+- **Severity:** High
+- **Docs URL:** https://react.dev/learn/rendering-lists#keeping-list-items-in-order-with-key
+- **Applies To:** react 19.2.x
+- **Status:** active
+- **Verified At:** 2026-08-13
+
+### Result 2
+- **Category:** State
+- **Guideline:** Use useState for local state
+- **Description:** Simple component state should use useState hook in current React apps.
+- **Do:** useState for form inputs toggles counters
+- **Don't:** Class components this.state
+- **Code Good:** const [count, setCount] = useState(0)
+- **Code Bad:** this.state = { count: 0 }
+- **Severity:** Medium
+- **Docs URL:** https://react.dev/reference/react/useState
+- **Applies To:** react 19.2.x
+- **Status:** active
+- **Verified At:** 2026-08-13
+
+### Result 3
+- **Category:** Testing
+- **Guideline:** Test behavior not implementation
+- **Description:** Test what user sees and does
+- **Do:** Test renders and interactions
+- **Don't:** Test internal state or methods
+- **Code Good:** expect(screen.getByText('Hello'))
+- **Code Bad:** expect(component.state.name)
+- **Severity:** Medium
+- **Docs URL:** https://testing-library.com/docs/react-testing-library/intro/
+- **Applies To:** react 19.2.x
+- **Status:** active
+- **Verified At:** 2026-08-13
+

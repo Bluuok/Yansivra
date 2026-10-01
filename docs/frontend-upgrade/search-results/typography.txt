@@ -1,0 +1,40 @@
+## UI Pro Max Search Results
+**Domain:** typography | **Query:** Chinese longform reading
+**Source:** typography.csv | **Found:** 3 results
+
+### Result 1
+- **Font Pairing Name:** Chinese Simplified
+- **Category:** Sans + Sans
+- **Heading Font:** Noto Sans SC
+- **Body Font:** Noto Sans SC
+- **Mood/Style Keywords:** chinese, simplified, modern, professional, multilingual, readable
+- **Best For:** Simplified Chinese sites, mainland China market, business apps
+- **Google Fonts URL:** https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap
+- **CSS Import:** @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+- **Tailwind Config:** fontFamily: { sans: ['Noto Sans SC', 'sans-serif'] }
+- **Notes:** Simplified Chinese support. Clean modern look.
+
+### Result 2
+- **Font Pairing Name:** Chinese Traditional
+- **Category:** Serif + Sans
+- **Heading Font:** Noto Serif TC
+- **Body Font:** Noto Sans TC
+- **Mood/Style Keywords:** chinese, traditional, elegant, cultural, multilingual, readable
+- **Best For:** Traditional Chinese sites, cultural content, Taiwan/Hong Kong markets
+- **Google Fonts URL:** https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap
+- **CSS Import:** @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;500;600;700&display=swap');
+- **Tailwind Config:** fontFamily: { serif: ['Noto Serif TC', 'serif'], sans: ['Noto Sans TC', 'sans-serif'] }
+- **Notes:** Traditional Chinese character support. Elegant pairing.
+
+### Result 3
+- **Font Pairing Name:** Bold Typography Mobile (Inter Poster)
+- **Category:** Sans + Serif (Display) + Mono
+- **Heading Font:** Inter
+- **Body Font:** Playfair Display
+- **Mood/Style Keywords:** bold typography, editorial, poster, near-black, vermillion, luxury, type-as-hero, manifesto, high-contrast
+- **Best For:** Creative brand flagships, reading platforms, event apps, flash pages, luxury mobile experiences
+- **Google Fonts URL:** https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital@1
+- **CSS Import:** @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400&family=Playfair+Display:ital@1&display=swap');
+- **Tailwind Config:** fontFamily: { display: ['Inter', 'sans-serif'], quote: ['Playfair Display', 'serif'], mono: ['JetBrains Mono', 'monospace'] }
+- **Notes:** Tri-stack: Inter 600–800 for UI and display type (letterSpacing -1.5px heroes, -0.5px subheads). Playfair Display Italic only for pull quotes. JetBrains Mono for labels and stats. Suggested scale: 12px labels, 16px body, 22px subhead, 32px section, 40px H2, 56px H1, 72px hero statement. Use lineHeig...
+
