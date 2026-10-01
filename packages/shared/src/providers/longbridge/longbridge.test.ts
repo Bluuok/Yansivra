@@ -108,6 +108,7 @@ describe('LongbridgeFinancialDataProvider', () => {
         expect(result.provenance.stale).toBe(false);
       }
       expect(lastArgs[0]).toBe(subcommand);
+      if (capability === 'research.events') expect(lastArgs[1]).toBe('report');
     });
   }
 

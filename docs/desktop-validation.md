@@ -98,3 +98,24 @@ SHA256 7f55ccd0073ac4f5c9164d38187578829bd03a12bbe7d7f55ae6cfdbe575c0f6
 本机默认 `%APPDATA%\Folio` 目录的 Node 同目录重命名报 `EXDEV`，独立无凭据探针复现。因此本次配置使用 `output/Folio`；本机双击 `output/启动 Folio.cmd` 会选择该 profile、独立 Pi 配置目录和 Flash 模型。直接启动 EXE 不会自动选择这次配置目录。
 
 更新后的 ZIP：141214071 bytes，SHA256 `f69eb9f8b7b6695820728519f3be1e317b508e5f76f07d59cbf50f1317e6cd62`。真实结果见本机 `output/deepseek-live-result.json` 和 `output/deepseek-live.png`。本次只验证 LLM 连通与聊天持久化，在线行情和完整金融研究仍未验证。
+
+## 2026-10-01：真实 Massive 数据与 Flash 研究闭环
+
+用户提供的 Massive Key 已通过实际桌面 IPC 保存到 Windows `safeStorage` 加密凭据存储，凭据文件仍在忽略的 `output/Folio` 中。Massive 设为主数据源；没有充值、购买套餐、注册新账户或执行交易。官方 Longbridge CLI `0.28.7` 已校验发布方 SHA256 后安装到本机忽略的 `output/runtime/longbridge`，仅由本机启动入口添加进程 PATH；账户本人尚未完成长桥授权。
+
+实测发现并修复：
+
+- Windows 缺少 CLI 时，`cmd.exe` 只返回退出码 1 与本地语言错误，原实现误报未知错误。新增可执行候选检查，仅将确认不存在的命令识别为未安装；保留已安装程序的退出码 1 错误。
+- 长桥当前版本的财报日历子命令为 `report`。已有 `financial` 输入兼容映射到该命令，实际 CLI 帮助/响应 schema 确认参数有效；未把参数检查当作已授权日历数据成功。
+- Massive 免费套餐拒绝实时 snapshot，原报价路径无法使用已配置的免费账户。权限不足时改为请求最近两个真实日线，按收盘价计算涨跌并保留延迟标记；鉴权失败或限流不走此回退，缺少两根日线时不制造昨收。
+- K 线返回数量超过请求上限时，只保留最近指定数量的日线。
+- 研究能力的 K 线与公司资料原先丢失路由来源，错标为 Longbridge。现在与报价一样传递实际提供方、时间、延迟和备用源记录；离线演示仍明确标为 demo。
+- 顶部行情提示原先只检查长桥。现在检查实际启用的行情连接并订阅连接变更；真实 Massive 连接成功、停用、重新启用均已通过实际界面验收。
+
+最终实际运行 `research-1c14ef3a-3bf2-4c38-b5f5-09b76d560f6d`，模型身份为 `deepseek / deepseek-flash`，没有调用 Pro；`FINAGENT_DEMO_DATA=0`。`market.quote`、`market.kline`、`company.profile` 三项成功，checkpoint 中实际来源均为 Massive 且 `delayed=true`。报价为 2026-09-30 日线收盘 333.02 USD、上一根日线收盘 329.40 USD；报价与 K 线最后一根收盘价、行情时间相同。数据是账户实际 API 响应，不是内置演示或离线 fixture。
+
+该研究生成结构化报告并保留 `partial`：其余 13 项能力因长桥尚未授权而失败。真实界面已保存该报告的人工判断、追加“数据不足”复盘；实际关闭重开后，报告快照、原判断和复盘记录保持一致。接口结果与日志见本机 `output/live-flow-result.json`、`output/live-ready-result.json`；截图仍留在忽略目录，不替换 README 中明确标注的离线准备截图。
+
+最终源码全量单元测试 **1714 pass / 8 skip / 0 fail**，184 文件、7503 断言；5 个工作区类型检查通过，Longbridge 工具包独立类型检查也通过。UI 修复后另有 **321 pass / 0 fail**。研究、路由来源、延迟标记与 demo 兼容的新增针对性用例通过。
+
+当前 ZIP 为 **141220436 bytes**，SHA256 `f41a52968acece01a7d8fcb0e00efc16c341fd5363ddad7ef32816d0832aa9a1`。再次解压到源码外中文/空格路径启动，真实生产页面、IPC、安全配置、13 个技能、包内扩展、金融工具和本地 Agent 均通过。完整金融数据覆盖、长桥财务/新闻/账户权限和券商账户真实集成仍未通过。实际行情 → Flash 报告 → 判断 → 复盘 → 重启留存的主流程已通过，不能据此声称全部项目功能均已跑通。

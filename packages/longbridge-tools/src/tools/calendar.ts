@@ -49,7 +49,9 @@ export async function getCalendarEvents(
     );
   }
 
-  const args = ['finance-calendar', options.eventType];
+  // Keep the existing capability input compatible; current CLI releases name
+  // the earnings-calendar subcommand "report", not "financial".
+  const args = ['finance-calendar', options.eventType === 'financial' ? 'report' : options.eventType];
   for (const symbol of options.symbols ?? []) {
     args.push('--symbol', symbol);
   }

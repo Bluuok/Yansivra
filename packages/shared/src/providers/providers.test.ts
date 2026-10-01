@@ -22,6 +22,9 @@ import { healthAll } from './health.ts';
 import { ProviderRegistry } from './registry.ts';
 import { ProviderFetchError, createRouterFetchers } from './router-fetchers.ts';
 import { ProviderRouter } from './router.ts';
+import { createMarketKlineCapability } from '../capabilities/manifests/market-kline.ts';
+import { createCompanyProfileCapability } from '../capabilities/manifests/company-profile.ts';
+import { withDemoDataFallback } from '../agent/demo-market-data.ts';
 
 type Handler = (
   capabilityId: CapabilityId,
@@ -688,6 +691,32 @@ describe('ConnectionStore', () => {
 });
 
 describe('createRouterFetchers', () => {
+  for (const capabilityId of ['market.kline', 'company.profile'] as const) {
+    it(`preserves actual fallback provider and delayed provenance through the ${capabilityId} manifest`, async () => {
+      const router = new ProviderRouter();
+      router.register(new FakeFinancialDataProvider('longbridge', 'Longbridge', [capabilityId], async () => failure('AUTH_EXPIRED')));
+      router.register(new FakeFinancialDataProvider('massive', 'Massive', [capabilityId], async () => ({
+        ok: true,
+        data: capabilityId === 'market.kline' ? [{ symbol: 'AAPL.US', timestamp: 1710000000, open: 100, high: 110, low: 98, close: 105, volume: 1000 }] : { symbol: 'AAPL.US', name: 'Apple' },
+        provenance: { providerId: 'massive', providerName: 'Massive', fetchedAt: 1000, delayed: true, stale: false, instrumentId: 'XNAS:AAPL', marketTime: 1710000000000 },
+      })));
+      router.setRouting({ primary: 'longbridge', fallback: 'massive' });
+      const routed = createRouterFetchers(router);
+      const capability = capabilityId === 'market.kline' ? createMarketKlineCapability(routed) : createCompanyProfileCapability(routed);
+      const result = await capability.execute({ symbol: 'AAPL.US' });
+      expect(result.provenance).toMatchObject({ provider: 'massive', providerName: 'Massive', instrumentId: 'XNAS:AAPL', delayed: true, fetchedAt: 1000, marketTime: 1710000000000 });
+      expect(result.evidence?.fallback).toMatchObject({ from: 'longbridge', to: 'massive' });
+    });
+  }
+
+  it('keeps opt-in offline K-line fallback labeled as demo data', async () => {
+    const router = new ProviderRouter();
+    const capability = createMarketKlineCapability(withDemoDataFallback(createRouterFetchers(router)));
+    const result = await capability.execute({ symbol: 'AAPL.US', limit: 5 });
+    expect(result.data).toHaveLength(5);
+    expect(result.provenance.provider).toBe('demo');
+  });
+
   it('returns data on success', async () => {
     const router = new ProviderRouter();
     const quote = {

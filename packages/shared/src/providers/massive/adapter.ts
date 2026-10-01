@@ -224,8 +224,18 @@ export class MassiveFinancialDataProvider implements FinancialDataProvider {
     switch (capabilityId) {
       case 'market.quote': {
         const path = `/v2/snapshot/locale/us/markets/stocks/tickers/${encodeURIComponent(ticker)}`
-        const payload = await getJson(path, apiKey, signal, endpoint)
-        const quote = mapQuote(symbol, payload)
+        let quote: Quote
+        try {
+          quote = mapQuote(symbol, await getJson(path, apiKey, signal, endpoint))
+        } catch (error) {
+          if (!(error instanceof ProviderHttpError) || error.providerError.code !== 'ACCESS_DENIED') throw error
+          // Stocks Basic includes daily aggregates, but excludes snapshots.
+          // Two completed bars preserve the actual previous close and change.
+          const { from, to } = klineRange(10)
+          const dailyPath = `/v2/aggs/ticker/${encodeURIComponent(ticker)}/range/1/day/${from}/${to}`
+          const payload = await getJson(buildAggsUrl(dailyPath, 2), apiKey, signal, endpoint)
+          quote = mapDailyQuote(symbol, payload)
+        }
         // Repo convention: Quote.timestamp is epoch SECONDS; provenance.marketTime is MS.
         return { ok: true, data: quote, provenance: provenance(quote.timestamp * 1000) }
       }
@@ -234,7 +244,7 @@ export class MassiveFinancialDataProvider implements FinancialDataProvider {
         const { from, to } = klineRange(count)
         const path = `/v2/aggs/ticker/${encodeURIComponent(ticker)}/range/1/${timespan}/${from}/${to}`
         const payload = await getJson(buildAggsUrl(path, count), apiKey, signal, endpoint)
-        const klines = mapKlines(symbol, payload)
+        const klines = mapKlines(symbol, payload).slice(-count)
         // Kline timestamps are epoch SECONDS; provenance.marketTime is MS (issue #179).
         const marketTime = klines.length > 0 ? klines[klines.length - 1].timestamp * 1000 : undefined
         return { ok: true, data: klines, provenance: provenance(marketTime) }
@@ -468,6 +478,22 @@ function mapKlines(symbol: string, payload: unknown): Kline[] {
       volume: toFinite(bar.v) ?? 0,
     }))
     .reverse()
+}
+
+function mapDailyQuote(symbol: string, payload: unknown): Quote {
+  const bars = mapKlines(symbol, payload).sort((a, b) => b.timestamp - a.timestamp)
+  const [latest, previous] = bars
+  if (!latest || !previous || latest.timestamp <= previous.timestamp || previous.close <= 0 ||
+      latest.timestamp <= 0 || latest.close <= 0 || latest.open <= 0 || latest.high <= 0 || latest.low <= 0) {
+    throw new ProviderHttpError({ code: 'NOT_FOUND', message: 'Two daily bars are required for an end-of-day quote.' })
+  }
+  const change = latest.close - previous.close
+  return {
+    symbol, lastPrice: latest.close, prevClose: previous.close,
+    change, changePercent: (change / previous.close) * 100,
+    open: latest.open, high: latest.high, low: latest.low,
+    volume: latest.volume, timestamp: latest.timestamp,
+  }
 }
 
 /**

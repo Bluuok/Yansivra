@@ -1,4 +1,7 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { LongBridgeError } from './errors.ts';
 
 type ExecaResult = { stdout: string };
@@ -178,6 +181,46 @@ describe('LongBridge errors', () => {
       name: 'LongBridgeError',
       code: 'LONGBRIDGE_NOT_INSTALLED',
     });
+  });
+
+  it.skipIf(process.platform !== 'win32')('recognizes a missing Windows command with localized stderr and no ENOENT', async () => {
+    const previousPath = process.env.PATH;
+    const previousPathExt = process.env.PATHEXT;
+    process.env.PATH = '';
+    process.env.PATHEXT = '.FOLIO-MISSING-TEST';
+    execaHandler = async () => {
+      throw Object.assign(new Error('Command failed with exit code 1: longbridge --version'), {
+        exitCode: 1,
+        stderr: "'longbridge' 不是内部或外部命令",
+      });
+    };
+    try {
+      await expect(executeLongBridge(['--version'])).rejects.toMatchObject({
+        code: 'LONGBRIDGE_NOT_INSTALLED',
+      });
+    } finally {
+      if (previousPath === undefined) delete process.env.PATH;
+      else process.env.PATH = previousPath;
+      if (previousPathExt === undefined) delete process.env.PATHEXT;
+      else process.env.PATHEXT = previousPathExt;
+    }
+  });
+
+  it.skipIf(process.platform !== 'win32')('preserves exit-code-1 failures when the Windows CLI exists on PATH', async () => {
+    const directory = mkdtempSync(join(tmpdir(), 'folio-existing-cli-'));
+    const previousPath = process.env.PATH;
+    writeFileSync(join(directory, 'longbridge.exe'), 'test executable candidate');
+    process.env.PATH = directory;
+    execaHandler = async () => {
+      throw Object.assign(new Error('Command failed with exit code 1: longbridge quote'), { exitCode: 1 });
+    };
+    try {
+      await expect(executeLongBridge(['quote', 'AAPL.US'])).rejects.toMatchObject({ code: 'LONGBRIDGE_UNKNOWN' });
+    } finally {
+      if (previousPath === undefined) delete process.env.PATH;
+      else process.env.PATH = previousPath;
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 
   it('normalizes timeout failures', async () => {

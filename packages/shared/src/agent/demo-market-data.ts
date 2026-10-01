@@ -3,6 +3,7 @@ import type { MarketDataFetchers } from './market-data-service.ts';
 import type { CapabilityFetchResult } from '../capabilities/fetchers.ts';
 
 type QuoteResultFetcher = (symbol: string, signal?: AbortSignal) => Promise<CapabilityFetchResult<Quote>>;
+type KlineResultFetcher = (options: Parameters<MarketDataFetchers['getKline']>[0], signal?: AbortSignal) => Promise<CapabilityFetchResult<Kline[]>>;
 
 /**
  * Built-in sample data for the offline demo path (#31 E2E, README offline
@@ -139,10 +140,11 @@ function demoPortfolioSnapshot(): PortfolioSnapshot {
  * demo dataset answers instead. Only the surfaces typed blocks demo are
  * wrapped; everything else keeps failing honestly.
  */
-export function withDemoDataFallback<F extends Partial<MarketDataFetchers> & { getQuoteResult?: QuoteResultFetcher }>(
+export function withDemoDataFallback<F extends Partial<MarketDataFetchers> & { getQuoteResult?: QuoteResultFetcher; getKlineResult?: KlineResultFetcher }>(
   fetchers: F
 ): F {
   const quoteResult = fetchers.getQuoteResult;
+  const klineResult = fetchers.getKlineResult;
   return {
     ...fetchers,
     getQuote: async (symbol) => {
@@ -167,6 +169,16 @@ export function withDemoDataFallback<F extends Partial<MarketDataFetchers> & { g
         },
       }
       : {}),
+    ...(klineResult ? {
+      getKlineResult: async (options: Parameters<MarketDataFetchers['getKline']>[0], signal?: AbortSignal) => {
+        try {
+          return await klineResult(options, signal);
+        } catch {
+          const data = demoKlinesFor(options.symbol, options.limit ?? 30);
+          return { data, provenance: { ...demoQuoteResult(options.symbol).provenance, marketTime: data[data.length - 1].timestamp * 1000 } };
+        }
+      },
+    } : {}),
     getKline: async (options) => {
       const real = fetchers.getKline;
       if (real) {

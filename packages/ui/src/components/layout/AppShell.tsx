@@ -15,7 +15,7 @@ import {
   type FinagentClient,
 } from '../../client';
 import { I18nProvider } from '../../i18n/I18nProvider';
-import type { LongBridgeStatus } from '@finagent/core';
+import type { ConnectionEntry } from '../../client/connections';
 import { useTranslation } from 'react-i18next';
 import { useSetAtom } from 'jotai';
 import { navSectionAtom, settingsTabAtom } from '../../atoms';
@@ -33,7 +33,7 @@ export const AppShell: React.FC<AppShellProps> = ({ client = fallbackClient }) =
             <KernelBridge client={client} />
             <div className="mac-app-window flex h-screen flex-col overflow-hidden bg-background text-foreground">
               <TitleBar />
-              <LongBridgeBanner />
+              <MarketConnectionBanner />
               <WorkbenchShell />
             </div>
             <OnboardingOverlay />
@@ -47,37 +47,55 @@ export const AppShell: React.FC<AppShellProps> = ({ client = fallbackClient }) =
   );
 };
 
-const LongBridgeBanner: React.FC = () => {
+const hasUsableMarketData = (entries: ConnectionEntry[]): boolean => entries.some((entry) =>
+  entry.kind === 'financial-data' && entry.enabled !== false && (
+    entry.status === 'connected' ||
+    (entry.status === 'permission-limited' && (
+      entry.recentResult?.ok === true || entry.health?.permissions?.some((permission) => permission.granted)
+    ))
+  )
+);
+
+const MarketConnectionBanner: React.FC = () => {
   const { t } = useTranslation();
   const setSection = useSetAtom(navSectionAtom);
   const setSettingsTab = useSetAtom(settingsTabAtom);
-  const [status, setStatus] = useState<LongBridgeStatus | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [available, setAvailable] = useState<boolean | null>(null);
   const client = useFinagentClient();
 
   useEffect(() => {
     let mounted = true;
-    client.longbridge.getStatus().then((result) => {
-      if (!mounted) return;
-      if (result.ok) {
-        setStatus(result.data);
-        setError(null);
-      } else {
-        setStatus(null);
-        setError(result.error.message);
-      }
+    let changed = false;
+    const unsubscribe = client.connections?.onChanged((entries) => {
+      changed = true;
+      if (mounted) setAvailable(hasUsableMarketData(entries));
     });
+    const load = async () => {
+      try {
+        const connections = await client.connections?.list();
+        if (connections?.ok) {
+          if (mounted && !changed) setAvailable(hasUsableMarketData(connections.data));
+          return;
+        }
+        const legacy = await client.longbridge.getStatus();
+        if (mounted && !changed) setAvailable(legacy.ok && legacy.data.available);
+      } catch {
+        if (mounted && !changed) setAvailable(false);
+      }
+    };
+    void load();
     return () => {
       mounted = false;
+      unsubscribe?.();
     };
   }, [client]);
 
-  if (!error && (!status || status.available)) {
+  if (available !== false) {
     return null;
   }
 
   return (
-    <div className="folio-banner flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
+    <div data-testid="market-connection-notice" className="folio-banner flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
       <span className="text-text-muted">{t('navigation.dataConnectionNotice')}</span>
       <button type="button" onClick={() => { setSettingsTab('connections'); setSection('settings'); }} className="shrink-0 font-medium text-accent">{t('navigation.openConnections')} →</button>
     </div>

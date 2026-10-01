@@ -207,6 +207,17 @@ describe('phase-2 argv construction', () => {
     );
   });
 
+  it('getCalendarEvents translates the legacy financial event type to the earnings report command', async () => {
+    execaHandler = async () => ({ stdout: JSON.stringify(loadFixture('finance-calendar-events')) });
+    const events = await getCalendarEvents({ eventType: 'financial', symbols: ['AAPL.US'] });
+    expect(events.length).toBeGreaterThan(0);
+    expect(execaMock).toHaveBeenCalledWith(
+      'longbridge',
+      ['finance-calendar', 'report', '--symbol', 'AAPL.US', '--format', 'json'],
+      expect.any(Object)
+    );
+  });
+
   it('getCalendarEvents maps options to argv flags', async () => {
     execaHandler = async () => ({ stdout: JSON.stringify(loadFixture('finance-calendar-events')) });
     await getCalendarEvents({

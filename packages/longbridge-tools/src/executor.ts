@@ -1,4 +1,6 @@
 import { execa } from 'execa';
+import { statSync } from 'node:fs';
+import { join } from 'node:path';
 import { LongBridgeError, isLongBridgeError } from './errors.ts';
 
 export interface ExecutorOptions {
@@ -17,12 +19,46 @@ export async function executeLongBridge(
     });
     return stdout;
   } catch (error) {
-    throw normalizeLongBridgeError(error);
+    const normalized = normalizeLongBridgeError(error);
+    // On Windows, cross-spawn can route missing commands through cmd.exe.
+    // That produces exit code 1 and localized stderr instead of ENOENT.
+    if (
+      process.platform === 'win32' &&
+      normalized.code === 'LONGBRIDGE_UNKNOWN' &&
+      (error as ExecaLikeError)?.exitCode === 1 &&
+      !isLongBridgeOnWindowsPath()
+    ) {
+      throw new LongBridgeError('LongBridge CLI is not installed or not on PATH', 'LONGBRIDGE_NOT_INSTALLED');
+    }
+    throw normalized;
   }
+}
+
+/** Check executable candidates without depending on cmd.exe's output language. */
+export function isLongBridgeOnWindowsPath(
+  pathValue = process.env.PATH ?? '',
+  pathExtValue = process.env.PATHEXT ?? '.COM;.EXE;.BAT;.CMD',
+  cwd = process.cwd()
+): boolean {
+  const directories = [cwd, ...pathValue.split(';').map((entry) => entry.replace(/^"|"$/g, '')).filter(Boolean)];
+  const extensions = ['', ...(pathExtValue || '.COM;.EXE;.BAT;.CMD').split(';').filter(Boolean)];
+  for (const directory of directories) {
+    for (const extension of extensions) {
+      try {
+        if (statSync(join(directory, `longbridge${extension}`)).isFile()) return true;
+      } catch (error) {
+        const code = (error as NodeJS.ErrnoException).code;
+        // An inaccessible PATH entry is not evidence that the CLI is missing.
+        if (code !== 'ENOENT' && code !== 'ENOTDIR') return true;
+      }
+    }
+  }
+  return false;
 }
 
 interface ExecaLikeError extends Error {
   code?: string;
+  exitCode?: number;
   timedOut?: boolean;
   stderr?: string;
   stdout?: string;

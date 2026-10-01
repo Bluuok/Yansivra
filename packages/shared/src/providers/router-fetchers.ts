@@ -67,9 +67,11 @@ export interface RouterCapabilityFetchers {
   getQuote: (symbol: string) => Promise<Quote>;
   getQuoteResult: (symbol: string, signal?: AbortSignal) => Promise<CapabilityFetchResult<Quote>>;
   getKline: (options: GetKlineOptions) => Promise<Kline[]>;
+  getKlineResult: (options: GetKlineOptions, signal?: AbortSignal) => Promise<CapabilityFetchResult<Kline[]>>;
   getIntraday: (symbol: string) => Promise<IntradayData[]>;
   getMarketStatus: () => Promise<MarketStatus[]>;
   getStaticInfo: (symbol: string) => Promise<StaticInfo>;
+  getStaticInfoResult: (symbol: string, signal?: AbortSignal) => Promise<CapabilityFetchResult<StaticInfo>>;
   getCalcIndex: (symbol: string) => Promise<CalcIndex>;
   getNews: (symbol: string) => Promise<NewsItem[]>;
   getPortfolio: () => Promise<PortfolioSnapshot>;
@@ -170,10 +172,14 @@ export function createRouterFetchers(
       fetchResult(router, 'market.quote', bindSymbolInput(symbol, {}, resolve), signal),
     getKline: (options) =>
       fetch(router, 'market.kline', bindSymbolInput(options.symbol, { ...options }, resolve)),
+    getKlineResult: (options, signal) =>
+      fetchResult(router, 'market.kline', bindSymbolInput(options.symbol, { ...options }, resolve), signal),
     getIntraday: (symbol) => fetch(router, 'market.intraday', bindSymbolInput(symbol, {}, resolve)),
     getMarketStatus: () => fetch(router, 'market.status', {}),
     getStaticInfo: (symbol) =>
       fetch(router, 'company.profile', bindSymbolInput(symbol, {}, resolve)),
+    getStaticInfoResult: (symbol, signal) =>
+      fetchResult(router, 'company.profile', bindSymbolInput(symbol, {}, resolve), signal),
     getCalcIndex: (symbol) =>
       fetch(router, 'company.valuation', bindSymbolInput(symbol, {}, resolve)),
     getNews: (symbol) => fetch(router, 'research.news', bindSymbolInput(symbol, {}, resolve)),

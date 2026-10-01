@@ -109,6 +109,40 @@ describe('MassiveFinancialDataProvider', () => {
     expect(calls[0].url).not.toContain('AAPL.US')
   })
 
+  it('uses actual daily closes when the free plan rejects snapshot access', async () => {
+    const calls = installFetch(url => url.includes('/snapshot/')
+      ? jsonResponse({}, 403)
+      : jsonResponse({ results: [
+        { c: 110, h: 112, l: 102, o: 104, t: 1699559040000, v: 2000 },
+        { c: 100, h: 105, l: 98, o: 101, t: 1699472640000, v: 1000 },
+      ] }))
+    const result = await makeProvider('testkey').execute<Quote>('market.quote', { symbol: 'AAPL.US' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toMatchObject({ lastPrice: 110, prevClose: 100, change: 10, changePercent: 10, volume: 2000 })
+    expect(result.provenance.delayed).toBe(true)
+    expect(result.provenance.marketTime).toBe(1699559040000)
+    expect(calls).toHaveLength(2)
+    expect(calls[1].url).toContain('/range/1/day/')
+    expect(calls[1].url).toContain('limit=2')
+  })
+
+  it('does not fabricate a previous close when only one daily bar is available', async () => {
+    installFetch(url => url.includes('/snapshot/') ? jsonResponse({}, 403) : jsonResponse({ results: [
+      { c: 110, h: 112, l: 102, o: 104, t: 1699559040000, v: 2000 },
+    ] }))
+    const result = await makeProvider('key').execute<Quote>('market.quote', { symbol: 'AAPL.US' })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.error.code).toBe('NOT_FOUND')
+  })
+
+  it('does not retry a rate-limited snapshot through another endpoint', async () => {
+    const calls = installFetch(() => jsonResponse({}, 429))
+    const result = await makeProvider('key').execute('market.quote', { symbol: 'AAPL.US' })
+    expect(result.ok).toBe(false)
+    expect(calls).toHaveLength(1)
+  })
+
   it('uses an HTTPS endpoint override without exposing the API key in provider state', async () => {
     const calls = installFetch(() => jsonResponse(snapshotPayload()))
     const provider = new MassiveFinancialDataProvider({
@@ -173,6 +207,16 @@ describe('MassiveFinancialDataProvider', () => {
     // (issue #179). The last (most recent) bar is the market time.
     expect(result.provenance.marketTime).toBe(1578027600_000)
     expect(result.provenance.marketTime! > 1e12).toBe(true)
+  })
+
+  it('keeps only the most recent requested bars when the server returns more than the limit', async () => {
+    installFetch(() => jsonResponse({ results: [
+      { c: 110, t: 1699559040000 }, { c: 100, t: 1699472640000 }, { c: 95, t: 1699386240000 },
+    ] }))
+    const result = await makeProvider('key').execute<Kline[]>('market.kline', { symbol: 'AAPL.US', limit: 2 })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data.map(bar => bar.close)).toEqual([100, 110])
   })
 
   it('maps ticker details to the StaticInfo subset', async () => {
