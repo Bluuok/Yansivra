@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { spawn, type ChildProcessWithoutNullStreams, type SpawnOptionsWithoutStdio } from 'node:child_process';
 import type { AgentTraceEvent, LlmModel, ToolCallRecord } from '@finagent/core';
 import { createCodeError } from './errors.ts';
+import { extractPiProviderError } from './pi-event-adapter.ts';
 type SpawnProcess = Pick<ChildProcessWithoutNullStreams, 'stdin' | 'stdout' | 'stderr' | 'kill' | 'killed' | 'pid'> & {
   on: ChildProcessWithoutNullStreams['on'];
 };
@@ -609,6 +610,12 @@ export class PiRpcClient {
           createCodeError('PI_RUNTIME_ERROR', String(event.error ?? event.message ?? 'Pi runtime rejected the prompt.'))
         );
       }
+      return;
+    }
+
+    const providerError = extractPiProviderError(event);
+    if (providerError) {
+      this.finishPrompt(pending, createCodeError(providerError.code, providerError.message));
       return;
     }
 

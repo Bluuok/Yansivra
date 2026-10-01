@@ -6,6 +6,23 @@ function adapter(): PiEventAdapter {
 }
 
 describe('PiEventAdapter provider usage (#17)', () => {
+  it('reports a provider error as failed even after partial text', () => {
+    const mapper = adapter();
+    mapper.consume({ type: 'message_update', assistantMessageEvent: { type: 'text_delta', delta: 'partial' } });
+    const events = mapper.consume({ type: 'agent_end', messages: [{ role: 'assistant', content: [], stopReason: 'error', errorMessage: 'Insufficient balance' }] });
+    expect(events.map(event => event.type)).toEqual(['run_failed']);
+    const failed = events.find(event => event.type === 'run_failed');
+    expect(failed?.payload).toMatchObject({ error: { code: 'PI_PROVIDER_ERROR', message: 'Insufficient balance' } });
+  });
+
+  it('uses only the last assistant outcome after a recovered provider error', () => {
+    const events = adapter().consume({ type: 'agent_end', messages: [
+      { role: 'assistant', content: [], stopReason: 'error', errorMessage: 'old failure' },
+      { role: 'assistant', content: [{ type: 'text', text: 'recovered' }], stopReason: 'stop' },
+    ] });
+    expect(events.at(-1)?.type).toBe('run_completed');
+  });
+
   it('carries provider-reported usage into the completed message', () => {
     const events = adapter().consume({
       type: 'agent_end',

@@ -20,6 +20,8 @@ interface ProviderModelConfig {
   baseUrl?: string;
   api?: string;
   reasoning?: boolean;
+  input?: ('text' | 'image')[];
+  cost?: { input: number; output: number; cacheRead: number; cacheWrite: number };
   contextWindow?: number;
   maxTokens?: number;
 }
@@ -203,7 +205,18 @@ export function registerProviderOverrides(agent: AgentApi) {
     if (entry.baseUrl !== undefined) config.baseUrl = entry.baseUrl;
     if (entry.apiKey !== undefined) config.apiKey = entry.apiKey;
     if (entry.api !== undefined) config.api = entry.api;
-    if (entry.models !== undefined) config.models = entry.models;
+    // Pi's extension API does not fill the defaults used by its models.json
+    // loader. Complete Folio's smaller custom-model schema before registering.
+    if (entry.models !== undefined) config.models = entry.models.map((model) => ({
+      ...model,
+      name: model.name ?? model.id,
+      reasoning: model.reasoning ?? false,
+      input: model.input ?? ['text'],
+      // Unspecified pricing is unknown; zero is Pi's unpriced tracking value.
+      cost: model.cost ?? { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+      contextWindow: model.contextWindow ?? 128000,
+      maxTokens: model.maxTokens ?? 8192,
+    }));
     agent.registerProvider(entry.provider, config);
   }
 }

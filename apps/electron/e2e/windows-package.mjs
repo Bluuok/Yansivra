@@ -23,6 +23,7 @@ try {
     version: app.getVersion(), prefs: BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences(),
   }));
   assert.equal(runtime.packaged, true);
+  assert.equal(existsSync(join(runtime.resources, 'default_app.asar')), false, 'Electron default shell must not override Folio');
   assert.equal(runtime.profile, profile);
   assert.equal(runtime.version, '0.5.0-beta.1');
   assert.equal(runtime.title, 'Folio Desk');

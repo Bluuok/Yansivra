@@ -1,6 +1,6 @@
 # Folio Desk 验证记录
 
-环境：Windows 10.0.26200，Bun 1.4.0，Node 24.21.0，Electron 39.8.9。所有桌面测试使用独立临时 profile、隐藏窗口和本地 provider，不读取用户现有账户资料。
+环境：Windows 10.0.26200，Bun 1.4.0，Node 24.21.0，Electron 39.8.9。阶段回归使用独立临时 profile、隐藏窗口和本地 provider。文末的 DeepSeek 补充验收使用用户授权的真实 API Key 和项目内独立 profile。
 
 ## 基线 `2e5dba5`
 
@@ -79,4 +79,22 @@ dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip
 SHA256 7f55ccd0073ac4f5c9164d38187578829bd03a12bbe7d7f55ae6cfdbe575c0f6
 ```
 
-这是未签名可解压运行包。EXE 元数据编辑被跳过，Explorer 属性/图标可能保留 Electron；应用窗口显示新品牌。在线行情、真实 LLM、Pi 外部运行时、签名、安装器、自动更新和 Windows 多显示器 DPI 切换未作为本轮通过项。源码按阶段推送到 `Bluuok/folio` 的 `desktop/redevelopment` 分支；没有自动发布二进制 Release。
+这是上述阶段的未签名可解压运行包。EXE 元数据编辑被跳过，Explorer 属性/图标可能保留 Electron；应用窗口显示新品牌。在线行情、真实 LLM、Pi 外部运行时、签名、安装器、自动更新和 Windows 多显示器 DPI 切换未作为上述阶段通过项。源码按阶段推送到 `Bluuok/folio` 的 `desktop/redevelopment` 分支；没有自动发布二进制 Release。
+
+## 2026-10-01：DeepSeek Flash 补充验收
+
+使用官方 `https://api.deepseek.com/v1`，模型固定为 `deepseek-flash`，没有调用 Pro。真实 Pi CLI 版本为 `0.73.1`。Key 通过 Folio 的自定义 provider IPC 写入 Windows `safeStorage` 加密存储；凭据、profile、启动入口、测试脚本和截图留在被 Git 忽略的 `output/`，未写入源码或提交。
+
+实际请求从 Windows 程序的聊天输入框发送，经过 renderer、preload、主进程、Pi RPC 和官方 DeepSeek 服务。运行 `09a9d934-5aad-495b-879a-e102e28d291a` 为 `completed`，界面与持久化回答均为“DeepSeek 已连接，2 加 3 等于 5。”测试脚本耗时 6434ms；Pi 最终消息为 `stop`，报告 7307 输入 token、60 输出 token。关闭重开后，provider 仍为 `deepseek`，model 仍为 `deepseek-flash`。自定义模型未配置价格，Pi 的零成本字段仅是未定价的跟踪值，不代表实际账单为零。
+
+实测修复：
+
+- 补齐 Pi 扩展注册自定义模型时必需的输入类型、成本结构及默认限额，保留显式字段。
+- 将最终 assistant 消息中的 provider 错误转换为 `PI_PROVIDER_ERROR`，避免空回答被记成完成；普通和流式 RPC 均覆盖。
+- Windows `afterPack` 移除自定义 Electron 发行目录遗留的 `default_app.asar`，避免加载默认 Electron 页面；ZIP 验收增加对应断言。
+
+38 项相关测试通过，全工作区类型检查通过。已有会话清理测试首次受到沙箱 `/tmp` 写权限限制，以本机临时目录权限重跑该文件的 19 项测试后全部通过。最终 ZIP 再次解压到源码外的中文/空格路径，真实 renderer、preload、main、13 个技能、扩展、工具、本地 Agent 和安全选项均通过。没有重跑全量单元测试，也没有调用 Pro 或其他模型。
+
+本机默认 `%APPDATA%\Folio` 目录的 Node 同目录重命名报 `EXDEV`，独立无凭据探针复现。因此本次配置使用 `output/Folio`；本机双击 `output/启动 Folio.cmd` 会选择该 profile、独立 Pi 配置目录和 Flash 模型。直接启动 EXE 不会自动选择这次配置目录。
+
+更新后的 ZIP：141214071 bytes，SHA256 `f69eb9f8b7b6695820728519f3be1e317b508e5f76f07d59cbf50f1317e6cd62`。真实结果见本机 `output/deepseek-live-result.json` 和 `output/deepseek-live.png`。本次只验证 LLM 连通与聊天持久化，在线行情和完整金融研究仍未验证。

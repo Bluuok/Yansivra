@@ -12,6 +12,8 @@ bun run test:windows-package
 
 输出：`dist/electron/win-unpacked/Folio Desk.exe` 和 `dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip`。必须完整解压后运行；renderer、preload、main 位于 `resources/app.asar`，技能和两个扩展 bundle 在 `resources/skills`、`resources/extensions`。
 
+Windows `afterPack` 会移除自定义 Electron 发行目录遗留的 `resources/default_app.asar`，确保启动 Folio，而不是 Electron 默认页面；ZIP 验收检查该文件不存在。
+
 Windows `resources` 与 macOS `Resources` 使用同一资源定位逻辑，必须同时满足真实资源目录与 packaged 标志。启动不依赖当前工作目录或开发服务器。
 
 本机基线的签名工具包解压被 macOS 软链接权限阻断。此未签名目录/ZIP 配置使用 builder 支持的 `signAndEditExecutable: false`，跳过签名和 EXE 元数据编辑；应用窗口显示 Folio Desk 图标，Explorer 的可执行文件图标/属性仍可能保留 Electron。没有变更宿主开发者模式、系统权限或全局配置。
@@ -37,4 +39,4 @@ Windows `resources` 与 macOS `Resources` 使用同一资源定位逻辑，必�
 
 `e2e/desktop-smoke.mjs` 检查主导航、原论点入口、助手草稿、研究启动/取消，以及 1366×768、1920×1080 和 Electron 125%/150% zoom。内容缩放不等于操作系统 DPI 设置切换。
 
-日志位于忽略的 `output/`，真实通过项及未验证层见 [验证记录](desktop-validation.md)。在线行情、真实 LLM 和 Pi 外部运行时需要另行配置并验证；本地 provider 是确定性测试路径。
+日志位于忽略的 `output/`，真实通过项及未验证层见 [验证记录](desktop-validation.md)。本机已补充验证 Pi 与官方 DeepSeek Flash 的真实聊天、落盘和重启配置；在线行情与完整金融研究仍需另行验证。本地 provider 是确定性测试路径。

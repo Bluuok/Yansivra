@@ -63,6 +63,21 @@ function scriptedClient(handler: (line: Record<string, unknown>, proc: FakePiPro
 }
 
 describe('PiRpcClient LLM control plane', () => {
+  it('rejects an agent_end with an assistant provider error for prompt and streaming', async () => {
+    const client = scriptedClient((line, proc) => {
+      if (line.type === 'prompt') {
+        proc.respond(line, { type: 'response', command: 'prompt', success: true });
+        proc.stdout.write(`${JSON.stringify({ type: 'agent_end', messages: [{ role: 'assistant', content: [], stopReason: 'error', errorMessage: 'Insufficient balance' }] })}\n`);
+      }
+    });
+    try {
+      await expect(client.prompt('test')).rejects.toMatchObject({ code: 'PI_PROVIDER_ERROR', message: 'Insufficient balance' });
+      const events: unknown[] = [];
+      await expect((async () => { for await (const event of client.promptStreaming('test')) events.push(event); })()).rejects.toMatchObject({ code: 'PI_PROVIDER_ERROR' });
+      expect(events).toEqual([]);
+    } finally { await client.dispose(); }
+  });
+
   it('lists models from get_available_models', async () => {
     const client = scriptedClient((line, proc) => {
       if (line.type === 'get_available_models') {

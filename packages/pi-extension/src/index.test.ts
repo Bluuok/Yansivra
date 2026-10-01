@@ -3,9 +3,24 @@ import { registerProviderOverrides, registerTools, tools } from './index.ts';
 
 afterEach(() => {
   delete process.env.ANTHROPIC_BASE_URL;
+  delete process.env.FINAGENT_PROVIDER_OVERRIDES;
 });
 
 describe('pi extension registration', () => {
+  it('completes custom models for Pi without overwriting explicit limits or pricing', () => {
+    process.env.FINAGENT_PROVIDER_OVERRIDES = JSON.stringify([{
+      provider: 'deepseek', baseUrl: 'https://api.deepseek.com/v1', api: 'openai-completions',
+      models: [
+        { id: 'minimal' },
+        { id: 'full', name: 'Full', reasoning: true, input: ['text', 'image'], contextWindow: 1048576, maxTokens: 4096, cost: { input: 1, output: 2, cacheRead: 0.1, cacheWrite: 0 } },
+      ],
+    }]);
+    let registered: Parameters<NonNullable<Parameters<typeof registerProviderOverrides>[0]['registerProvider']>>[1] | undefined;
+    registerProviderOverrides({ registerTool: () => {}, registerProvider: (_name, config) => { registered = config; } });
+    expect(registered?.models?.[0]).toEqual({ id: 'minimal', name: 'minimal', reasoning: false, input: ['text'], contextWindow: 128000, maxTokens: 8192, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 } });
+    expect(registered?.models?.[1]).toMatchObject({ name: 'Full', reasoning: true, input: ['text', 'image'], contextWindow: 1048576, maxTokens: 4096, cost: { input: 1, output: 2, cacheRead: 0.1, cacheWrite: 0 } });
+  });
+
   it('registers all finance tools', () => {
     const registered: string[] = [];
 

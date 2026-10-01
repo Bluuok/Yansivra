@@ -73,6 +73,8 @@ export class PiEventAdapter {
     }
 
     if (type === 'agent_end') {
+      const error = extractPiProviderError(event);
+      if (error) return [this.emit('run_failed', { error })];
       const finalAnswer = extractFinalAnswer(event);
       if (finalAnswer) this.answer = finalAnswer;
       const events: AgentEvent[] = [];
@@ -146,6 +148,19 @@ export class PiEventAdapter {
       payload,
     } as AgentEvent;
   }
+}
+
+/** Pi reports provider failures inside the final assistant message. */
+export function extractPiProviderError(event: Record<string, unknown>): ApiError | undefined {
+  if (event.type !== 'agent_end' || !Array.isArray(event.messages)) return undefined;
+  const assistant = [...event.messages].reverse().map(readRecord).find(message => message.role === 'assistant');
+  if (assistant?.stopReason !== 'error') return undefined;
+  return {
+    code: 'PI_PROVIDER_ERROR',
+    message: typeof assistant.errorMessage === 'string' && assistant.errorMessage.trim()
+      ? assistant.errorMessage
+      : 'The model provider failed to generate a response.',
+  };
 }
 
 function parseToolStart(event: Record<string, unknown>, now: () => number): ToolCall {
