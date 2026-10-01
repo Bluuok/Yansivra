@@ -17,7 +17,6 @@ import {
   loadResearchReport,
   TERMINAL_RUN_STATUSES,
 } from '../../atoms/researchAtoms';
-import { saveThesisFromReport } from '../../client/thesis';
 import { ResearchReportView } from './ResearchReportView';
 import { ResearchMarketWorkspace } from './ResearchMarketWorkspace';
 import { DEFAULT_STRATEGY_ID, StrategyPicker } from './StrategyPicker';
@@ -26,6 +25,7 @@ import { semanticCapabilityLabelKey } from '../../lib/agentPresentation';
 import { readPersisted, writePersisted } from '../../lib/persistedPrefs';
 import { ContentReveal } from '../motion/ContentReveal';
 import { useFinagentClient } from '../../client';
+import { reviewTabAtom } from '../../atoms/journalAtoms';
 
 const POLL_MS = 900;
 const SYMBOL_REGEX = /^[A-Z0-9]{1,6}\.(US|HK|SG|SH|SZ|HAS)$/;
@@ -42,6 +42,7 @@ export const ResearchPanel: React.FC = () => {
   const symbol = useAtomValue(activeSymbolAtom);
   const setActiveSymbol = useSetAtom(activeSymbolAtom);
   const setNavSection = useSetAtom(navSectionAtom);
+  const setReviewTab = useSetAtom(reviewTabAtom);
   const [runs, setRuns] = useAtom(researchRunsAtom);
   const [reports, setReports] = useState<ResearchReport[]>([]);
   const [report, setReport] = useAtom(researchReportAtom);
@@ -83,6 +84,7 @@ export const ResearchPanel: React.FC = () => {
     return () => { alive = false; };
   }, [setRuns, setActiveSymbol]);
 
+  const newestReportId = runs.find((run) => run.symbol === symbol && run.reportId)?.reportId;
   useEffect(() => {
     if (!symbol) {
       setReports([]);
@@ -90,15 +92,16 @@ export const ResearchPanel: React.FC = () => {
       setThesisSaved(false);
       return;
     }
-    setThesisSaved(false);
-    void loadSymbolReports(symbol).then(setReports);
-    const latest = runs.find((run) => run.symbol === symbol && run.reportId);
-    if (latest?.reportId && !report) {
-      void loadResearchReport(latest.reportId).then((loaded) => {
-        if (loaded) setReport(loaded);
-      });
-    }
-  }, [symbol, setReport, setReports, runs, report]);
+    let alive = true;
+    void loadSymbolReports(symbol).then((loaded) => {
+      if (!alive) return;
+      const ordered = [...loaded].sort((a, b) => b.generatedAt - a.generatedAt);
+      setReports(ordered);
+      setReport((current) => current?.symbol === symbol ? current : ordered[0] ?? null);
+    });
+    return () => { alive = false; };
+  }, [symbol, newestReportId, setReport]);
+  useEffect(() => { setThesisSaved(false); }, [report?.id]);
 
   // Poll the newest active run for this symbol while it is non-terminal.
   const activeRun = runs.find(
@@ -173,9 +176,9 @@ export const ResearchPanel: React.FC = () => {
 
   /** V9: research complete → one-click save as investment thesis. */
   const handleSaveThesis = async () => {
-    if (!symbol) return;
-    const created = await saveThesisFromReport(symbol);
-    if (created) {
+    if (!report) return;
+    const created = await client.thesis?.saveFromReport({ reportId: report.id });
+    if (created?.ok) {
       setThesisSaved(true);
     } else {
       setError(t('research.notAvailable'));
@@ -308,7 +311,7 @@ export const ResearchPanel: React.FC = () => {
         ))}
         {!symbol && <SymbolEntry error={symbolError} value={symbolInput} onChange={setSymbolInput} onSubmit={handleSymbolEntrySubmit} />}
 
-        {symbol && (
+        {symbol && (report?.symbol === symbol ? <details className="folio-pilot-strategy-context"><summary>{t('navigation.kLines')} · {symbol}</summary><ResearchMarketWorkspace symbol={symbol} report={report} activeRun={activeRun?.status ?? null} loading={loading} onStart={() => void handleStart()} /></details> :
           <ResearchMarketWorkspace
             symbol={symbol}
             report={report && report.symbol === symbol ? report : null}
@@ -317,6 +320,8 @@ export const ResearchPanel: React.FC = () => {
             onStart={() => void handleStart()}
           />
         )}
+
+        {symbol && reports.length > 0 && <label className="desk-form mb-4 block text-xs text-text-muted">{t('research.workspace.history')}<select data-testid="research-report-select" value={report?.symbol === symbol ? report.id : ''} onChange={(event) => { const selected = reports.find((item) => item.id === event.target.value); if (selected) setReport(selected); }}>{reports.map((item) => <option key={item.id} value={item.id}>{new Date(item.generatedAt).toLocaleString()} · {t(`research.runStatus.${item.runStatus}`)}</option>)}</select></label>}
 
         {symbol && !activeRun && (!report || report.symbol !== symbol) && (
           <div className="folio-research-strategy-section">
@@ -353,7 +358,7 @@ export const ResearchPanel: React.FC = () => {
                     primaryLabel={t('research.next.saveThesis')}
                     onPrimary={() => void handleSaveThesis()}
                     secondaryLabel={t('research.next.viewThesis')}
-                    onSecondary={() => setNavSection('thesis')}
+                    onSecondary={() => { setReviewTab('thesis'); setNavSection('thesis'); }}
                     hint={t('research.next.saveThesisHint')}
                   />
                 )

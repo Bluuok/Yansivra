@@ -4,7 +4,7 @@ import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next';
 import { useAtomValue, useSetAtom } from 'jotai'
-import type { AlertTriggerEvent, ApiResult, CalendarEvent, InvestmentThesis, ResearchReport } from '@finagent/core'
+import type { AlertTriggerEvent, ApiError, ApiResult, CalendarEvent, InvestmentThesis, ResearchReport, JudgmentSummary } from '@finagent/core'
 import {
   activeSymbolAtom,
   alertStateAtom,
@@ -33,6 +33,8 @@ import { SectionState, TodaySection } from './TodaySection'
 import { DailyBriefSection } from './DailyBriefSection'
 import { AutomationRulesView } from '../automation/AutomationRulesView'
 import { MarketPulse } from '../pulse/MarketPulse'
+import { journalRevisionAtom, selectedJudgmentIdAtom, reviewTabAtom } from '../../atoms/journalAtoms'
+import { JournalError } from '../journal/JournalError'
 
 const MOVER_ROWS = 5
 const EVENT_ROWS = 10
@@ -72,6 +74,25 @@ async function loadUpcomingEvents(client: FinagentClient, symbols: string[]): Pr
 export const TodayView: React.FC = () => {
   const { t } = useTranslation()
   const client = useFinagentClient()
+  const journalRevision = useAtomValue(journalRevisionAtom)
+  const setJudgment = useSetAtom(selectedJudgmentIdAtom)
+  const setReviewTab = useSetAtom(reviewTabAtom)
+  const [pending, setPending] = useState<JudgmentSummary[] | null>(null)
+  const [journalError, setJournalError] = useState<ApiError | null>(null)
+  useEffect(() => {
+    let alive = true
+    const load = async () => {
+      try {
+        const result = await client.journal.list({ status: 'pending', limit: 5 })
+        if (!alive) return
+        if (result.ok) { setPending(result.data.entries); setJournalError(null) }
+        else setJournalError(result.error)
+      } catch (error) { if (alive) setJournalError({ code: 'IPC_FAILED', message: String(error) }) }
+    }
+    void load()
+    const timer = setInterval(() => void load(), 60_000)
+    return () => { alive = false; clearInterval(timer) }
+  }, [client, journalRevision])
   const watchlist = useAtomValue(watchlistAtom)
   const movers = useAtomValue(watchlistMoversAtom)
   const portfolioView = useAtomValue(portfolioViewAtom)
@@ -335,9 +356,9 @@ export const TodayView: React.FC = () => {
             <div className="folio-stitch-card-heading"><h2>{t('today.recentResearch')}</h2><button type="button" onClick={handleResearchStock} className="folio-stitch-text-button">{t('navigation.research')} →</button></div>
             {researchContent}
           </section>
-          <section className="folio-stitch-card" data-testid="today-thesis-review">
-            <div className="folio-stitch-card-heading"><h2>{t('today.thesesNeedingReview')}</h2><button type="button" onClick={() => setNavSection('thesis')} className="folio-stitch-text-button">{t('navigation.review')} →</button></div>
-            {thesesContent}
+          <section className="folio-stitch-card" data-testid="today-pending-reviews">
+            <div className="folio-stitch-card-heading"><h2>{t('journal.pending')}</h2><button type="button" onClick={() => { setReviewTab('journal'); setNavSection('thesis') }} className="folio-stitch-text-button">{t('navigation.review')} →</button></div>
+            {journalError ? <JournalError error={journalError} /> : pending === null ? <SectionState kind="loading" /> : pending.length === 0 ? <div><p className="text-sm">{t('journal.noPending')}</p><p className="mt-2 text-xs leading-5 text-text-muted">{t('journal.noPendingHint')}</p></div> : <ul className="divide-y divide-border">{pending.map((entry) => <li key={entry.id}><button type="button" data-testid="pending-review" className="w-full py-3 text-left" onClick={() => { setJudgment(entry.id); setReviewTab('journal'); setNavSection('thesis') }}><strong className="text-sm">{entry.symbol}</strong><p className="mt-1 line-clamp-2 text-xs text-text-muted">{entry.rationale}</p><p className="mt-2 text-xs text-accent">{t('journal.reviewDate')} {entry.reviewAt !== undefined ? new Date(entry.reviewAt).toLocaleDateString() : '—'}</p></button></li>)}</ul>}
           </section>
           <section className="folio-stitch-card" data-testid="today-portfolio-glance">
             <div className="folio-stitch-card-heading">
@@ -375,6 +396,7 @@ export const TodayView: React.FC = () => {
         <div className="folio-today-secondary mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <DailyBriefSection onManage={() => setAutomationOpen(true)} />
           <MarketPulse />
+          <TodaySection title={t('today.thesesNeedingReview')}><div data-testid="today-thesis-review">{thesesContent}</div></TodaySection>
           <TodaySection title={t('today.triggeredAlerts')}>{alertsContent}</TodaySection>
         </div>
       </div>

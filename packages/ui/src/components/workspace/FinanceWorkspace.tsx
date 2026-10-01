@@ -13,7 +13,7 @@ import { AlertsSection } from './AlertsSection';
 import { SkillsView } from '../settings/SkillsView';
 import { SettingsView } from '../settings/SettingsView';
 import { ResearchPanel } from '../research/ResearchPanel';
-import { ThesisPanel } from '../thesis/ThesisPanel';
+import { ReviewWorkspace } from '../journal/ReviewWorkspace';
 import { CompareWorkspace } from '../compare/CompareWorkspace';
 import { TodayView } from '../today/TodayView';
 import { DiscoverView } from '../discover/DiscoverView';
@@ -63,7 +63,7 @@ export const FinanceWorkspace: React.FC = () => {
       content = <ResearchPanel />;
       break;
     case 'thesis':
-      content = <ThesisPanel />;
+      content = <ReviewWorkspace />;
       break;
     case 'compare':
       content = <CompareWorkspace />;

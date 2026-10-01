@@ -21,12 +21,14 @@ import { trace } from './trace.ts';
 import { events } from './events.ts';
 import { profile } from './profile.ts';
 import { demo } from './demo.ts';
+import { journal } from './journal.ts';
 
 /**
  * en-US resource bundle. Feature slices add their own namespace here (today,
  * discover, research, …) alongside the matching zh-CN entry.
  */
 export const enUsResources = {
+  journal,
   common,
   demo,
   navigation,

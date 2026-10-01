@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { activeSymbolAtom, activeViewAtom, navSectionAtom, agentPanelVisibleAtom } from '../../atoms';
 import type { WorkspaceView } from '@finagent/core';
 import { useTheme } from './ThemeProvider';
+import { inspectorModeAtom } from '../../atoms/journalAtoms';
 
 const TABS: Array<{ labelKey: string; view: WorkspaceView }> = [
   { labelKey: 'kLines', view: 'chart' },
@@ -21,6 +22,7 @@ export const WorkspaceTopbar: React.FC = () => {
   const navSection = useAtomValue(navSectionAtom);
   const [, setNavSection] = useAtom(navSectionAtom);
   const [assistantOpen, setAssistantOpen] = useAtom(agentPanelVisibleAtom);
+  const [inspectorMode, setInspectorMode] = useAtom(inspectorModeAtom);
   const { mode, setMode } = useTheme();
   const [activeView, setActiveView] = useAtom(activeViewAtom);
   const showAssetTabs = navSection === 'watchlist' || navSection === 'sessions';
@@ -54,7 +56,7 @@ export const WorkspaceTopbar: React.FC = () => {
       <div className="flex shrink-0 items-center gap-3">
         <span className="folio-local-label text-xs text-text-muted">{t('navigation.localFirst')}</span>
         <button type="button" onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')} aria-label={t('navigation.toggleTheme')} className="rounded-lg p-2 text-text-muted hover:bg-surface-hover">{mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</button>
-        <button type="button" data-testid="assistant-toggle" onClick={() => setAssistantOpen((open) => !open)} aria-pressed={assistantOpen} aria-label={t('navigation.agentPanelLabel')} className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-text-muted hover:bg-surface-hover"><PanelRight className="h-4 w-4" /><span>{t('navigation.agentPanel')}</span></button>
+        <button type="button" data-testid="assistant-toggle" onClick={() => { setAssistantOpen(!(assistantOpen && inspectorMode === 'assistant')); setInspectorMode('assistant'); }} aria-pressed={assistantOpen && inspectorMode === 'assistant'} aria-label={t('navigation.agentPanelLabel')} className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-text-muted hover:bg-surface-hover"><PanelRight className="h-4 w-4" /><span>{t('navigation.agentPanel')}</span></button>
       </div>
     </header>
   );

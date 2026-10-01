@@ -27,6 +27,7 @@ export const SUPPORTED_NAMESPACES: readonly string[] = [
   'security',
   'research',
   'thesis',
+  'journal',
   'portfolio',
   'compare',
   'alerts',

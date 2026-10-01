@@ -4,6 +4,7 @@ import { KernelBridge } from '../kernel/KernelBridge';
 import { WorkbenchShell } from './WorkbenchShell';
 import { OnboardingOverlay } from '../onboarding/OnboardingOverlay';
 import { CommandPalette } from '../command/CommandPalette';
+import { JudgmentDialog } from '../journal/JudgmentDialog';
 import { ThemeProvider } from './ThemeProvider';
 import { TooltipProvider } from '../ui/tooltip';
 import { Toaster } from 'sonner';
@@ -37,6 +38,7 @@ export const AppShell: React.FC<AppShellProps> = ({ client = fallbackClient }) =
             </div>
             <OnboardingOverlay />
             <CommandPalette />
+            <JudgmentDialog />
             <Toaster closeButton richColors={false} />
           </TooltipProvider>
         </ThemeProvider>

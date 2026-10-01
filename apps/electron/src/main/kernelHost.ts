@@ -753,8 +753,11 @@ export class AgentKernelHost {
     return reports[0] ?? null;
   }
 
-  async thesisSaveFromReport(symbol: unknown): Promise<InvestmentThesis> {
-    const report = await this.thesisGetReport(symbol);
+  async thesisSaveFromReport(input: unknown): Promise<InvestmentThesis> {
+    // Preserve legacy symbol callers while binding the reader action to its report.
+    const report = typeof input === 'string'
+      ? await this.thesisGetReport(input)
+      : await this.researchService.getReport(requireString(requireObject(input).reportId, 'reportId'));
     if (!report) {
       throw createCodeError(
         'REPORT_NOT_FOUND',

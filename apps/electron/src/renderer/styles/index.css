@@ -1,4 +1,22 @@
 @import "tailwindcss";
+
+/* Research desk forms share the same warm surfaces and ink-blue actions. */
+.desk-primary, .desk-secondary { border-radius: 8px; padding: 8px 13px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.desk-primary { background: var(--color-accent); color: var(--color-accent-foreground, white); border: 1px solid transparent; }
+.desk-secondary { background: var(--color-surface); color: var(--color-foreground); border: 1px solid var(--color-border); }
+.desk-primary:disabled, .desk-secondary:disabled { opacity: .45; cursor: default; }
+.desk-form { display: flex; flex-direction: column; gap: 16px; }
+.desk-form label { display: flex; flex-direction: column; gap: 7px; font-size: 12px; font-weight: 500; }
+.desk-form input, .desk-form select, .desk-form textarea { width: 100%; min-width: 0; border: 1px solid var(--color-border); border-radius: 8px; padding: 9px 11px; background: var(--color-background); color: var(--color-foreground); font-size: 13px; font-weight: 400; }
+.desk-form textarea { resize: vertical; }
+.desk-form input:focus, .desk-form select:focus, .desk-form textarea:focus { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.desk-journal { container-type: inline-size; }
+.desk-journal-columns { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 24px; align-items: start; }
+.desk-journal-row { overflow-wrap: anywhere; }
+.folio-pilot-report { width: 100%; max-width: 920px; margin-inline: auto; overflow-wrap: anywhere; }
+.folio-pilot-verdict-top { flex-wrap: wrap; gap: 16px; }
+.folio-today-view .folio-portfolio-summary-card > div:first-child { flex-wrap: wrap; gap: .75rem; }
+@container (max-width: 850px) { .desk-journal-columns { grid-template-columns: minmax(0, 1fr); } }
 @source "../../../../../packages/ui/src";
 @source "../";
 

@@ -109,7 +109,7 @@ var electronAPI = {
   thesis: {
     list: (symbol) => import_electron.ipcRenderer.invoke("thesis:list", symbol),
     getReport: (symbol) => import_electron.ipcRenderer.invoke("thesis:getReport", symbol),
-    saveFromReport: (symbol) => import_electron.ipcRenderer.invoke("thesis:saveFromReport", symbol),
+    saveFromReport: (input) => import_electron.ipcRenderer.invoke("thesis:saveFromReport", input),
     reEvaluate: (symbol) => import_electron.ipcRenderer.invoke("thesis:reEvaluate", symbol),
     update: (thesis) => import_electron.ipcRenderer.invoke("thesis:update", thesis),
     listImpacts: (symbol) => import_electron.ipcRenderer.invoke("thesis:listImpacts", symbol),

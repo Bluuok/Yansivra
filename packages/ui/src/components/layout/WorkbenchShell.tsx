@@ -8,6 +8,8 @@ import { ErrorBoundary } from '../primitives/ErrorBoundary';
 import { Sidebar } from './Sidebar';
 import { FinanceWorkspace } from '../workspace/FinanceWorkspace';
 import { AgentPanel } from '../agent/AgentPanel';
+import { EvidenceInspector } from '../research/EvidenceInspector';
+import { inspectorModeAtom } from '../../atoms/journalAtoms';
 import { WorkspaceTopbar } from './WorkspaceTopbar';
 
 const SIZES_KEY = 'allotmentSizes';
@@ -15,6 +17,7 @@ const DEFAULT_SIZES = [208, 1000, 360];
 
 export const WorkbenchShell: React.FC = () => {
   const agentPanelVisible = useAtomValue(agentPanelVisibleAtom);
+  const inspectorMode = useAtomValue(inspectorModeAtom);
   const [sizes, setSizes] = useState<number[]>(() => readPersisted<number[]>(SIZES_KEY, DEFAULT_SIZES));
   const [isNarrow, setIsNarrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 900);
 
@@ -67,7 +70,8 @@ export const WorkbenchShell: React.FC = () => {
         </Allotment.Pane>
           <Allotment.Pane visible={showAgent} minSize={isNarrow ? 280 : 320} preferredSize={normalized[2]} snap>
             <ErrorBoundary>
-              <div className="h-full" hidden={!showAgent}><AgentPanel /></div>
+              <div className="h-full" hidden={!showAgent || inspectorMode !== 'assistant'}><AgentPanel /></div>
+              <div className="h-full" hidden={!showAgent || inspectorMode !== 'evidence'}><EvidenceInspector /></div>
             </ErrorBoundary>
           </Allotment.Pane>
       </Allotment>

@@ -21,9 +21,11 @@ import { trace } from './trace.ts';
 import { events } from './events.ts';
 import { profile } from './profile.ts';
 import { demo } from './demo.ts';
+import { journal } from './journal.ts';
 
 /** zh-CN resource bundle — every namespace mirrors en-US key-for-key. */
 export const zhCnResources = {
+  journal,
   common,
   demo,
   navigation,

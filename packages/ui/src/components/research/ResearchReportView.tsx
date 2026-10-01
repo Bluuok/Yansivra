@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import type { ResearchReport, ResearchSection } from '@finagent/core';
 import { loadResearchDiff, researchDiffAtom } from '../../atoms/diffAtoms';
@@ -8,15 +8,17 @@ import { EvidenceList } from './EvidenceList';
 import { ExportMenu } from './ExportMenu';
 import { WhatChangedSection } from './WhatChangedSection';
 import { MarkdownContent } from '../chat/MarkdownContent';
+import { judgmentReportAtom, evidenceSelectionAtom, inspectorModeAtom } from '../../atoms/journalAtoms';
+import { agentPanelVisibleAtom } from '../../atoms';
 
 const STANCE_TONE: Record<ResearchReport['stance'], string> = {
-  bullish: 'text-positive',
+  bullish: 'text-accent',
   bearish: 'text-negative',
   neutral: 'text-text-muted',
 };
 
 const VERDICT_TONE: Record<ResearchSection['verdict'], string> = {
-  positive: 'text-positive',
+  positive: 'text-accent',
   negative: 'text-negative',
   neutral: 'text-text-muted',
   unavailable: 'text-warning',
@@ -26,24 +28,35 @@ const VERDICT_TONE: Record<ResearchSection['verdict'], string> = {
 export const ResearchReportView: React.FC<{
   report: ResearchReport;
   nextAction?: React.ReactNode;
-}> = ({ report, nextAction }) => {
+  snapshotMode?: boolean;
+}> = ({ report, nextAction, snapshotMode = false }) => {
   const { t } = useTranslation();
   const confidence = Math.round(report.confidence * 100);
   const [diffState, setDiffState] = useAtom(researchDiffAtom);
   const [previousReport, setPreviousReport] = useState<ResearchReport | null>(null);
+  const setJudgmentReport = useSetAtom(judgmentReportAtom);
+  const setEvidence = useSetAtom(evidenceSelectionAtom);
+  const setInspectorMode = useSetAtom(inspectorModeAtom);
+  const setInspectorVisible = useSetAtom(agentPanelVisibleAtom);
+  const inspect = (section: ResearchSection) => {
+    setEvidence({ reportId: report.id, symbol: report.symbol, generatedAt: report.generatedAt, section, capabilityRuns: report.capabilityRuns });
+    setInspectorMode('evidence'); setInspectorVisible(true);
+  };
 
   // Fetch the latest diff for this symbol; when a previous report exists the
   // What Changed section renders. Degrades to a hidden section when the
   // research:getDiff channel is unwired or the symbol has no history.
   useEffect(() => {
+    if (snapshotMode) return;
     let alive = true;
     setDiffState({ loading: true, diff: null });
     setPreviousReport(null);
     void loadResearchDiff(report.symbol).then((diff) => {
       if (!alive) return;
-      setDiffState({ loading: false, diff: diff ?? null });
-      if (diff) {
-        void loadResearchReport(diff.previousReportId).then((prev) => {
+      const matching = diff?.currentReportId === report.id ? diff : null;
+      setDiffState({ loading: false, diff: matching });
+      if (matching) {
+        void loadResearchReport(matching.previousReportId).then((prev) => {
           if (alive && prev) setPreviousReport(prev);
         });
       }
@@ -51,7 +64,7 @@ export const ResearchReportView: React.FC<{
     return () => {
       alive = false;
     };
-  }, [report.symbol, report.id, setDiffState]);
+  }, [report.symbol, report.id, setDiffState, snapshotMode]);
 
   return (
     <div className="folio-pilot-report" data-testid="research-report">
@@ -75,20 +88,19 @@ export const ResearchReportView: React.FC<{
               </div>
             </div>
             <ExportMenu report={report} />
+            {!snapshotMode && <button type="button" data-testid="record-judgment" className="desk-primary" onClick={() => setJudgmentReport(report)}>{t('journal.record')}</button>}
           </div>
         </div>
         <MarkdownContent content={report.summary} className="folio-pilot-summary" />
         <div className="folio-pilot-report-meta">
-          {report.runStatus === 'partial'
-            ? t('research.partialRun')
-            : t('research.allCompleted')}{' '}
+          {t(`research.runStatus.${report.runStatus}`)}{' '}
           · {t('research.capabilityCalls', { count: report.capabilityRuns.length })} ·{' '}
           {new Date(report.generatedAt).toLocaleString()}
         </div>
         {nextAction}
       </div>
 
-      {diffState.diff && (
+      {!snapshotMode && diffState.diff?.currentReportId === report.id && (
         <WhatChangedSection
           diff={diffState.diff}
           previousReport={previousReport ?? undefined}
@@ -97,7 +109,7 @@ export const ResearchReportView: React.FC<{
 
       <div id="research-signals" className="folio-pilot-report-sections">
         {report.sections.map((section) => (
-          <SectionCard key={section.key} section={section} />
+          <SectionCard key={section.key} section={section} onInspect={() => inspect(section)} />
         ))}
       </div>
 
@@ -123,7 +135,7 @@ export const ResearchReportView: React.FC<{
   );
 };
 
-const SectionCard: React.FC<{ section: ResearchSection }> = ({ section }) => {
+const SectionCard: React.FC<{ section: ResearchSection; onInspect: () => void }> = ({ section, onInspect }) => {
   const { t } = useTranslation();
   return (
     <article className="folio-pilot-report-section">
@@ -144,6 +156,7 @@ const SectionCard: React.FC<{ section: ResearchSection }> = ({ section }) => {
           )}
         </div>
       )}
+      <button type="button" data-testid="inspect-evidence" onClick={onInspect} className="mt-3 text-xs font-medium text-accent">{t('journal.showEvidence')} →</button>
     </article>
   );
 };

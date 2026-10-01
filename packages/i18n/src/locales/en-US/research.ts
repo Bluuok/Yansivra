@@ -9,6 +9,7 @@ import type { NamespaceResource } from '../keys.ts';
 export const research = {
   deepResearch: 'Deep Research',
   workspace: {
+    history: 'Report history',
     title: 'Research',
     searchPlaceholder: 'Search securities, topics, or notes',
     addToWatchlist: 'Add to watchlist',

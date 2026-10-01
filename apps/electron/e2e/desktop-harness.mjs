@@ -36,6 +36,7 @@ export async function launchDesktop(profile, options = {}) {
     env,
     timeout: 45_000,
   });
+  try {
   const page = await application.firstWindow({ timeout: 30_000 });
   await page.waitForLoadState('domcontentloaded');
   await page.locator('[data-testid="finance-workspace"]').waitFor();
@@ -47,6 +48,18 @@ export async function launchDesktop(profile, options = {}) {
   await page.locator('[data-testid="finance-workspace"]').waitFor();
   await page.locator('[data-testid="onboarding-overlay"]').waitFor({ state: 'hidden' });
   return { application, page };
+  } catch (error) { await application.close().catch(() => undefined); throw error; }
+}
+
+export async function captureDesktop(application, name) {
+  // Hidden windows can lag one compositor frame behind DOM assertions.
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  const png = await application.evaluate(async ({ BrowserWindow }) => {
+    globalThis.__folioCapture = BrowserWindow.getAllWindows()[0].capturePage(undefined, { stayHidden: true, stayAwake: true });
+    try { return (await globalThis.__folioCapture).toPNG().toString('base64'); }
+    finally { delete globalThis.__folioCapture; }
+  });
+  writeFileSync(join(outputRoot, name), Buffer.from(png, 'base64'));
 }
 
 export async function closeDesktop(application) {

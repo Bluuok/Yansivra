@@ -5,6 +5,7 @@ import type { research as enResearch } from '../en-US/research.ts';
 export const research = {
   deepResearch: '深度研究',
   workspace: {
+    history: '历史报告',
     title: '研究',
     searchPlaceholder: '搜索标的、主题或笔记',
     addToWatchlist: '加入自选',
