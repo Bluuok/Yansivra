@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import type { ResearchReport, ResearchSection } from '@finagent/core';
@@ -8,7 +8,7 @@ import { EvidenceList } from './EvidenceList';
 import { ExportMenu } from './ExportMenu';
 import { WhatChangedSection } from './WhatChangedSection';
 import { MarkdownContent } from '../chat/MarkdownContent';
-import { judgmentReportAtom, evidenceSelectionAtom, inspectorModeAtom } from '../../atoms/journalAtoms';
+import { judgmentReportAtom, evidenceSelectionAtom, evidenceTriggerAtom, inspectorModeAtom } from '../../atoms/journalAtoms';
 import { agentPanelVisibleAtom } from '../../atoms';
 
 const STANCE_TONE: Record<ResearchReport['stance'], string> = {
@@ -32,14 +32,29 @@ export const ResearchReportView: React.FC<{
 }> = ({ report, nextAction, snapshotMode = false }) => {
   const { t } = useTranslation();
   const confidence = Math.round(report.confidence * 100);
+  const instance = useId();
+  const reportRoot = useRef<HTMLDivElement>(null);
+  const anchor = (key: string) => `report-${instance}-${encodeURIComponent(report.id)}-${encodeURIComponent(key)}`;
+  const headingId = anchor('heading');
+  const sectionIds = report.sections.map((section, index) => anchor(`section-${index}-${section.key}`));
+  const goTo = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    event.preventDefault();
+    const target = document.getElementById(id);
+    const container = reportRoot.current?.closest<HTMLElement>('.folio-pilot-research-content, .desk-journal');
+    if (target && container) container.scrollTo({ top: container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top - 24, behavior: 'auto' });
+    else target?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    target?.focus({ preventScroll: true });
+  };
   const [diffState, setDiffState] = useAtom(researchDiffAtom);
   const [previousReport, setPreviousReport] = useState<ResearchReport | null>(null);
   const setJudgmentReport = useSetAtom(judgmentReportAtom);
   const setEvidence = useSetAtom(evidenceSelectionAtom);
+  const setTrigger = useSetAtom(evidenceTriggerAtom);
   const setInspectorMode = useSetAtom(inspectorModeAtom);
   const setInspectorVisible = useSetAtom(agentPanelVisibleAtom);
-  const inspect = (section: ResearchSection) => {
-    setEvidence({ reportId: report.id, symbol: report.symbol, generatedAt: report.generatedAt, section, capabilityRuns: report.capabilityRuns });
+  const inspect = (section: ResearchSection, trigger: HTMLElement) => {
+    setTrigger(trigger);
+    setEvidence({ reportId: report.id, symbol: report.symbol, generatedAt: report.generatedAt, section, capabilityRuns: report.capabilityRuns, headingId });
     setInspectorMode('evidence'); setInspectorVisible(true);
   };
 
@@ -67,14 +82,18 @@ export const ResearchReportView: React.FC<{
   }, [report.symbol, report.id, setDiffState, snapshotMode]);
 
   return (
-    <div className="folio-pilot-report" data-testid="research-report">
+    <div ref={reportRoot} className="desk-reading folio-pilot-report" data-testid="research-report">
+      <nav className="desk-report-toc" aria-label={t('research.flow.contents')}>
+        <details open><summary>{t('research.flow.contents')}</summary><div>{report.sections.map((section, index) => <a key={sectionIds[index]} href={`#${sectionIds[index]}`} onClick={(event) => goTo(event, sectionIds[index])}>{section.title}</a>)}<a href={`#${anchor('evidence')}`} onClick={(event) => goTo(event, anchor('evidence'))}>{t('research.evidence')}</a></div></details>
+      </nav>
+      <div className="desk-report-body">
       <div className="folio-pilot-verdict">
         <div className="folio-pilot-verdict-top">
           <div>
             <div className="folio-pilot-verdict-label">
               {t('research.reportFor', { symbol: report.symbol })}
             </div>
-            <h3 className={`mt-1 text-[17px] font-bold ${STANCE_TONE[report.stance]}`}>
+            <h3 id={headingId} data-testid="research-report-heading" tabIndex={-1} className={`mt-1 text-[17px] font-bold ${STANCE_TONE[report.stance]}`}>
               {t(`research.stance.${report.stance}`)}
             </h3>
           </div>
@@ -97,6 +116,7 @@ export const ResearchReportView: React.FC<{
           · {t('research.capabilityCalls', { count: report.capabilityRuns.length })} ·{' '}
           {new Date(report.generatedAt).toLocaleString()}
         </div>
+        <p className="desk-report-confidence-note">{t('research.flow.confidenceNote')}</p>
         {nextAction}
       </div>
 
@@ -107,9 +127,9 @@ export const ResearchReportView: React.FC<{
         />
       )}
 
-      <div id="research-signals" className="folio-pilot-report-sections">
-        {report.sections.map((section) => (
-          <SectionCard key={section.key} section={section} onInspect={() => inspect(section)} />
+      <div id={anchor('signals')} className="folio-pilot-report-sections">
+        {report.sections.map((section, index) => (
+          <SectionCard key={sectionIds[index]} id={sectionIds[index]} section={section} onInspect={(trigger) => inspect(section, trigger)} />
         ))}
       </div>
 
@@ -118,7 +138,7 @@ export const ResearchReportView: React.FC<{
       <CaseColumn title={t('research.catalysts')} points={report.catalysts} />
       <CaseColumn title={t('research.risks')} points={report.risks} />
 
-      <section id="research-evidence-detail" className="folio-pilot-evidence">
+      <section id={anchor('evidence')} tabIndex={-1} className="folio-pilot-evidence">
         <h4 className="folio-pilot-evidence-heading">
           {t('research.evidence')}
         </h4>
@@ -126,21 +146,22 @@ export const ResearchReportView: React.FC<{
           {t('research.evidenceNote')}
         </p>
         <div className="mt-3 flex flex-col gap-2">
-          {report.sections.map((section) => (
-            <EvidenceList key={section.key} section={section} />
+          {report.sections.map((section, index) => (
+            <EvidenceList key={sectionIds[index]} section={section} />
           ))}
         </div>
       </section>
+      </div>
     </div>
   );
 };
 
-const SectionCard: React.FC<{ section: ResearchSection; onInspect: () => void }> = ({ section, onInspect }) => {
+const SectionCard: React.FC<{ id: string; section: ResearchSection; onInspect: (trigger: HTMLElement) => void }> = ({ id, section, onInspect }) => {
   const { t } = useTranslation();
   return (
-    <article className="folio-pilot-report-section">
+    <article id={id} tabIndex={-1} className="folio-pilot-report-section">
       <div className="flex items-center justify-between">
-        <span className="text-[12.5px] font-semibold text-foreground">{section.title}</span>
+        <h4 className="desk-report-section-heading">{section.title}</h4>
         <span className={`text-[11px] font-semibold ${VERDICT_TONE[section.verdict]}`}>
           {t(`research.verdict.${section.verdict}`)}
         </span>
@@ -148,15 +169,10 @@ const SectionCard: React.FC<{ section: ResearchSection; onInspect: () => void }>
       <MarkdownContent content={section.summary} className="folio-pilot-report-section-summary" />
       {section.evidence.length > 0 && (
         <div className="mt-1.5 text-[10.5px] text-text-muted">
-          {t(
-            section.evidence.length === 1
-              ? 'research.evidenceSourceCount'
-              : 'research.evidenceSourceCountOther',
-            { count: section.evidence.length }
-          )}
+          {t('research.flow.references', { count: section.evidence.length })}
         </div>
       )}
-      <button type="button" data-testid="inspect-evidence" onClick={onInspect} className="mt-3 text-xs font-medium text-accent">{t('journal.showEvidence')} →</button>
+      <button type="button" data-testid="inspect-evidence" onClick={(event) => onInspect(event.currentTarget)} className="desk-evidence-trigger mt-3 text-xs font-medium text-accent">{t('journal.showEvidence')}</button>
     </article>
   );
 };

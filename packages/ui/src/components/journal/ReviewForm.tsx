@@ -11,15 +11,17 @@ export const ReviewForm: React.FC<{ entryId: string; onSaved: (entry: JudgmentEn
   const [draft, setDraft] = useAtom(reviewDraftAtomFamily(entryId));
   const setRevision = useSetAtom(journalRevisionAtom);
   const [error, setError] = useState<ApiError | null>(null);
+  const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false); const busyRef = useRef(false);
   const submit = async (event: React.FormEvent) => {
     event.preventDefault(); if (busyRef.current) return;
     if (!draft.observations.trim()) { setError({ code: 'INVALID_ARGUMENT', message: t('journal.invalid') }); return; }
-    busyRef.current = true; setBusy(true); setError(null);
+    busyRef.current = true; setBusy(true); setError(null); setSaved(false);
     try {
       const result = await client.journal.addReview({ ...draft, entryId });
       if (!result.ok) { setError(result.error); return; }
       onSaved(result.data);
+      setSaved(true);
       setDraft({ requestId: crypto.randomUUID(), verdict: 'insufficient_data', observations: '', lessons: '' });
       setRevision((value) => value + 1);
     } catch (error) { setError({ code: 'IPC_FAILED', message: error instanceof Error ? error.message : String(error) }); }
@@ -28,6 +30,7 @@ export const ReviewForm: React.FC<{ entryId: string; onSaved: (entry: JudgmentEn
   return <form onSubmit={(event) => void submit(event)} className="desk-form rounded-xl border border-border bg-surface p-5" data-testid="review-form">
     <h3 className="text-base font-semibold">{t('journal.addReview')}</h3>
     {error && <JournalError error={error} />}
+    {saved && <p role="status" className="desk-review-saved">{t('journal.reviewSaved')}</p>}
     <fieldset disabled={busy} className="space-y-4">
       <label>{t('journal.verdictLabel')}<select data-testid="review-verdict" value={draft.verdict} onChange={(event) => setDraft((value) => ({ ...value, verdict: event.target.value as JudgmentVerdict }))}>{(['still_valid', 'weakened', 'invalidated', 'insufficient_data'] as const).map((value) => <option key={value} value={value}>{t(`journal.verdict.${value}`)}</option>)}</select></label>
       <label>{t('journal.observations')} *<textarea data-testid="review-observations" rows={3} maxLength={JOURNAL_LIMITS.observations} required value={draft.observations} onChange={(event) => setDraft((value) => ({ ...value, observations: event.target.value }))} /></label>

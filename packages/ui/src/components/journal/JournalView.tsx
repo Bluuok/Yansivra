@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import type { ApiError, JudgmentEntry, JudgmentPage, JudgmentStatus } from '@finagent/core';
@@ -8,6 +8,7 @@ import { navSectionAtom } from '../../atoms';
 import { ResearchReportView } from '../research/ResearchReportView';
 import { ReviewForm } from './ReviewForm';
 import { JournalError } from './JournalError';
+import { useBoundedReveal } from '../motion/useBoundedReveal';
 
 export const JournalView: React.FC = () => {
   const { t } = useTranslation(); const client = useFinagentClient();
@@ -17,6 +18,16 @@ export const JournalView: React.FC = () => {
   const [status, setStatus] = useState<JudgmentStatus>('all'); const [offset, setOffset] = useState(0);
   const [page, setPage] = useState<JudgmentPage | null>(null);
   const [entry, setEntry] = useState<JudgmentEntry | null>(null);
+  const selectedRef = useRef(selectedId); selectedRef.current = selectedId;
+  const [newReviewId, setNewReviewId] = useState<string | null>(null);
+  const animatedReviews = useRef(new Set<string>());
+  const saved = (result: JudgmentEntry) => {
+    if (selectedRef.current !== result.id) return;
+    const existing = new Set(entry?.reviews.map(review => review.id));
+    const appended = result.reviews.find(review => !existing.has(review.id));
+    if (appended) setNewReviewId(appended.id);
+    setEntry(result);
+  };
   const [listError, setListError] = useState<ApiError | null>(null);
   const [detailError, setDetailError] = useState<ApiError | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +43,7 @@ export const JournalView: React.FC = () => {
     return () => { alive = false; };
   }, [client, status, offset, revision, setSelectedId]);
   useEffect(() => {
-    let alive = true; setEntry(null); setDetailError(null);
+    let alive = true; setEntry(current => current?.id === selectedId ? current : null); setDetailError(null);
     if (selectedId) void client.journal.get({ entryId: selectedId }).then((result) => {
       if (!alive) return;
       if (result.ok) setEntry(result.data); else setDetailError(result.error);
@@ -57,7 +68,7 @@ export const JournalView: React.FC = () => {
       <div className="min-w-0 space-y-5" data-testid="judgment-detail">
         {detailError && <JournalError error={detailError} />}
         {selectedId && !entry && !detailError ? <p className="text-sm text-text-muted">{t('common.loading')}</p> : !entry && <p className="text-sm text-text-muted">{t('journal.select')}</p>}
-        {entry && <>
+        {entry && entry.id === selectedId && <>
           <article className="rounded-xl border border-border bg-surface p-5" data-testid="judgment-original">
             <div className="flex justify-between gap-3"><h2 className="text-lg font-semibold">{t('journal.original')}</h2><span className="text-sm text-accent">{entry.symbol} · {t(`journal.stance.${entry.judgment.stance}`)}</span></div>
             <div className="mt-2 space-y-1 text-xs text-text-muted"><div>{t('journal.recordedTime')} {new Date(entry.createdAt).toLocaleString()}</div><div>{t('journal.reportTime')} {new Date(entry.reportSnapshot.generatedAt).toLocaleString()}</div><div>{entry.reviewAt !== undefined ? `${t('journal.reviewDate')} ${new Date(entry.reviewAt).toLocaleDateString()}` : t('journal.noDate')}</div></div>
@@ -65,10 +76,19 @@ export const JournalView: React.FC = () => {
             <div className="mt-5 grid gap-5 sm:grid-cols-2">{[{ title: t('journal.assumptions'), points: entry.judgment.assumptions }, { title: t('journal.conditions'), points: entry.judgment.invalidationConditions }].map((group) => <section key={group.title}><h3 className="mb-2 text-xs font-semibold text-text-muted">{group.title}</h3><ul className="space-y-2 text-sm">{group.points.length ? group.points.map((value, i) => <li key={i} className="whitespace-pre-wrap">• {value}</li>) : <li>—</li>}</ul></section>)}</div>
           </article>
           <details className="rounded-xl border border-border bg-surface p-5" data-testid="judgment-snapshot"><summary className="cursor-pointer font-semibold">{t('journal.snapshot')} · {entry.symbol}</summary><div className="mt-4"><ResearchReportView report={entry.reportSnapshot} snapshotMode /></div></details>
-          <section className="rounded-xl border border-border bg-surface p-5" data-testid="judgment-reviews"><h2 className="mb-4 text-lg font-semibold">{t('journal.later')}</h2>{entry.reviews.length === 0 ? <p className="text-sm text-text-muted">{t('journal.noReviews')}</p> : <ol className="space-y-5 border-l border-border pl-5">{entry.reviews.map((review) => <li key={review.id} data-testid="judgment-review"><div className="flex flex-wrap items-center justify-between gap-2"><strong className="text-sm text-accent">{t(`journal.verdict.${review.verdict}`)}</strong><time className="text-xs text-text-muted">{new Date(review.createdAt).toLocaleString()}</time></div><p className="mt-2 whitespace-pre-wrap text-sm leading-6">{review.observations}</p>{review.lessons && <p className="mt-3 whitespace-pre-wrap text-sm text-text-muted">{review.lessons}</p>}</li>)}</ol>}</section>
-          <ReviewForm key={entry.id} entryId={entry.id} onSaved={setEntry} />
+          <section className="rounded-xl border border-border bg-surface p-5" data-testid="judgment-reviews"><h2 className="mb-4 text-lg font-semibold">{t('journal.later')}</h2>{entry.reviews.length === 0 ? <p className="text-sm text-text-muted">{t('journal.noReviews')}</p> : <ol className="space-y-5 border-l border-border pl-5">{entry.reviews.map(review => <ReviewAppend key={review.id} review={review} animate={newReviewId === review.id && !animatedReviews.current.has(review.id)} onEntered={() => animatedReviews.current.add(review.id)} />)}</ol>}</section>
+          <ReviewForm key={entry.id} entryId={entry.id} onSaved={saved} />
         </>}
       </div>
     </div>
   </div>;
+};
+
+
+const ReviewAppend: React.FC<{ review: JudgmentEntry['reviews'][number]; animate: boolean; onEntered: () => void }> = ({ review, animate, onEntered }) => {
+  const { t } = useTranslation();
+  const paper = useRef<HTMLLIElement>(null);
+  useBoundedReveal(paper, review.id, true, animate);
+  useEffect(() => { if (animate) onEntered(); }, [review.id]);
+  return <li ref={paper} data-testid="judgment-review" className="desk-review-append"><div className="flex flex-wrap items-center justify-between gap-2"><strong className="text-sm text-accent">{t(`journal.verdict.${review.verdict}`)}</strong><time className="text-xs text-text-muted">{new Date(review.createdAt).toLocaleString()}</time></div><p className="mt-2 whitespace-pre-wrap text-sm leading-6">{review.observations}</p>{review.lessons && <p className="mt-3 whitespace-pre-wrap text-sm text-text-muted">{review.lessons}</p>}</li>;
 };

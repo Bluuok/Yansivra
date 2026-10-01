@@ -45,6 +45,7 @@ it('hydrates an interrupted run, exposes recovery actions, and shows a resume er
       await new Promise((r) => setTimeout(r, 10));
     });
     expect(store.get(activeSymbolAtom)).toBe('NVDA.US');
+    expect(container.querySelector('[data-testid="research-flow-map"]')?.getAttribute('data-run-id')).toBe(run.id);
     const card = container.querySelector('[data-testid="research-recovery"]')!;
     expect(card.textContent).toContain('1 completed results saved');
     const buttons = Array.from(card.querySelectorAll('button'));

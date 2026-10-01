@@ -82,7 +82,7 @@ try {
   desktop = await launchDesktop(profile); ({ page } = desktop);
   await page.locator('[data-testid="sidebar"]').getByRole('button', { name: '复盘', exact: true }).click();
   await page.locator('[data-testid="judgment-original-rationale"]').waitFor();
-  await page.locator('[data-testid="judgment-snapshot"] summary').click();
+  await page.locator('[data-testid="judgment-snapshot"] > summary').click();
   assert.ok((await page.locator('[data-testid="judgment-snapshot"]').innerText()).includes(old.summary));
   assert.equal(await page.locator('[data-testid="judgment-review"]').count(), 1);
   await page.locator('[data-testid="review-observations"]').fill('关闭重开后继续人工复盘');

@@ -243,6 +243,13 @@ export const research = {
     researchEvents: 'Upcoming events',
     portfolioSummary: 'Portfolio summary',
   },
+  flow: {
+    collection: 'Evidence collection', success: 'succeeded', failed: 'failed', remaining: 'remaining',
+    preparing: 'Preparing the collection plan', collectionNote: 'Collection progress is not report completion.',
+    inconsistent: 'Saved outcomes are inconsistent; progress is not reliable.', unplanned: 'Not planned',
+    market: 'Market', financials: 'Financials', valuation: 'Valuation', events: 'Events', other: 'Other', synthesis: 'Report synthesis',
+    contents: 'Report contents', references: '{{count}} references', confidenceNote: 'Confidence is not a win probability.',
+  },
   export: {
     copyMarkdown: 'Copy Markdown',
     downloadMarkdown: 'Download .md',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowUpRight, BriefcaseBusiness, CalendarDays, GitCompareArrows, Search } from 'lucide-react'
+import { BriefcaseBusiness, CalendarDays, GitCompareArrows, Search } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next';
@@ -288,33 +288,36 @@ export const TodayView: React.FC = () => {
     .sort((a, b) => b.generatedAt - a.generatedAt)
     .slice(0, REPORT_ROWS)
 
+  const openReport = (report: ResearchReport) => {
+    setActiveSymbol(report.symbol)
+    setResearchReport(report)
+    setResearchOrigin({ from: 'today', label: t('today.continueLabel') })
+    setNavSection('research')
+  }
+
   const researchContent = (() => {
     if (reportsLoading && recentReports.length === 0) return <SectionState kind="loading" />
     if (recentReports.length === 0) return <SectionState kind="empty" message={t('today.noResearchReports')} />
     return (
-      <ul className="divide-y divide-border">
-        {recentReports.map((report) => (
-          <li key={report.id} className="flex items-start justify-between gap-3 py-2 first:pt-0 last:pb-0">
-            <div className="min-w-0">
+      <ul className="desk-report-index">
+        {recentReports.map((report, index) => (
+          <li key={report.id} className={index === 0 ? 'desk-archive-lead' : 'desk-report-row'}>
+            <div className="desk-report-copy min-w-0">
               <div className="truncate text-[12.5px] font-medium text-foreground">
-                {report.symbol} · <span className="capitalize">{report.stance}</span>
+                {report.symbol} · <span>{t(`research.stance.${report.stance}`)}</span>
               </div>
-              <div className="truncate text-[12px] text-foreground/54">{report.summary}</div>
+              <div className="desk-report-summary">{report.summary}</div>
               <div className="mt-1 text-xs text-text-muted">{new Date(report.generatedAt).toLocaleString()} · {t(`research.runStatus.${report.runStatus}`)}</div>
-            </div>
             <button
               type="button"
-              onClick={() => {
-                setActiveSymbol(report.symbol)
-                setResearchReport(report)
-                setResearchOrigin({ from: 'today', label: t('today.continueLabel') })
-                setNavSection('research')
-              }}
+              onClick={() => openReport(report)}
               data-testid={`today-continue-${report.symbol}`}
-              className="shrink-0 rounded-[7px] border border-[var(--mac-blue)]/25 px-2 py-1 text-[11.5px] font-medium text-accent transition-smooth hover:border-[var(--mac-blue)]/50 hover:bg-[var(--mac-blue-soft)]"
+              className="desk-report-open desk-secondary"
             >
               {t('today.continueResearch')}
             </button>
+            </div>
+            {index === 0 && <img className="desk-archive-art" src={new URL('../../assets/research-archive.svg', import.meta.url).href} alt="" aria-hidden="true" draggable={false} />}
           </li>
         ))}
       </ul>
@@ -344,7 +347,7 @@ export const TodayView: React.FC = () => {
   })()
 
   return (
-    <div className="folio-today-view h-full overflow-y-auto bg-background px-6 py-6" data-testid="today-view">
+    <div className="folio-today-view desk-overview h-full overflow-y-auto bg-background px-6 py-6" data-testid="today-view">
       <div className="folio-today-content mx-auto max-w-6xl">
         <header className="folio-today-heading mb-6 flex flex-wrap items-end justify-between gap-4">
           <div><div className="mb-2 text-xs text-text-muted tnum">{new Date().toLocaleDateString()}</div><h1 className="font-display-lg text-foreground">{t('today.greeting')}</h1>
@@ -353,7 +356,7 @@ export const TodayView: React.FC = () => {
         </header>
         <div className="folio-today-bento grid grid-cols-1 gap-4 lg:grid-cols-3">
           <section className="folio-stitch-card lg:col-span-2" data-testid="today-continue-research">
-            <div className="folio-stitch-card-heading"><h2>{t('today.recentResearch')}</h2><button type="button" onClick={handleResearchStock} className="folio-stitch-text-button">{t('navigation.research')} →</button></div>
+            <div className="folio-stitch-card-heading"><h2>{t('today.recentResearch')}</h2><button type="button" onClick={handleResearchStock} className="folio-stitch-text-button">{t('navigation.research')}</button></div>
             {researchContent}
           </section>
           <section className="folio-stitch-card" data-testid="today-pending-reviews">
@@ -418,6 +421,5 @@ const QuickAction: React.FC<{
   <button type="button" onClick={onClick} className={`folio-quick-action group flex items-center gap-3 rounded-[9px] border border-border px-3 py-2.5 text-left transition-smooth hover:border-[var(--mac-blue)]/35 hover:bg-[var(--mac-blue-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 ${tone === 'blue' ? 'bg-accent/5' : 'bg-surface'}`}>
     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent"><Icon className="h-4 w-4" strokeWidth={1.8} /></span>
     <span className="min-w-0 flex-1"><span className="block text-[12px] font-semibold text-foreground">{label}</span><span className="mt-0.5 block truncate text-[11px] text-foreground/44">{hint}</span></span>
-    <ArrowUpRight className="h-3.5 w-3.5 text-accent/55 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
   </button>
 )

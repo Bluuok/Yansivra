@@ -12,7 +12,7 @@ export const journal = {
   all: '全部', pending: '待复盘', reviewed: '已复盘', reviews: '{{count}} 次复盘',
   original: '当时的判断', snapshot: '当时阅读的报告', later: '后续复盘',
   addReview: '追加一次复盘', verdictLabel: '复盘结论', observations: '我的观察', lessons: '经验与认识（可选）',
-  append: '保存复盘', noReviews: '尚未追加复盘。', noDate: '未设置复盘日期',
+  append: '保存复盘', reviewSaved: '复盘已保存', noReviews: '尚未追加复盘。', noDate: '未设置复盘日期',
   discard: '放弃未保存的输入？', discardHint: '这些内容尚未保存。确认放弃后关闭表单。',
   keepEditing: '继续填写', discardAction: '放弃输入', busy: '保存中…',
   invalid: '请填写理由和至少一条失效条件，并检查文本长度与日期。',

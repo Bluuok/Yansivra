@@ -230,6 +230,13 @@ export const research = {
     researchEvents: '近期事件',
     portfolioSummary: '持仓概况',
   },
+  flow: {
+    collection: '证据采集', success: '成功', failed: '失败', remaining: '待完成',
+    preparing: '正在准备采集计划', collectionNote: '采集进度不代表报告已完成。',
+    inconsistent: '已保存的执行结果不一致，进度暂不可信。', unplanned: '未计划',
+    market: '行情', financials: '财务', valuation: '估值', events: '事件', other: '其他', synthesis: '报告综合',
+    contents: '报告目录', references: '{{count}} 条引用', confidenceNote: '可信度不是胜率。',
+  },
   export: {
     copyMarkdown: '复制 Markdown',
     downloadMarkdown: '下载 .md',

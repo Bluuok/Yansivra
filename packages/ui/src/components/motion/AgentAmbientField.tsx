@@ -66,7 +66,7 @@ export const AgentAmbientField: React.FC<AgentAmbientFieldProps> = ({
     });
   }, [particleCount]);
 
-  const shouldRenderParticles = state !== 'idle' && state !== 'error';
+  const shouldRenderParticles = state === 'thinking' || state === 'tool' || state === 'synthesizing';
 
   return (
     <div

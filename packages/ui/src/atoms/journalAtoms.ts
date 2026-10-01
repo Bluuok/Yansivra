@@ -17,10 +17,13 @@ export const reviewDraftAtomFamily = atomFamily((_entryId: string) => atom<Revie
   requestId: crypto.randomUUID(), verdict: 'insufficient_data', observations: '', lessons: '',
 }));
 export const inspectorModeAtom = atom<'assistant' | 'evidence'>('assistant');
+// UI-only focus target, never serialized with reports or journal records.
+export const evidenceTriggerAtom = atom<HTMLElement | null>(null);
 export const evidenceSelectionAtom = atom<{
   reportId: string;
   symbol: string;
   generatedAt: number;
   section: ResearchSection;
   capabilityRuns: ResearchReport['capabilityRuns'];
+  headingId?: string;
 } | null>(null);

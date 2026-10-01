@@ -198,7 +198,11 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
 
         <nav className="folio-research-tabs" aria-label={t('research.workspace.tabsAria')}>
           <a className="folio-research-tab folio-research-tab--active" href="#research-overview">{t('research.workspace.overview')}</a>
-          <a className="folio-research-tab" href="#research-signals">{t('research.workspace.signals')}</a>
+          <a className="folio-research-tab" href="#research-evidence" onClick={(event) => {
+            const content = event.currentTarget.closest<HTMLElement>('.folio-pilot-research-content');
+            const signals = content?.querySelector<HTMLElement>('[data-testid="research-report"] .folio-pilot-report-sections');
+            if (signals && content) { event.preventDefault(); content.scrollTo({ top: content.scrollTop + signals.getBoundingClientRect().top - content.getBoundingClientRect().top - 24, behavior: 'auto' }); }
+          }}>{t('research.workspace.signals')}</a>
           <a className="folio-research-tab" href="#research-evidence">{t('research.workspace.evidence')}</a>
           <a className="folio-research-tab" href="#research-thesis">{t('research.workspace.thesis')}</a>
         </nav>

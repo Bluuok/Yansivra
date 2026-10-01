@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
-import { Check, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import type { ResearchRunSummary, ResearchReport, StrategyId } from '@finagent/core';
 import { activeSymbolAtom, navSectionAtom } from '../../atoms';
 import { pendingResearchStrategyAtom, researchOriginAtom } from '../../atoms/discoverAtoms';
@@ -21,7 +21,7 @@ import { ResearchReportView } from './ResearchReportView';
 import { ResearchMarketWorkspace } from './ResearchMarketWorkspace';
 import { DEFAULT_STRATEGY_ID, StrategyPicker } from './StrategyPicker';
 import { NextAction } from '../primitives/NextAction';
-import { semanticCapabilityLabelKey } from '../../lib/agentPresentation';
+import { ResearchFlowMap } from './ResearchFlowMap';
 import { readPersisted, writePersisted } from '../../lib/persistedPrefs';
 import { ContentReveal } from '../motion/ContentReveal';
 import { useFinagentClient } from '../../client';
@@ -55,6 +55,8 @@ export const ResearchPanel: React.FC = () => {
   const [symbolInput, setSymbolInput] = useState('');
   const [symbolError, setSymbolError] = useState<string | null>(null);
   const [thesisSaved, setThesisSaved] = useState(false);
+  const [focusedRunId, setFocusedRunId] = useState<string | null>(null);
+  useEffect(() => { setFocusedRunId(null); }, [symbol]);
 
   // Discover → Research: a candidate card carries a recommended strategy.
   useEffect(() => {
@@ -107,6 +109,7 @@ export const ResearchPanel: React.FC = () => {
   const activeRun = runs.find(
     (run) => run.symbol === symbol && !(run.status in TERMINAL_RUN_STATUSES)
   );
+  useEffect(() => { if (activeRun) setFocusedRunId(activeRun.id); }, [activeRun?.id]);
   useEffect(() => {
     if (!activeRun) return;
     let alive = true;
@@ -138,6 +141,7 @@ export const ResearchPanel: React.FC = () => {
     try {
       const started = await startResearch({ symbol: targetSymbol, strategyId });
       if (started) {
+        setFocusedRunId(started.id);
         setRuns((current) => [started, ...current.filter((run) => run.id !== started.id)]);
         // Remember this strategy for the symbol so the next run defaults to it.
         writePersisted(lastStrategyKey(targetSymbol), strategyId);
@@ -185,15 +189,17 @@ export const ResearchPanel: React.FC = () => {
     }
   };
 
-  /** V9: return to the section the user came from (Discover results / Portfolio). */
+  /** Return to the section that opened this report. */
   const handleBackToOrigin = (): void => {
     const origin = researchOrigin;
     if (!origin) return;
-    setNavSection(origin.from === 'discover' ? 'discover' : 'portfolio');
+    setNavSection(origin.from);
     setResearchOrigin(null);
   };
 
   const symbolRuns = runs.filter((run) => run.symbol === symbol);
+  const presentationRun = activeRun ?? symbolRuns.find(run => run.id === focusedRunId)
+    ?? (report?.symbol === symbol ? symbolRuns.find(run => run.reportId === report.id) : symbolRuns[0]);
   const recoverableRuns = runs.filter((run) => (!symbol || run.symbol === symbol) &&
     (run.status === 'interrupted' || (run.status === 'failed' && run.error)));
 
@@ -319,7 +325,7 @@ export const ResearchPanel: React.FC = () => {
           />
         )}
 
-        {symbol && reports.length > 0 && <label className="desk-form mb-4 block text-xs text-text-muted">{t('research.workspace.history')}<select data-testid="research-report-select" value={report?.symbol === symbol ? report.id : ''} onChange={(event) => { const selected = reports.find((item) => item.id === event.target.value); if (selected) setReport(selected); }}>{reports.map((item) => <option key={item.id} value={item.id}>{new Date(item.generatedAt).toLocaleString()} · {t(`research.runStatus.${item.runStatus}`)}</option>)}</select></label>}
+        {symbol && reports.length > 0 && <label className="desk-form mb-4 block text-xs text-text-muted">{t('research.workspace.history')}<select data-testid="research-report-select" value={report?.symbol === symbol ? report.id : ''} onChange={(event) => { const selected = reports.find((item) => item.id === event.target.value); if (selected) { setFocusedRunId(null); setReport(selected); } }}>{reports.map((item) => <option key={item.id} value={item.id}>{new Date(item.generatedAt).toLocaleString()} · {t(`research.runStatus.${item.runStatus}`)}</option>)}</select></label>}
 
         {symbol && !activeRun && (!report || report.symbol !== symbol) && (
           <div className="folio-research-strategy-section">
@@ -337,8 +343,8 @@ export const ResearchPanel: React.FC = () => {
           </details>
         )}
 
-        {activeRun && (
-          <RunProgressCard key={activeRun.id} run={activeRun} />
+        {presentationRun && (
+          <RunProgressCard key={presentationRun.id} run={presentationRun} />
         )}
 
         {report && symbol && report.symbol === symbol && (
@@ -370,7 +376,7 @@ export const ResearchPanel: React.FC = () => {
             runs={symbolRuns}
             onSelect={async (reportId) => {
               const loaded = await loadResearchReport(reportId);
-              if (loaded) setReport(loaded);
+              if (loaded) { setFocusedRunId(null); setReport(loaded); }
             }}
           />
         )}
@@ -420,118 +426,7 @@ const SymbolEntry: React.FC<{
   );
 };
 
-const RunProgressCard: React.FC<{ run: ResearchRunSummary }> = ({ run }) => {
-  const { t } = useTranslation();
-  const planned = run.plannedCapabilities.length;
-  const done = run.completedCapabilities.length;
-  const failed = run.failedCapabilities.length;
-  const humanized = (id: string): string => {
-    return t(semanticCapabilityLabelKey(id));
-  };
-  return (
-    <div className="folio-pilot-progress mb-3">
-      <div className="flex items-center justify-between">
-        <span className="text-[12.5px] font-semibold text-foreground">
-          {run.status === 'fetching' ? t('research.fetching') : t('research.synthesizing')}
-        </span>
-        <span className="tnum text-[11px] text-text-muted">
-          {t('research.capabilitiesCount', { done, planned })}
-          {failed > 0 ? ` ${t('research.failedCount', { failed })}` : ''}
-        </span>
-      </div>
-      <div className="folio-pilot-progress-bar mt-2">
-        <div
-          className="h-full rounded-full bg-accent transition-all"
-          style={{ width: `${planned === 0 ? 100 : Math.round((done / planned) * 100)}%` }}
-        />
-      </div>
-      <SemanticStageList run={run} />
-      <div className="hidden" aria-hidden="true">
-        {run.plannedCapabilities.map((capabilityId) => {
-          const doneCap = run.completedCapabilities.includes(capabilityId);
-          const failedCap = run.failedCapabilities.includes(capabilityId);
-          return (
-            <span
-              key={capabilityId}
-              className={`inline-flex items-center gap-1 rounded-[6px] px-1.5 py-0.5 text-[10.5px] font-medium ${
-                doneCap
-                  ? 'bg-positive/12 text-positive'
-                  : failedCap
-                    ? 'bg-negative/12 text-negative'
-                    : 'bg-foreground/8 text-text-muted'
-              }`}
-            >
-              {doneCap && <Check className="h-2.5 w-2.5" strokeWidth={2.2} />}
-              {humanized(capabilityId)}
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-type ResearchStageKey = 'market' | 'financials' | 'valuation' | 'events' | 'synthesis';
-type ResearchStageState = 'pending' | 'active' | 'done' | 'failed';
-
-const RESEARCH_STAGES: ReadonlyArray<{ key: ResearchStageKey }> = [
-  { key: 'market' },
-  { key: 'financials' },
-  { key: 'valuation' },
-  { key: 'events' },
-  { key: 'synthesis' },
-];
-
-function stageForCapability(capabilityId: string): ResearchStageKey {
-  if (capabilityId.startsWith('market.')) return 'market';
-  if (capabilityId === 'company.valuation') return 'valuation';
-  if (capabilityId.startsWith('company.')) return 'financials';
-  if (capabilityId.startsWith('research.')) return 'events';
-  return 'financials';
-}
-
-const SemanticStageList: React.FC<{ run: ResearchRunSummary }> = ({ run }) => {
-  const { t } = useTranslation();
-  const openStage = RESEARCH_STAGES.find((stage) => {
-    const capabilities = run.plannedCapabilities.filter(
-      (capabilityId) => stageForCapability(capabilityId) === stage.key
-    );
-    return capabilities.some(
-      (capabilityId) =>
-        !run.completedCapabilities.includes(capabilityId) &&
-        !run.failedCapabilities.includes(capabilityId)
-    );
-  })?.key;
-
-  const stateFor = (stage: ResearchStageKey): ResearchStageState => {
-    if (stage === 'synthesis' && run.status === 'synthesizing') return 'active';
-    const capabilities = run.plannedCapabilities.filter(
-      (capabilityId) => stageForCapability(capabilityId) === stage
-    );
-    if (capabilities.length > 0 && capabilities.every((capabilityId) => run.completedCapabilities.includes(capabilityId))) {
-      return 'done';
-    }
-    if (capabilities.some((capabilityId) => run.failedCapabilities.includes(capabilityId))) {
-      return 'failed';
-    }
-    return openStage === stage ? 'active' : 'pending';
-  };
-
-  return (
-    <div className="folio-pilot-stage-list" aria-label={t('research.stages.label')}>
-      {RESEARCH_STAGES.map((stage) => {
-        const state = stateFor(stage.key);
-        const marker = state === 'done' ? '✓' : state === 'failed' ? '!' : state === 'active' ? '•' : '·';
-        return (
-          <div key={stage.key} className={'folio-pilot-stage folio-pilot-stage--' + state}>
-            <span className="folio-pilot-stage-marker" aria-hidden="true">{marker}</span>
-            <span>{t('research.stages.' + stage.key)}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+const RunProgressCard: React.FC<{ run: ResearchRunSummary }> = ({ run }) => <ResearchFlowMap run={run} />;
 
 const RunHistory: React.FC<{
   runs: ResearchRunSummary[];

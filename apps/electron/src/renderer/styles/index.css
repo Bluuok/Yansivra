@@ -64,7 +64,7 @@
   --motion-base: 160ms;
   --motion-content: 220ms;
   --motion-slow: 180ms;
-  --motion-ambient: 180ms;
+  --motion-ambient: 12s;
 
   /* Compatibility aliases for feature slices that still use the old names. */
   --mac-window: var(--background);
@@ -651,7 +651,7 @@ button:disabled { cursor: not-allowed; }
   background: radial-gradient(circle at 35% 48%, rgba(var(--accent-rgb), .12), transparent 66%);
   filter: blur(16px);
   opacity: .65;
-  animation: folio-motion-halo var(--motion-ambient) ease-in-out infinite alternate;
+  /* Static halo: fast interaction timing must not become ambient flashing. */
 }
 
 .folio-motion-ambient__particle {
@@ -664,7 +664,7 @@ button:disabled { cursor: not-allowed; }
   background: var(--accent);
   opacity: .28;
   box-shadow: 0 0 8px rgba(var(--accent-rgb), .18);
-  animation: folio-motion-drift var(--particle-duration) ease-in-out var(--particle-delay) infinite alternate;
+  /* Static texture. Actual outcome motion belongs to ResearchFlowMap. */
 }
 
 .folio-motion-state--thinking .folio-motion-ambient__particle { opacity: .16; }

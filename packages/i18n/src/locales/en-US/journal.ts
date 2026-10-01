@@ -10,7 +10,7 @@ export const journal = {
   all: 'All', pending: 'Due for review', reviewed: 'Reviewed', reviews: '{{count}} reviews',
   original: 'My original judgment', snapshot: 'The report I read', later: 'Later reviews',
   addReview: 'Append a review', verdictLabel: 'Review conclusion', observations: 'What I observed', lessons: 'What I learned (optional)',
-  append: 'Save review', noReviews: 'No later review has been added.', noDate: 'No review date set',
+  append: 'Save review', reviewSaved: 'Review saved', noReviews: 'No later review has been added.', noDate: 'No review date set',
   discard: 'Discard unsaved input?', discardHint: 'The input has not been saved. Discard it to close this form.',
   keepEditing: 'Keep editing', discardAction: 'Discard', busy: 'Saving…',
   invalid: 'Add your reasoning and at least one invalidation condition. Check text limits and date.',
