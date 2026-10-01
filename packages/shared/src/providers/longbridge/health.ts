@@ -152,7 +152,7 @@ function accountLabel(account: Record<string, unknown> | undefined): string | un
   const name = stringField(account, 'name');
   if (name) return name;
   const accountNo = account?.account_no;
-  return accountNo === undefined || accountNo === '' ? undefined : String(accountNo);
+  return accountNo == null || accountNo === '' ? undefined : String(accountNo);
 }
 
 /** Pure mapping of `longbridge auth status` stdout → `ProviderHealth`. */

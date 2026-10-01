@@ -1,6 +1,7 @@
 import { EventEmitter } from 'node:events';
 import { PassThrough } from 'node:stream';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdtemp, rm, rmdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'bun:test';
 import type { SpawnOptionsWithoutStdio } from 'node:child_process';
@@ -670,13 +671,16 @@ describe('PiRuntimeAdapter', () => {
     const client = new PiRpcClient({
       spawnProcess: createSpawn(() => new FakePiProcess(() => undefined)),
     });
-    const adapter = new PiRuntimeAdapter({ rpcClient: client, sessionDir: '/tmp/pi' });
-    const sessionPath = '/tmp/pi/s1.jsonl';
-    await mkdir('/tmp/pi', { recursive: true });
-    await writeFile(sessionPath, 'dummy', 'utf8');
-
-    await adapter.disposeSession('s1');
-
-    await expect(readFileOrNull(sessionPath)).resolves.toBeNull();
+    const sessionDir = await mkdtemp(join(tmpdir(), 'folio-pi-dispose-'));
+    const adapter = new PiRuntimeAdapter({ rpcClient: client, sessionDir });
+    const sessionPath = join(sessionDir, 's1.jsonl');
+    try {
+      await writeFile(sessionPath, 'dummy', 'utf8');
+      await adapter.disposeSession('s1');
+      await expect(readFileOrNull(sessionPath)).resolves.toBeNull();
+    } finally {
+      await rm(sessionPath, { force: true });
+      await rmdir(sessionDir);
+    }
   });
 });

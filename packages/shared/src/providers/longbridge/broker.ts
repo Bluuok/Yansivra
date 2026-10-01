@@ -79,7 +79,10 @@ export class LongbridgeBrokerAccountProvider implements BrokerAccountProvider {
     const json = parseAuthStatus(output);
     const account = json?.account;
     const accountNo = account?.account_no;
-    if (accountNo === undefined || accountNo === '') {
+    if (accountNo == null || accountNo === '') {
+      if (stringField(json?.token, 'status') === 'valid') {
+        return { ok: false, error: { code: 'ACCESS_DENIED', message: 'No brokerage account is available for this authorization.' } };
+      }
       return { ok: false, error: { code: 'AUTH_EXPIRED', message: 'Longbridge is not connected.' } };
     }
     const no = String(accountNo);

@@ -142,14 +142,20 @@ export function parseKlineResponse(output: string, fallbackSymbol = ''): Kline[]
   }
 }
 
-export function parseIntradayResponse(output: string): IntradayData[] {
+export function parseIntradayResponse(output: string, fallbackSymbol = ''): IntradayData[] {
   try {
     const data = JSON.parse(output);
-    return data.map((d: { symbol: string; timestamp: number; price: number; volume: number }) => ({
-      symbol: d.symbol,
-      timestamp: d.timestamp,
-      price: d.price,
-      volume: d.volume,
+    return data.map((d: {
+      symbol?: string;
+      timestamp?: number | string;
+      time?: number | string;
+      price: number | string;
+      volume: number | string;
+    }) => ({
+      symbol: d.symbol ?? fallbackSymbol,
+      timestamp: toTimestamp(d.timestamp ?? d.time),
+      price: toNumber(d.price, 'price'),
+      volume: toNumber(d.volume, 'volume'),
     }));
   } catch (e) {
     throw parseFailure('intraday', output);

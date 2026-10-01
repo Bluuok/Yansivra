@@ -76,7 +76,7 @@ Acceptance tests use isolated profiles, hidden windows and the local provider. E
 
 ## Integration boundaries
 
-Existing Longbridge / Massive data providers and Pi / model configuration remain available. Data CLIs, account access, model credentials and the external Pi runtime are not bundled in the ZIP. A completed local-provider run does not validate a production LLM or live market connection.
+Existing Longbridge / Massive data providers and Pi / model configuration remain available. Data CLIs, account access, model credentials and the external Pi runtime are not bundled in the ZIP. Live acceptance passed all 16 financial capabilities, a complete DeepSeek Flash report, judgment/review entry, and persistence after restart. That run used Longbridge data with a delayed Massive daily quote fallback because the Longbridge quote lacked its market timestamp. Earlier external timeouts correctly produced partial reports. Brokerage portfolio access remains denied by the provider; see the [validation record](docs/desktop-validation.md).
 
 Archived judgments and manual reviews require neither market nor model calls. The current release does not add PDF page navigation, scheduled reassessment, full-text search or trading. Evidence shows only fields retained by the report.
 

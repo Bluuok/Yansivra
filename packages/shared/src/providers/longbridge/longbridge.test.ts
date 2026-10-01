@@ -48,7 +48,7 @@ beforeEach(() => {
 const CANNED: Record<string, string> = {
   quote: JSON.stringify([{ symbol: 'NVDA.US', last_price: '224.1', prev_close: '220', change: '4.1', change_ratio: '0.0186', volume: '12345', timestamp: '1786492800', high: '225', low: '219', open: '221' }]),
   kline: JSON.stringify([{ symbol: 'NVDA.US', time: '1786492800', open: '220', high: '225', low: '219', close: '224', volume: '1000' }]),
-  intraday: JSON.stringify([{ symbol: 'NVDA.US', timestamp: 1786492800, price: 224, volume: 100 }]),
+  intraday: JSON.stringify([{ time: '1786492800', price: '224', volume: '100' }]),
   depth: JSON.stringify({ symbol: 'NVDA.US', bids: [{ position: 1, price: '224.07', volume: 40 }], asks: [{ position: 1, price: '224.20', volume: 76 }] }),
   trades: JSON.stringify([{ time: '1786492800', price: '224.1', volume: 100, direction: 'Up', type: 'I' }]),
   capital: JSON.stringify({ symbol: 'NVDA.US', timestamp: '1786492800', capital_in: { large: '100', medium: '50', small: '10' }, capital_out: { large: '80', medium: '40', small: '5' } }),
@@ -106,6 +106,9 @@ describe('LongbridgeFinancialDataProvider', () => {
         expect(result.provenance.providerId).toBe('longbridge');
         expect(result.provenance.providerName).toBe('Longbridge');
         expect(result.provenance.stale).toBe(false);
+        if (capability === 'market.intraday') {
+          expect(result.data).toEqual([{ symbol: 'NVDA.US', timestamp: 1786492800, price: 224, volume: 100 }]);
+        }
       }
       expect(lastArgs[0]).toBe(subcommand);
       if (capability === 'research.events') expect(lastArgs[1]).toBe('report');
@@ -219,6 +222,14 @@ function authJson(quoteLevel: string, tokenStatus = 'valid'): string {
 }
 
 describe('LongbridgeHealthProbe', () => {
+  it('keeps a valid login without inventing an account label for null account metadata', async () => {
+    const { exec } = buildExec({ authStatus: () => JSON.stringify({
+      token: { status: 'valid' }, account: { account_no: null, name: null },
+    }) });
+    const health = await new LongbridgeHealthProbe({ exec, cacheTtlMs: 0 }).status();
+    expect(health.status).toBe('connected');
+    expect(health.account).toBeUndefined();
+  });
   it('reports not-installed when the CLI is missing', async () => {
     const { exec } = buildExec({
       version: () => {
@@ -295,6 +306,16 @@ const PORTFOLIO_SAMPLE = JSON.stringify({
 });
 
 describe('LongbridgeBrokerAccountProvider', () => {
+  it('distinguishes valid login without a brokerage account from expired authorization', async () => {
+    for (const accountNo of [null, undefined, '']) {
+      const exec: LongbridgeExec = async () => JSON.stringify({
+        token: { status: 'valid' }, account: { account_no: accountNo, name: null },
+      });
+      const result = await new LongbridgeBrokerAccountProvider({ exec }).accounts();
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.error.code).toBe('ACCESS_DENIED');
+    }
+  });
   it('declares broker identity', () => {
     const broker = new LongbridgeBrokerAccountProvider();
     expect(broker.id).toBe('longbridge-broker');

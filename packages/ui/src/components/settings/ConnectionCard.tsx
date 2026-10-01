@@ -177,7 +177,7 @@ export const ConnectionCard: React.FC<{
   const status = entry.status;
   const accountLabel = entry.accountLabel ?? entry.health?.account ?? null;
   const quoteAccess = quoteAccessSummary(entry.health?.permissions);
-  const portfolioReady = entry.kind === 'broker-account' && status === 'connected';
+  const portfolioReady = entry.kind === 'broker-account' && status === 'connected' && entry.hasAccount;
   const lastCheck = entry.health?.lastCheck;
 
   const byok = entry.configurable;

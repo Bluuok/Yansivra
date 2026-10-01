@@ -4,6 +4,7 @@ import {
   parseCapitalFlowResponse,
   parseDepthResponse,
   parseInstitutionRatingResponse,
+  parseIntradayResponse,
   parseKlineResponse,
   parseMarketTemperatureResponse,
   parseNewsResponse,
@@ -110,6 +111,31 @@ describe('parseQuoteResponse empty-value markers', () => {
     const parsed = parseQuoteResponse(quote({ high: 'abc', volume: 'n/a' }));
     expect(parsed.high).toBe(195.5);
     expect(parsed.volume).toBe(0);
+  });
+});
+
+describe('parseIntradayResponse', () => {
+  it('normalizes CLI time and string values with the requested symbol', () => {
+    const points = parseIntradayResponse(JSON.stringify([
+      { time: '2026-09-30T13:30:00Z', price: '331.605', volume: '180453' },
+    ]), 'AAPL.US');
+    expect(points).toEqual([{
+      symbol: 'AAPL.US', timestamp: Date.parse('2026-09-30T13:30:00Z') / 1000,
+      price: 331.605, volume: 180453,
+    }]);
+    expect(points[0]!.price.toFixed(2)).toBe('331.61');
+  });
+
+  it('preserves explicit symbols and numeric payloads', () => {
+    const point = { symbol: 'NVDA.US', timestamp: 1786492800, price: 224, volume: 100 };
+    expect(parseIntradayResponse(JSON.stringify([point]), 'AAPL.US')).toEqual([point]);
+  });
+
+  it('rejects missing timestamps and invalid prices or volumes', () => {
+    const point = { time: '2026-09-30T13:30:00Z', price: '331.605', volume: '180453' };
+    for (const invalid of [{ time: null }, { price: '' }, { price: null }, { volume: true }]) {
+      expect(() => parseIntradayResponse(JSON.stringify([{ ...point, ...invalid }]))).toThrow(LongBridgeError);
+    }
   });
 });
 
