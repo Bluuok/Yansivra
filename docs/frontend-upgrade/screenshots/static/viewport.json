@@ -1,0 +1,98 @@
+[
+  {
+    "name": "overview",
+    "theme": "light",
+    "motion": "no-preference",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "research",
+    "theme": "light",
+    "motion": "no-preference",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "journal",
+    "theme": "light",
+    "motion": "no-preference",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "overview",
+    "theme": "light",
+    "motion": "reduce",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "research",
+    "theme": "light",
+    "motion": "reduce",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "journal",
+    "theme": "light",
+    "motion": "reduce",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "overview",
+    "theme": "dark",
+    "motion": "no-preference",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "research",
+    "theme": "dark",
+    "motion": "no-preference",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "journal",
+    "theme": "dark",
+    "motion": "no-preference",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "overview",
+    "theme": "dark",
+    "motion": "reduce",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "research",
+    "theme": "dark",
+    "motion": "reduce",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  },
+  {
+    "name": "journal",
+    "theme": "dark",
+    "motion": "reduce",
+    "width": 1367,
+    "height": 769,
+    "overflow": false
+  }
+]
