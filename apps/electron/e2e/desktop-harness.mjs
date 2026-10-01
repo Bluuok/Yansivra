@@ -9,9 +9,9 @@ export const appRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const repoRoot = join(appRoot, '../..');
 export const outputRoot = join(repoRoot, 'output');
 
-export function freshProfile(prefix = '桌面测试 ') {
-  mkdirSync(outputRoot, { recursive: true });
-  const profile = mkdtempSync(join(outputRoot, prefix));
+export function freshProfile(prefix = '桌面测试 ', directory = outputRoot) {
+  mkdirSync(directory, { recursive: true });
+  const profile = mkdtempSync(join(directory, prefix));
   writeFileSync(join(profile, 'app-preferences.json'), JSON.stringify({ locale: 'zh-CN' }));
   writeFileSync(join(profile, 'onboarding.json'), JSON.stringify({ completed: true }));
   return profile;
@@ -38,6 +38,10 @@ export async function launchDesktop(profile, options = {}) {
   });
   try {
   const page = await application.firstWindow({ timeout: 30_000 });
+  // Hidden acceptance windows must render current state for truthful captures.
+  await application.evaluate(({ BrowserWindow }) => {
+    BrowserWindow.getAllWindows()[0].webContents.setBackgroundThrottling(false);
+  });
   await page.waitForLoadState('domcontentloaded');
   await page.locator('[data-testid="finance-workspace"]').waitFor();
   // Persist the real main-process onboarding preference; never replace the IPC.
@@ -55,10 +59,18 @@ export async function captureDesktop(application, name) {
   // Hidden windows can lag one compositor frame behind DOM assertions.
   await new Promise((resolve) => setTimeout(resolve, 400));
   const png = await application.evaluate(async ({ BrowserWindow }) => {
-    globalThis.__folioCapture = BrowserWindow.getAllWindows()[0].capturePage(undefined, { stayHidden: true, stayAwake: true });
+    // Activate page painting for capture while keeping the native window hidden.
+    const target = BrowserWindow.getAllWindows()[0];
+    globalThis.__folioCapture = (async () => {
+      await target.capturePage(undefined, { stayHidden: false, stayAwake: true });
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      return target.capturePage(undefined, { stayHidden: false, stayAwake: true });
+    })();
     try { return (await globalThis.__folioCapture).toPNG().toString('base64'); }
     finally { delete globalThis.__folioCapture; }
   });
+  const visible = await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].isVisible());
+  if (visible) throw new Error('Screenshot capture unexpectedly showed the hidden test window');
   writeFileSync(join(outputRoot, name), Buffer.from(png, 'base64'));
 }
 

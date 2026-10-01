@@ -19,10 +19,10 @@ export const WorkbenchShell: React.FC = () => {
   const agentPanelVisible = useAtomValue(agentPanelVisibleAtom);
   const inspectorMode = useAtomValue(inspectorModeAtom);
   const [sizes, setSizes] = useState<number[]>(() => readPersisted<number[]>(SIZES_KEY, DEFAULT_SIZES));
-  const [isNarrow, setIsNarrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 900);
+  const [isNarrow, setIsNarrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1000);
 
   useEffect(() => {
-    const onResize = () => setIsNarrow(window.innerWidth < 900);
+    const onResize = () => setIsNarrow(window.innerWidth < 1000);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);

@@ -5,7 +5,7 @@ import { Dialog } from '../primitives/Dialog';
 import { AboutView } from '../about/AboutView';
 import { useFinagentClient } from '../../client';
 
-const folioLogoUrl = new URL('../../assets/folio-logo.png', import.meta.url).href;
+const folioLogoUrl = new URL('../../assets/desk-logo.svg', import.meta.url).href;
 
 export const TitleBar: React.FC = () => {
   const { t } = useTranslation();

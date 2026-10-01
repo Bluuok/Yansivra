@@ -232,9 +232,7 @@ export const ResearchPanel: React.FC = () => {
             placeholder={t('research.workspace.searchPlaceholder')}
             aria-label={t('research.workspace.searchPlaceholder')}
           />
-          <span className="folio-research-command-hint">⌘ K</span>
         </label>
-        <span className="folio-research-topbar-market">USD <span aria-hidden="true">⌄</span></span>
       </div>
       <div className="folio-pilot-research-header">
         <div>

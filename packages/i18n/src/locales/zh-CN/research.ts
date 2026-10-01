@@ -7,7 +7,7 @@ export const research = {
   workspace: {
     history: '历史报告',
     title: '研究',
-    searchPlaceholder: '搜索标的、主题或笔记',
+    searchPlaceholder: '输入代码开始研究，如 NVDA.US',
     addToWatchlist: '加入自选',
     inWatchlist: '已在自选',
     moreActions: '更多操作',
@@ -54,7 +54,7 @@ export const research = {
   },
   stop: '停止',
   starting: '正在启动…',
-  subtitleFor: '{{symbol}} 的结构化研究 — 事实来自能力层，分析由 agent 合成。',
+  subtitleFor: '围绕 {{symbol}} 阅读结论、核对依据与不确定性。',
   subtitleEmpty: '从自选列表中选择一个标的以开始研究。',
   notAvailable: '深度研究暂不可用。',
   fetching: '正在获取市场数据…',

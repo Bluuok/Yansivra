@@ -1,6 +1,6 @@
 {
   "name": "finagent",
-  "version": "0.4.0-beta.2",
+  "version": "0.5.0-beta.1",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -12,6 +12,9 @@
     "build": "bun run build:packages && bun run build:electron",
     "build:packages": "bun run --filter './packages/*' build",
     "build:electron": "cd apps/electron && bun run build",
+    "package:windows": "cd apps/electron && bun run package:windows",
+    "test:desktop": "node apps/electron/e2e/desktop-smoke.mjs && node apps/electron/e2e/journal-ipc.mjs && node apps/electron/e2e/journal-flow.mjs && node apps/electron/e2e/desktop-market.mjs",
+    "test:windows-package": "node apps/electron/e2e/windows-package.mjs",
     "typecheck": "bun run --filter './**' typecheck",
     "lint": "bun run --filter './**' lint",
     "test:unit": "bun test --isolate",

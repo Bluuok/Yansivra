@@ -30,6 +30,9 @@ try {
   await page.locator('[data-testid="research-report-select"]').selectOption('prepared-new-report');
   await page.locator('[data-testid="research-report-select"]').selectOption(old.id);
   assert.ok((await page.locator('[data-testid="research-report"]').innerText()).includes(old.summary));
+  const thesis = await page.evaluate((reportId) => window.electronAPI.thesis.saveFromReport({ reportId }), old.id);
+  assert.equal(thesis.ok, true, JSON.stringify(thesis));
+  assert.equal(thesis.data.summary, old.summary, 'legacy thesis action binds to the selected old report');
   await page.locator('[data-testid="inspect-evidence"]').first().click();
   const inspector = page.locator('[data-testid="evidence-inspector"]');
   await inspector.waitFor();

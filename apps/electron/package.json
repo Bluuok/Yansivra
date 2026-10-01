@@ -1,6 +1,6 @@
 {
   "name": "@finagent/electron",
-  "version": "0.4.0-beta.2",
+  "version": "0.5.0-beta.1",
   "private": true,
   "folio": {
     "channel": "beta"
@@ -25,6 +25,7 @@
     "build:extension": "bun build ../../.pi/extensions/finagent/index.ts --outfile build/extensions/finagent/index.js --bundle --target node --format esm && bun build ../../.pi/extensions/langsmith/index.ts --outfile build/extensions/langsmith/index.js --bundle --target node --format esm",
     "package": "bun run build && bun run build:extension && bun run package:builder",
     "package:builder": "electron-builder",
+    "package:windows": "bun run build && bun run build:extension && electron-builder --win --x64",
     "test:v5": "node e2e/v5.mjs",
     "test:typed-blocks": "node e2e/typed-blocks.mjs"
   },
@@ -54,13 +55,15 @@
   },
   "build": {
     "appId": "com.finagent.app",
-    "productName": "Folio",
+    "productName": "Folio Desk",
+    "artifactName": "Folio-Desk-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "../../dist/electron"
     },
     "electronDist": "node_modules/electron/dist",
     "files": [
       "src/**/*",
+      "assets/desk-icon.png",
       "dist/renderer/**/*"
     ],
     "extraResources": [
@@ -73,6 +76,11 @@
         "to": "extensions"
       }
     ],
+    "win": {
+      "target": ["dir", "zip"],
+      "signAndEditExecutable": false,
+      "requestedExecutionLevel": "asInvoker"
+    },
     "mac": {
       "target": [
         "dir",

@@ -18,6 +18,9 @@ const runtimeRoot = getRuntimeRoot();
 
 if (process.env.FINAGENT_USER_DATA_DIR) {
   app.setPath('userData', process.env.FINAGENT_USER_DATA_DIR);
+} else if (app.isPackaged) {
+  // Product branding must not silently create a different legacy data profile.
+  app.setPath('userData', join(app.getPath('appData'), 'Folio'));
 }
 
 loadFinagentEnv({
@@ -48,6 +51,7 @@ function createWindow() {
     process.env.FINAGENT_E2E_VISIBLE === '1' || process.env.FINAGENT_E2E_HIDDEN !== '1';
   mainWindow = new BrowserWindow({
     title: 'Folio Desk',
+    icon: join(appRoot, 'assets/desk-icon.png'),
     width: 1366,
     height: 800,
     minWidth: 900,

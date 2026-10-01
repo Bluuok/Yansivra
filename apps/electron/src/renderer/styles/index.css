@@ -1036,7 +1036,7 @@ button:disabled { cursor: not-allowed; }
 .folio-stitch-text-button:hover { text-decoration: underline; text-underline-offset: 3px; }
 .folio-today-secondary > .folio-today-section { min-width: 0; }
 
-@media (max-width: 899px) {
+@media (max-width: 999px) {
   .folio-sidebar-content { align-items: center; padding: .7rem .35rem; }
   .folio-sidebar-brand,
   .folio-sidebar-nav-label,

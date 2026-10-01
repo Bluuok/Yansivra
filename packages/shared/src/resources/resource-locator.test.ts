@@ -10,13 +10,38 @@ import {
 
 const PACKAGED = 'FINAGENT_PACKAGED';
 const saved = process.env[PACKAGED];
+const resourcesDescriptor = Object.getOwnPropertyDescriptor(process, 'resourcesPath');
 
 afterEach(() => {
+  if (resourcesDescriptor) Object.defineProperty(process, 'resourcesPath', resourcesDescriptor);
+  else Reflect.deleteProperty(process, 'resourcesPath');
   if (saved === undefined) {
     delete process.env[PACKAGED];
   } else {
     process.env[PACKAGED] = saved;
   }
+});
+
+describe('ResourceLocator (packaged Windows resources)', () => {
+  it('resolves lowercase resources in a path with Chinese characters and spaces', () => {
+    const root = resolve('output', '桌面 应用', 'resources');
+    Object.defineProperty(process, 'resourcesPath', { value: root, configurable: true });
+    process.env[PACKAGED] = '1';
+    expect(isPackaged()).toBe(true);
+    expect(getRuntimeRoot()).toBe(root);
+    expect(getSkillsDir()).toBe(resolve(root, 'skills'));
+    expect(getPiExtensionEntry()).toBe(resolve(root, 'extensions', 'finagent', 'index.js'));
+  });
+  it('requires the packaged flag even when Electron exposes a resources path', () => {
+    Object.defineProperty(process, 'resourcesPath', { value: resolve('resources'), configurable: true });
+    delete process.env[PACKAGED];
+    expect(isPackaged()).toBe(false);
+  });
+  it('rejects a directory that only ends with the Resources string', () => {
+    Object.defineProperty(process, 'resourcesPath', { value: resolve('NotResources'), configurable: true });
+    process.env[PACKAGED] = '1';
+    expect(isPackaged()).toBe(false);
+  });
 });
 
 describe('ResourceLocator (dev mode)', () => {

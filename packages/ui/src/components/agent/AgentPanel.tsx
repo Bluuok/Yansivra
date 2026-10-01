@@ -31,7 +31,7 @@ import { QuoteCard } from './structured/QuoteCard';
 import { PortfolioRiskCard } from './structured/PortfolioRiskCard';
 import { AgentAmbientField, type AgentMotionState } from '../motion/AgentAmbientField';
 
-const folioLogoUrl = new URL('../../assets/folio-logo.png', import.meta.url).href;
+const folioLogoUrl = new URL('../../assets/desk-logo.svg', import.meta.url).href;
 
 // ---------------------------------------------------------------------------
 // Defensive parsing of structured tool results (get_quote / get_portfolio).

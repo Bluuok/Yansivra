@@ -16,6 +16,15 @@ try {
   const nav = page.locator('[data-testid="sidebar"]');
   for (const name of ['总览', '研究', '复盘', '资产']) assert.equal(await nav.getByRole('button', { name, exact: true }).count(), 1);
   console.log('PASS four primary routes + research-first overview + collapsed assistant');
+  for (const [name, testId] of [['研究', 'research-panel'], ['复盘', 'journal-view'], ['资产', 'portfolio-view']]) {
+    await nav.getByRole('button', { name, exact: true }).click();
+    await page.locator(`[data-testid="${testId}"]`).waitFor();
+  }
+  await nav.getByRole('button', { name: '复盘', exact: true }).click();
+  await page.getByRole('button', { name: '投资逻辑', exact: true }).click();
+  await page.locator('[data-testid="thesis-panel"]').waitFor();
+  await nav.getByRole('button', { name: '总览', exact: true }).click();
+  console.log('PASS actual primary page navigation and preserved investment-thesis entry');
   await page.locator('[data-testid="assistant-toggle"]').click();
   await nav.getByRole('button', { name: '高级工具', exact: true }).click();
   await nav.getByRole('button', { name: '会话', exact: true }).click();
@@ -29,21 +38,48 @@ try {
   await page.locator('[data-testid="assistant-toggle"]').click();
   await nav.getByRole('button', { name: '总览', exact: true }).click();
   console.log('PASS assistant draft retained across layout changes');
+  const cancellation = await page.evaluate(async () => {
+    const started = await window.electronAPI.research.start({ symbol: 'NVDA.US', strategyId: 'comprehensive' });
+    if (!started.ok) return { started };
+    const cancelled = await window.electronAPI.research.cancel({ runId: started.data.id });
+    const run = await window.electronAPI.research.getRun({ runId: started.data.id });
+    return { started, cancelled, run };
+  });
+  assert.equal(cancellation.started.ok, true, JSON.stringify(cancellation));
+  assert.equal(cancellation.cancelled.ok, true, JSON.stringify(cancellation));
+  assert.equal(cancellation.run.data.status, 'cancelled');
+  console.log('PASS real research start/cancel and persisted cancelled status');
   const sizes = [
     { width: 1366, height: 768, zoom: 1, name: '1366' },
     { width: 1920, height: 1080, zoom: 1, name: '1920' },
     { width: 1366, height: 768, zoom: 1.25, name: '125-percent' },
+    { width: 1920, height: 1080, zoom: 1.25, name: '1920-125-percent' },
+    { width: 1366, height: 768, zoom: 1.5, name: '1366-150-percent' },
     { width: 1920, height: 1080, zoom: 1.5, name: '150-percent' },
   ];
   for (const size of sizes) {
     await application.evaluate(({ BrowserWindow }, s) => {
-      const window = BrowserWindow.getAllWindows()[0];
-      window.setSize(s.width, s.height);
-      window.webContents.setZoomFactor(s.zoom);
+      // Retain the resize promise while CDP awaits a hidden-window frame.
+      globalThis.__folioResize = new Promise((resolve) => {
+        const target = BrowserWindow.getAllWindows()[0];
+        target.setSize(s.width, s.height);
+        target.webContents.setZoomFactor(s.zoom);
+        setTimeout(() => resolve(true), 100);
+      });
+      return globalThis.__folioResize;
     }, size);
     await page.waitForTimeout(250);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
     assert.equal(overflow, false, `no horizontal page overflow: ${size.name}`);
+    await page.locator('[data-testid="assistant-toggle"]').click();
+    await page.waitForTimeout(100);
+    const layout = await page.evaluate(() => {
+      const center = document.querySelector('[data-testid="finance-workspace"]').getBoundingClientRect();
+      const assistant = document.querySelector('[data-testid="agent-panel"]').getBoundingClientRect();
+      return { center: center.width, assistant: assistant.width, right: assistant.right, viewport: innerWidth };
+    });
+    assert.ok(layout.center >= 319 && layout.assistant >= 279 && layout.right <= layout.viewport + 1, `both panes fit when opened: ${size.name} ${JSON.stringify(layout)}`);
+    await page.locator('[data-testid="assistant-toggle"]').click();
     if (size.zoom === 1) {
       const capture = await application.evaluate(async ({ BrowserWindow }) => {
         globalThis.__folioCapture = BrowserWindow.getAllWindows()[0].capturePage(undefined, { stayHidden: true, stayAwake: true });

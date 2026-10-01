@@ -1,271 +1,89 @@
-# Folio
+# Folio Desk
 
-<p align="center">
-  <img src="packages/ui/src/assets/folio-logo.png" alt="Folio logo" width="96" />
-</p>
+<p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Folio Desk" width="88" /></p>
 
-<p align="center">
-  <a href="README.en.md">English</a> · <a href="README.md">简体中文</a>
-</p>
+English · [简体中文](README.md) · [Upstream Folio](https://github.com/helsome/folio) · [Validation record](docs/desktop-validation.md)
 
-<p align="center">
-  <strong>Local-first AI-native investment research workbench</strong><br />
-  Research the market, understand your exposure, and keep an evidence-backed view of what changed.
-</p>
+**A local-first desktop workspace for AI investment research and personal review.** Follow a security from market context through research and supporting evidence, record your own reasoning, then revisit its assumptions with later observations.
 
-<p align="center">
-  <a href="https://github.com/helsome/folio/releases">Releases</a> ·
-  <a href="docs/architecture.md">Architecture</a> ·
-  <a href="docs/PRD.md">Product requirements</a>
-</p>
+Desktop version: **0.5.0-beta.1**. Warm white surfaces and ink-blue actions, with green mainly reserved for financial changes. Overview, Research, Review and Assets are the primary routes; watchlists, comparisons, events, alerts and advanced tools remain accessible.
 
-> 一句话：行情终端告诉你 **What happened**；Folio 的 Agent 帮你回答 **Why does this matter to you**，记录 **What did you believe before**，并持续追踪 **What changed**。
+## Product workflow
 
-## Our Product
+- **Overview:** recent reports, due judgments awaiting a first review, portfolio context, watchlist activity and events.
+- **Market and portfolio:** existing watchlists, charts, statements, news, security comparisons and portfolio risk. Live data requires configured connections; samples and unavailable states remain visible.
+- **Deep research:** existing strategies, progress, cancellation/recovery, reports and export. Select a historical report and inspect its generation time and partial completion status.
+- **Evidence inspector:** recorded claims, collection times, execution outcomes and missing data. Evidence and the assistant share a side pane; hiding it preserves the assistant draft.
+- **Agent and skills:** existing contextual sessions, finance tools, skill readiness, provider settings and evaluation views. External data and models require user configuration.
+- **Judgment archive:** your stance, rationale, up to three assumptions and invalidation conditions, and an optional review date. Snapshots bind to the report you are reading, including an older report.
+- **Manual review:** append later observations and lessons without rewriting the original judgment. Choose still valid, weakened, invalidated or insufficient data. Snapshots and reviews remain usable after restart or source report deletion.
 
-Folio is a desktop research environment for public-market investors. It combines a quiet finance workspace with an agent copilot that can fetch structured market data, explain the evidence, and carry research forward into theses, alerts, and portfolio decisions.
-
-Folio is local-first: sessions, credentials, and research state stay on the device by default. Market data and model providers are explicit integrations, not hidden dependencies.
-
-> Folio is a research and decision-support tool. It is read-only by design and does not expose order or trading capabilities.
+Saving waits for persistence. Repeated requests are idempotent, and failures preserve input. Review drafts survive page navigation during the current application session; unsaved drafts do not survive restart.
 
 ## Screenshots
 
-<p align="center">
-  <img src="docs/screenshots/today.png" alt="Folio Today workspace" width="900" />
-</p>
+![Research-first overview](docs/screenshots/desktop-overview.png)
 
-<p align="center">
-  <em>Today — portfolio attention items, market pulse, events, and quick research actions.</em>
-</p>
+![Historical report and evidence](docs/screenshots/desktop-research.png)
 
-<p align="center">
-  <img src="docs/screenshots/workspace.png" alt="Folio security workspace" width="49%" />
-  <img src="docs/screenshots/events.png" alt="Folio Events & Catalysts" width="49%" />
-</p>
+![Judgment and manual review](docs/screenshots/desktop-journal.png)
 
-<p align="center">
-  <img src="docs/screenshots/portfolio.png" alt="Folio portfolio" width="49%" />
-  <img src="docs/screenshots/profile.png" alt="Folio profile & workspace health" width="49%" />
-</p>
+Captured from real Windows Electron windows. Sample quotes carry badges; research and journal content use explicitly labeled offline acceptance fixtures, not live research results.
 
-<p align="center">
-  <img src="docs/screenshots/settings.png" alt="Folio settings center" width="49%" />
-  <img src="docs/screenshots/evaluation.png" alt="Folio Agent evaluation settings" width="49%" />
-</p>
+## Windows x64
 
-<p align="center">
-  <img src="docs/screenshots/skills.png" alt="Folio skills center" width="49%" />
-  <img src="docs/screenshots/discover.png" alt="Folio discover" width="49%" />
-</p>
-
-<p align="center">
-  <em>From the security workspace, events & catalysts, and portfolio overview to settings, skill readiness, and evaluation tracing — with no services connected, every page above renders built-in sample data (badged “Sample data”).</em>
-</p>
-
-## Key Features
-
-### Research Workspace
-
-- Watchlists, quotes, K-line charts, financial statements, news, and security overviews.
-- A three-pane desktop layout: navigation, market workspace, and Agent copilot, with persistent asset tabs (K-Lines / Statements / News / Reports) in the workspace topbar.
-- Compare 2–4 symbols across valuation, growth, margins, ROE, dividends, returns, ratings, and momentum.
-- Data freshness is visible; missing values render as `—` instead of being guessed.
-
-### Built-in Sample Data (offline fallback)
-
-- With no market-data provider or LLM connected, Today, the portfolio card, Market Pulse, events, and the daily brief render built-in sample data — the workspace is complete from the very first launch.
-- Every sample surface carries a visible “Sample data” badge (with a tooltip explaining how to connect real sources); error details stay in the underlying state, and live data replaces samples the moment it becomes available.
-- Symbols outside the sample set (e.g. `0700.HK`) keep their honest empty/error states — nothing is fabricated.
-
-### Deep Research
-
-- One-click research from a focused security.
-- Parallel capability fetches with bounded concurrency, timeouts, cancellation, and honest partial-failure states.
-- Structured data bundle → agent synthesis → evidence-backed `ResearchReport`.
-- Reports contain stance, confidence, sections, bull case, bear case, catalysts, risks, and links back to the capability run behind each claim.
-
-### Agent Copilot
-
-- Persistent sessions and streamed answers powered by the Pi Agent runtime.
-- Model and thinking-level controls, stop/cancel, workspace context, and structured quote/portfolio cards.
-- Markdown answers render with headings, lists, tables, links, and code blocks.
-- Internal synthesis sessions stay out of the visible conversation history.
-
-### Agent Evaluation & Observability
-
-- An integrated Evaluation Center for experiments, baselines, model comparisons, failure modes, case details, and human feedback.
-- Coverage includes task completion, tool selection and arguments, evidence/provenance, latency, failure recovery, research completeness, and decision usefulness.
-- Supports local offline evaluation and optional LangSmith tracing; tracing is off by default, with privacy level and API-key controls in Settings.
-- The `folio-agent-v1` benchmark contains 86 golden, difficult, long-tail, tool-failure, regression, and adversarial cases; fixed bugs become regression gates.
-- Pull requests use a zero-cost deterministic smoke eval, while the full benchmark and model/strategy experiments run on demand or on a schedule.
-
-### Skills & Capability Layer
-
-- A single capability registry powers provider execution, agent tools, UI availability, and skill readiness.
-- Skills declare required and optional capabilities; the Skills Center shows Ready, Partial, and Disabled states.
-- Progressive loading keeps skill instructions and reference material available without putting every document into every prompt.
-- The agent never claims a missing capability is available.
-
-### Discover & Learning Loop
-
-- 17 deterministic screening tasks across market movers, fundamentals, technicals, and events.
-- Eight research strategies: Comprehensive, Value, Growth, Technical, Earnings, Event Driven, Risk Review, and Income.
-- Candidate actions flow into Research, Compare, and Watchlist with evidence and reasons attached.
-- Research Diff highlights changed verdicts, valuation moves, new risks, and confidence deltas.
-
-### Portfolio, Thesis & Monitoring
-
-- Portfolio allocation, concentration, Herfindahl, large-position, earnings, news, drawdown, and exposure signals.
-- Save a report as an editable investment thesis and re-evaluate it against fresh data.
-- Alert rules for price, news, earnings, ratings, dividends, position weight, and drawdown.
-- Today combines portfolio attention items, watchlist movers, alerts, upcoming events, recent research, and theses needing review.
-- A dedicated **Events & Catalysts page**: earnings, macro releases, and central-bank calendar events, with one-click context handoff into Research.
-- A **Profile page** with at-a-glance local workspace health (AI / market data / skills / agent runtime).
-
-## How It Works
+The local artifact is an **unsigned unpacked directory / ZIP**, without an installer or updater:
 
 ```text
-Longbridge / Massive providers
-              │
-              ▼
-     Capability Registry
-              │
-       ┌──────┼───────────────┐
-       ▼      ▼               ▼
-    Agent   Research       Product UI
-    tools   + Thesis       + Skills
-             + Alerts      + Compare
-             + Risk        + Today
-              │
-              ▼
-     Evidence-backed reports
+dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip
+dist/electron/win-unpacked/Folio Desk.exe
 ```
 
-The core boundary is deliberately small: providers return normalized data with provenance, capabilities expose typed operations, and product workflows consume those contracts instead of importing vendor-specific code.
+Extract the entire ZIP and run `Folio Desk.exe`, keeping its adjacent resource files. This branch contains source and build commands; it does not automatically publish a GitHub Release.
 
-## Flexible Integrations
+The legacy Folio data directory, `com.finagent.app`, internal package names and environment variables remain compatible. No automatic migration is performed. This unsigned build skips executable metadata editing, so Explorer properties and the executable icon can still identify Electron. The application window uses the new icon. See [Windows notes](docs/desktop-windows.md).
 
-- **Market data:** Longbridge is the primary connector for US/HK/CN market data and brokerage portfolio access; Massive is available as a secondary US market-data provider.
-- **Agent runtime:** Pi runtime for configured LLM providers, with a deterministic local provider for development and offline golden paths.
-- **Desktop:** Electron with a macOS arm64 packaged build. The renderer, preload bridge, and main-process kernel are separated by context isolation and a whitelisted IPC surface.
-- **Skills:** Vendored `SKILL.md` resources with references, enable/disable state, triggers, and capability requirements.
-- **Agent evaluation:** Local or LangSmith-backed evaluation records traces, datasets, evaluators, experiments, and regression gates; engineering metrics can be linked to investment outcomes without claiming causation.
+## Development
 
-## Quick Start
+Install Bun, Node.js and workspace dependencies. Windows dependency installation requires an environment that can create symbolic links.
 
-### For Users
-
-Download the latest macOS build from the [Releases page](https://github.com/helsome/folio/releases). After launching Folio:
-
-1. The full workspace is browsable on first launch — built-in sample data (badged “Sample data”) is shown until services are connected.
-2. Configure an LLM provider in **Settings → Models**, or use the local provider for a deterministic demo.
-3. Connect Longbridge in **Settings → Connections** for live market data and portfolio access; sample data switches to live data automatically.
-4. Select a symbol from the Watchlist and open **Deep Research**.
-
-Longbridge authentication can also be completed from the terminal:
-
-```bash
-longbridge auth login
-```
-
-### For Developers
-
-Prerequisites: [Bun](https://bun.sh), the [Longbridge CLI](https://open.longbridge.com/longbridge/longbridge-terminal/install) for live data, and an LLM provider for the Pi runtime.
-
-> **Windows**: When developing from a standard (non-administrator) terminal, enable Developer Mode first (Settings → System → For developers). Otherwise, installing this project's workspace/symlink dependencies with Bun may leave empty directories under `node_modules`, omit `.bin`, or fail with `tsc not found`. Processes with the required symlink privilege or elevated permissions are not affected.
-
-```bash
-# Clone and install
-git clone https://github.com/helsome/folio.git
+```powershell
+git clone --branch desktop/redevelopment https://github.com/Bluuok/folio.git
 cd folio
 bun install
-
-# Run the desktop app in development
 bun run dev
-
-# Deterministic local agent path — no external LLM required
-FINAGENT_AGENT_PROVIDER=local bun run dev
-
-# Offline demo mode: fall back to built-in sample data when no real provider
-# is available (Copilot answers are labeled "Sample data")
-FINAGENT_AGENT_PROVIDER=local FINAGENT_DEMO_DATA=1 bun run dev
 ```
 
-### Commands
+For deterministic local Agent runs without an external model:
 
-| Command | Description |
+```powershell
+$env:FINAGENT_AGENT_PROVIDER = 'local'
+bun run dev
+```
+
+| Command | Purpose |
 | --- | --- |
-| `bun run dev` | Start the Electron renderer in development mode |
-| `bun test` | Run the full unit and integration suite |
-| `bun run typecheck` | Typecheck every workspace package |
-| `bun run build` | Build packages, renderer, preload, and main process |
-| `bun run test:e2e` | Run the Electron golden-path E2E suite |
-| `bun run test:typed-blocks` | Run the real-app typed answer blocks Copilot E2E (apps/electron) |
-| `bun run eval:smoke` | Run the deterministic PR-level Agent regression eval |
-| `bun run eval:full` | Run the full Agent benchmark and experiment flow |
-| `bun run release:check` | Run the release gates |
-| `bun run release:package` | Build the macOS arm64 app, DMG, and SHA256 checksums |
+| `bun run typecheck` | Workspace type checks |
+| `bun run build` | Workspace and production desktop build |
+| `bun run test:unit` | Isolated unit tests |
+| `bun run eval:smoke` | Fixture smoke evaluations |
+| `bun run i18n:check` | Locale key and interpolation checks |
+| `bun run test:desktop` | Real Electron layout, journal IPC and UI flow |
+| `bun run package:windows` | Windows x64 directory and ZIP |
+| `bun run test:windows-package` | Launch the extracted ZIP outside source in a path containing spaces and Chinese characters |
 
-The packaged artifacts are staged in `dist/release/`.
+Acceptance tests use isolated profiles, hidden windows and the local provider. Exact counts and limits are documented in the [validation record](docs/desktop-validation.md).
 
-## Security & Product Boundaries
+## Integration boundaries
 
-- Electron runs with `contextIsolation: true`, `nodeIntegration: false`, and a whitelisted preload bridge.
-- API keys and custom provider credentials are encrypted at rest with Electron `safeStorage` in the main process.
-- Longbridge commands use argv-safe execution, symbol validation, and read-only capability registration.
-- Skill resources are path-safe: traversal and symlink escapes are rejected.
-- Research reports distinguish unavailable data from negative evidence and never fabricate missing numbers.
-- Agent tracing is off by default; standard privacy redacts prompts, answers, arguments, and portfolio tool results, while full tracing requires explicit opt-in.
-- Unsigned local builds may trigger a macOS security prompt; signing and notarization are opt-in release steps.
+Existing Longbridge / Massive data providers and Pi / model configuration remain available. Data CLIs, account access, model credentials and the external Pi runtime are not bundled in the ZIP. A completed local-provider run does not validate a production LLM or live market connection.
 
-## Project Status
+Archived judgments and manual reviews require neither market nor model calls. The current release does not add PDF page navigation, scheduled reassessment, full-text search or trading. Evidence shows only fields retained by the report.
 
-Folio is in beta. The current repository includes the V5 research, discovery, monitoring, outcome, and adaptive-calibration surfaces, plus a refreshed visual system implementing the Stitch “Minimalist Personal Portfolio” design language: a redrawn sidebar and workspace topbar, new Events & Catalysts and Profile pages, a unified component library and radius scale, and the offline sample-data fallback.
+## Upstream and scope
 
-Agent engineering evaluation (V7) is now wired into Settings and the Evaluation Center: LangSmith connection, privacy controls, benchmark experiments, failure-mode analysis, case-level traces, and human feedback are available as an advanced workflow.
+Based on [helsome/folio](https://github.com/helsome/folio) and existing local contributions. This redevelopment covers desktop presentation/navigation, the journal service, report/review integration and Windows packaging validation. Existing market, Agent, research, portfolio, thesis, alerts and evaluation features are upstream capabilities; describing the complete product does not imply sole authorship.
 
-- Unit and integration tests: **1157+ passing**
-- Typecheck: **green**
-- Electron E2E and packaged smoke gates: available through the release scripts
-- Current package channel: `0.4.0-beta.2`
+Existing copyright and third-party notices are retained. The upstream baseline has no standard root LICENSE; this branch does not assign it a new MIT/Apache license. Confirm applicable authorization before further distribution.
 
-Known limitations and release decisions are documented in [`docs/release-gates.md`](docs/release-gates.md) ([简体中文](docs/release-gates.zh-CN.md)) and [`docs/provider-b-decision.md`](docs/provider-b-decision.md) ([简体中文](docs/provider-b-decision.zh-CN.md)).
-
-## Roadmap
-
-### Near Term
-
-- More provider coverage behind the same capability contracts.
-- Better report navigation and evidence inspection.
-- Valuation comparison table (CURRENT vs 5Y AVG) and target-price cards for the security workspace (see [`docs/design-comparison.md`](docs/design-comparison.md)).
-- More useful portfolio-aware research prompts without leaking internal runtime instructions into the user conversation.
-
-### Longer Term
-
-- Cross-platform packaged builds.
-- More research strategies and outcome calibration samples.
-- Richer scheduled briefs, notification channels, and user-defined monitoring rules.
-- A contributor-friendly skill and provider extension model.
-
-## Documentation
-
-- [`docs/architecture.md`](docs/architecture.md) — system architecture and runtime boundaries · [简体中文](docs/architecture.zh-CN.md)
-- [`docs/PRD.md`](docs/PRD.md) — product requirements and invariants (document is in Chinese)
-- [`docs/UI-SYSTEM.md`](docs/UI-SYSTEM.md) — visual system and component rules · [简体中文](docs/UI-SYSTEM.zh-CN.md)
-- [`docs/longbridge-auth.md`](docs/longbridge-auth.md) — Longbridge authentication · [简体中文](docs/longbridge-auth.zh-CN.md)
-- [`docs/longbridge-skill-setup.md`](docs/longbridge-skill-setup.md) — skill setup and capability coverage · [简体中文](docs/longbridge-skill-setup.zh-CN.md)
-- [`docs/release-gates.md`](docs/release-gates.md) — release validation checklist · [简体中文](docs/release-gates.zh-CN.md)
-- [`docs/EVALUATION.md`](docs/EVALUATION.md) — Agent evaluation, LangSmith observability, and experiment architecture · [CI strategy](docs/EVALUATION-CI.md) · [benchmark](docs/EVALUATION-BENCHMARK.md)
-- [`docs/design-comparison.md`](docs/design-comparison.md) — screen-by-screen comparison between the Stitch designs and the current implementation
-
-## Contributing
-
-Issues and pull requests are welcome. Before opening a change, run:
-
-```bash
-bun test
-bun run typecheck
-```
-
-For UI changes, include a screenshot or a short visual QA note when the layout or interaction changes materially.
+[Scope](docs/desktop-redevelopment.md) · [Validation](docs/desktop-validation.md) · [Windows](docs/desktop-windows.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md)

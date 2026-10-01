@@ -11,7 +11,7 @@ export const research = {
   workspace: {
     history: 'Report history',
     title: 'Research',
-    searchPlaceholder: 'Search securities, topics, or notes',
+    searchPlaceholder: 'Enter a symbol to research, e.g. NVDA.US',
     addToWatchlist: 'Add to watchlist',
     inWatchlist: 'In watchlist',
     moreActions: 'More actions',
@@ -59,7 +59,7 @@ export const research = {
   stop: 'Stop',
   starting: 'Starting…',
   subtitleFor:
-    'Structured research for {{symbol}} — facts from the capability layer, synthesis by the agent.',
+    'Research for {{symbol}}: conclusions, supporting evidence, and uncertainty.',
   subtitleEmpty: 'Open a symbol from the watchlist to start research.',
   notAvailable: 'Deep Research is not available yet.',
   fetching: 'Fetching market data…',
