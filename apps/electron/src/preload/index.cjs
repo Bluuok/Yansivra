@@ -23,7 +23,7 @@ var __toCommonJS = (from) => {
 };
 var __moduleCache;
 
-// apps/electron/src/preload/index.ts
+// src/preload/index.ts
 var exports_preload = {};
 module.exports = __toCommonJS(exports_preload);
 var import_electron = require("electron");

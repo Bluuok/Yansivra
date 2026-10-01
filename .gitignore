@@ -39,3 +39,8 @@ apps/electron/e2e/artifacts/
 
 # Local eval / Langfuse smoke output
 artifacts/
+
+# Local task attachments and external worker state
+.codex-remote-attachments/
+.agy-staff/
+output/
