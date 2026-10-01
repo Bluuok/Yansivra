@@ -11,7 +11,7 @@ import { AgentPanel } from '../agent/AgentPanel';
 import { WorkspaceTopbar } from './WorkspaceTopbar';
 
 const SIZES_KEY = 'allotmentSizes';
-const DEFAULT_SIZES = [240, 640, 400];
+const DEFAULT_SIZES = [208, 1000, 360];
 
 export const WorkbenchShell: React.FC = () => {
   const agentPanelVisible = useAtomValue(agentPanelVisibleAtom);
@@ -43,17 +43,16 @@ export const WorkbenchShell: React.FC = () => {
 
   // When the agent panel toggles off and back on, Allotment restores its
   // remembered width automatically; no extra state required.
-  const showAgent = agentPanelVisible && !isNarrow;
+  const showAgent = agentPanelVisible;
 
   return (
     <div className="relative h-full flex-1 overflow-hidden">
       <Allotment
-        key={showAgent ? 'workbench-with-agent' : isNarrow ? 'workbench-narrow' : 'workbench-without-agent'}
         className="h-full"
-        defaultSizes={showAgent ? normalized : isNarrow ? [56, Math.max(320, normalized[1])] : [360, Math.max(720, normalized[1] + normalized[2])]}
+        defaultSizes={normalized}
         onDragEnd={handleDragEnd}
       >
-        <Allotment.Pane minSize={isNarrow ? 56 : 200} preferredSize={isNarrow ? 56 : showAgent ? normalized[0] : 360}>
+        <Allotment.Pane minSize={isNarrow ? 56 : 184} maxSize={isNarrow ? 56 : 240} preferredSize={isNarrow ? 56 : 208}>
           <Sidebar />
         </Allotment.Pane>
         <Allotment.Pane minSize={isNarrow ? 320 : 500}>
@@ -66,13 +65,11 @@ export const WorkbenchShell: React.FC = () => {
             </div>
           </ErrorBoundary>
         </Allotment.Pane>
-        {showAgent && (
-          <Allotment.Pane minSize={320} preferredSize={normalized[2]} snap>
+          <Allotment.Pane visible={showAgent} minSize={isNarrow ? 280 : 320} preferredSize={normalized[2]} snap>
             <ErrorBoundary>
-              <AgentPanel />
+              <div className="h-full" hidden={!showAgent}><AgentPanel /></div>
             </ErrorBoundary>
           </Allotment.Pane>
-        )}
       </Allotment>
     </div>
   );

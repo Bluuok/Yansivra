@@ -41,11 +41,13 @@ function createWindow() {
   const windowVisible =
     process.env.FINAGENT_E2E_VISIBLE === '1' || process.env.FINAGENT_E2E_HIDDEN !== '1';
   mainWindow = new BrowserWindow({
-    width: 1200,
+    title: 'Folio Desk',
+    width: 1366,
     height: 800,
     minWidth: 900,
     minHeight: 600,
     titleBarStyle: 'hiddenInset',
+    frame: process.platform === 'darwin',
     show: windowVisible,
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),

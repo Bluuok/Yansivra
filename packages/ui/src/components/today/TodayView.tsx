@@ -22,7 +22,7 @@ import { watchlistQuotesAreDemoAtom } from '../../atoms/quoteAtoms'
 import { demoCalendarEvents } from '../../demo/demoData'
 import { DemoBadge } from '../primitives/DemoBadge'
 import { analyzePortfolioRiskAtom } from '../../atoms/portfolioRiskAtoms'
-import { loadSymbolReports } from '../../atoms/researchAtoms'
+import { loadSymbolReports, researchReportAtom } from '../../atoms/researchAtoms'
 import { loadTheses } from '../../client/thesis'
 import { useFinagentClient, type FinagentClient } from '../../client'
 import { formatMoney, formatPercent } from '../../lib/money'
@@ -82,6 +82,7 @@ export const TodayView: React.FC = () => {
   const setActiveSymbol = useSetAtom(activeSymbolAtom)
   const setNavSection = useSetAtom(navSectionAtom)
   const setResearchOrigin = useSetAtom(researchOriginAtom)
+  const setResearchReport = useSetAtom(researchReportAtom)
   const fetchPortfolio = useSetAtom(fetchPortfolioAtom)
   const fetchQuote = useSetAtom(fetchQuoteAtom)
   const loadAlerts = useSetAtom(loadAlertsAtom)
@@ -278,11 +279,13 @@ export const TodayView: React.FC = () => {
                 {report.symbol} · <span className="capitalize">{report.stance}</span>
               </div>
               <div className="truncate text-[12px] text-foreground/54">{report.summary}</div>
+              <div className="mt-1 text-xs text-text-muted">{new Date(report.generatedAt).toLocaleString()} · {t(`research.runStatus.${report.runStatus}`)}</div>
             </div>
             <button
               type="button"
               onClick={() => {
                 setActiveSymbol(report.symbol)
+                setResearchReport(report)
                 setResearchOrigin({ from: 'today', label: t('today.continueLabel') })
                 setNavSection('research')
               }}
@@ -322,14 +325,23 @@ export const TodayView: React.FC = () => {
   return (
     <div className="folio-today-view h-full overflow-y-auto bg-background px-6 py-6" data-testid="today-view">
       <div className="folio-today-content mx-auto max-w-6xl">
-        <header className="folio-today-heading mb-6">
-          <h1 className="font-display-lg text-foreground">{t('today.greeting')}</h1>
-          <p>{t('today.heroSubtitle')}</p>
+        <header className="folio-today-heading mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div><div className="mb-2 text-xs text-text-muted tnum">{new Date().toLocaleDateString()}</div><h1 className="font-display-lg text-foreground">{t('today.greeting')}</h1>
+          <p>{t('today.heroSubtitle')}</p></div>
+          <button type="button" onClick={handleResearchStock} className="mac-primary-button flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium"><Search className="h-4 w-4" />{t('navigation.startResearch')}</button>
         </header>
         <div className="folio-today-bento grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <section className="folio-stitch-card lg:col-span-2" data-testid="today-portfolio-glance">
+          <section className="folio-stitch-card lg:col-span-2" data-testid="today-continue-research">
+            <div className="folio-stitch-card-heading"><h2>{t('today.recentResearch')}</h2><button type="button" onClick={handleResearchStock} className="folio-stitch-text-button">{t('navigation.research')} →</button></div>
+            {researchContent}
+          </section>
+          <section className="folio-stitch-card" data-testid="today-thesis-review">
+            <div className="folio-stitch-card-heading"><h2>{t('today.thesesNeedingReview')}</h2><button type="button" onClick={() => setNavSection('thesis')} className="folio-stitch-text-button">{t('navigation.review')} →</button></div>
+            {thesesContent}
+          </section>
+          <section className="folio-stitch-card" data-testid="today-portfolio-glance">
             <div className="folio-stitch-card-heading">
-              <h2>{t('portfolio.totalValue')}</h2>
+              <h2>{t('today.portfolio')}</h2>
               <span className="flex items-center gap-2">
                 {(portfolioCache.isDemo || quotesAreDemo) && <DemoBadge />}
                 <span className="folio-card-menu" aria-hidden="true">•••</span>
@@ -348,7 +360,7 @@ export const TodayView: React.FC = () => {
             <button type="button" onClick={() => setNavSection('events')} className="folio-stitch-secondary-button mt-5 w-full">{t('events.title')}</button>
           </section>
 
-          <section className="folio-stitch-card lg:col-span-3" data-testid="today-watchlist-activity">
+          <section className="folio-stitch-card" data-testid="today-watchlist-activity">
             <div className="folio-stitch-card-heading"><h2>{t('today.watchlistMovers')}</h2><span className="flex items-center gap-2">{quotesAreDemo && <DemoBadge />}<button type="button" onClick={() => setNavSection('watchlist')} className="folio-stitch-text-button">{t('navigation.watchlist')}</button></span></div>
             {moversContent}
           </section>
@@ -356,7 +368,7 @@ export const TodayView: React.FC = () => {
 
         <div className="folio-today-actions mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <QuickAction icon={Search} label={t('today.quickActionDeepResearch')} hint={t('today.quickActionDeepResearchHint')} onClick={handleResearchStock} tone="blue" />
-          <QuickAction icon={BriefcaseBusiness} label={t('today.quickActionReviewPortfolio')} hint={t('today.quickActionReviewPortfolioHint')} onClick={handleAnalyzePortfolio} tone="green" />
+          <QuickAction icon={BriefcaseBusiness} label={t('today.quickActionReviewPortfolio')} hint={t('today.quickActionReviewPortfolioHint')} onClick={handleAnalyzePortfolio} tone="blue" />
           <QuickAction icon={GitCompareArrows} label={t('today.quickActionCompareStocks')} hint={t('today.quickActionCompareStocksHint')} onClick={handleCompare} tone="violet" />
         </div>
 
@@ -364,8 +376,6 @@ export const TodayView: React.FC = () => {
           <DailyBriefSection onManage={() => setAutomationOpen(true)} />
           <MarketPulse />
           <TodaySection title={t('today.triggeredAlerts')}>{alertsContent}</TodaySection>
-          <TodaySection title={t('today.recentResearch')}>{researchContent}</TodaySection>
-          <TodaySection title={t('today.thesesNeedingReview')}>{thesesContent}</TodaySection>
         </div>
       </div>
 
@@ -380,11 +390,11 @@ const QuickAction: React.FC<{
   icon: LucideIcon
   label: string
   hint: string
-  tone: 'blue' | 'green' | 'violet'
+  tone: 'blue' | 'violet'
   onClick: () => void
 }> = ({ icon: Icon, label, hint, tone, onClick }) => (
-  <button type="button" onClick={onClick} className={`folio-quick-action group flex items-center gap-3 rounded-[9px] border border-border px-3 py-2.5 text-left transition-smooth hover:border-[var(--mac-blue)]/35 hover:bg-[var(--mac-blue-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 ${tone === 'blue' ? 'bg-accent/5' : tone === 'green' ? 'bg-positive/5' : 'bg-info/5'}`}>
-    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[8px] ${tone === 'blue' ? 'bg-accent/10 text-accent' : tone === 'green' ? 'bg-positive/10 text-positive' : 'bg-info/10 text-info'}`}><Icon className="h-4 w-4" strokeWidth={1.8} /></span>
+  <button type="button" onClick={onClick} className={`folio-quick-action group flex items-center gap-3 rounded-[9px] border border-border px-3 py-2.5 text-left transition-smooth hover:border-[var(--mac-blue)]/35 hover:bg-[var(--mac-blue-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 ${tone === 'blue' ? 'bg-accent/5' : 'bg-surface'}`}>
+    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent"><Icon className="h-4 w-4" strokeWidth={1.8} /></span>
     <span className="min-w-0 flex-1"><span className="block text-[12px] font-semibold text-foreground">{label}</span><span className="mt-0.5 block truncate text-[11px] text-foreground/44">{hint}</span></span>
     <ArrowUpRight className="h-3.5 w-3.5 text-accent/55 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
   </button>

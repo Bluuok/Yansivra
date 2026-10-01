@@ -13,29 +13,31 @@
   --font-sans-stack: var(--font-global-stack);
   --font-display-stack: "Geist", "Inter", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
   --font-numeric-stack: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-  --background: #f8fafc;
+  --background: #f6f5f1;
   --surface: #ffffff;
-  --surface-muted: #f2f4f6;
-  --surface-hover: #e9eef6;
-  --foreground: #0f172a;
+  --surface-muted: #eeede8;
+  --surface-hover: #e9edf3;
+  --foreground: #202a37;
   --foreground-muted: #45464d;
   --foreground-subtle: #76777d;
-  --primary: #0f172a;
+  --primary: #304b78;
   --primary-foreground: #ffffff;
-  --accent: #0284c7;
+  --accent: #304b78;
   --accent-foreground: #ffffff;
-  --positive: #10b981;
+  --positive: #39735b;
   --negative: #ef4444;
   --warning: #b45309;
-  --info: #0284c7;
-  --border: #e2e8f0;
+  --info: #304b78;
+  --success: #304b78;
+  --destructive: var(--negative);
+  --border: #deded7;
   --border-strong: #c6c6cd;
   --input: #c6c6cd;
-  --ring: rgba(2, 132, 199, .4);
-  --radius: 4px;
-  --foreground-rgb: 15, 23, 42;
-  --accent-rgb: 2, 132, 199;
-  --positive-rgb: 16, 185, 129;
+  --ring: rgba(48, 75, 120, .4);
+  --radius: 8px;
+  --foreground-rgb: 32, 42, 55;
+  --accent-rgb: 48, 75, 120;
+  --positive-rgb: 57, 115, 91;
   --negative-rgb: 239, 68, 68;
   --warning-rgb: 180, 83, 9;
 
@@ -43,8 +45,8 @@
   --motion-fast: 120ms;
   --motion-base: 160ms;
   --motion-content: 220ms;
-  --motion-slow: 600ms;
-  --motion-ambient: 11s;
+  --motion-slow: 180ms;
+  --motion-ambient: 180ms;
 
   /* Compatibility aliases for feature slices that still use the old names. */
   --mac-window: var(--background);
@@ -89,6 +91,7 @@
   --negative: #ff6b76;
   --warning: #e3b45b;
   --info: #4c8dff;
+  --success: #4c8dff;
   --border: rgba(235, 241, 248, .13);
   --border-strong: rgba(235, 241, 248, .22);
   --input: rgba(235, 241, 248, .18);
@@ -123,6 +126,7 @@
   --color-negative: var(--negative);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-success: var(--success);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
@@ -996,11 +1000,11 @@ button:disabled { cursor: not-allowed; }
 .folio-agent-header { background: var(--surface); }
 .folio-agent-title { color: var(--foreground); font-family: var(--font-display-stack); font-size: .82rem; font-weight: 600; white-space: nowrap; }
 .folio-today-content { width: 100%; }
-.folio-today-heading h1 { margin: 0; font-size: 1.5rem; font-weight: 500; letter-spacing: -.025em; line-height: 1.3; }
+.folio-today-heading h1 { margin: 0; font-size: 1.8rem; font-weight: 600; letter-spacing: -.025em; line-height: 1.3; }
 .folio-today-heading p { margin-top: .35rem; color: var(--foreground-muted); font-size: .8rem; line-height: 1.5; }
-.folio-stitch-card { min-width: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); padding: 1.25rem; box-shadow: 0 4px 24px rgba(var(--foreground-rgb), .03); }
+.folio-stitch-card { min-width: 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 1.25rem; box-shadow: none; }
 .folio-stitch-card-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
-.folio-stitch-card-heading h2 { color: var(--foreground-muted); font-size: .61rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.folio-stitch-card-heading h2 { color: var(--foreground); font-size: .85rem; font-weight: 600; letter-spacing: .01em; }
 .folio-card-menu { color: var(--foreground-subtle); font-size: .7rem; letter-spacing: .1em; }
 .folio-stitch-card .folio-portfolio-summary-card { border: 0; padding: 0; box-shadow: none; }
 .folio-stitch-card .folio-portfolio-summary-card > div:first-child > div:first-child > div:last-child { font-size: 2rem; }

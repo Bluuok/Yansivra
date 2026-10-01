@@ -15,6 +15,9 @@ import {
 } from '../../client';
 import { I18nProvider } from '../../i18n/I18nProvider';
 import type { LongBridgeStatus } from '@finagent/core';
+import { useTranslation } from 'react-i18next';
+import { useSetAtom } from 'jotai';
+import { navSectionAtom, settingsTabAtom } from '../../atoms';
 
 interface AppShellProps {
   client?: FinagentClient;
@@ -43,6 +46,9 @@ export const AppShell: React.FC<AppShellProps> = ({ client = fallbackClient }) =
 };
 
 const LongBridgeBanner: React.FC = () => {
+  const { t } = useTranslation();
+  const setSection = useSetAtom(navSectionAtom);
+  const setSettingsTab = useSetAtom(settingsTabAtom);
   const [status, setStatus] = useState<LongBridgeStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const client = useFinagentClient();
@@ -68,15 +74,10 @@ const LongBridgeBanner: React.FC = () => {
     return null;
   }
 
-  const message = error ?? status?.message ?? 'LongBridge CLI status is unavailable.';
-  const action = status?.action ?? 'Install LongBridge CLI and run longbridge auth login.';
-  const title = status?.status === 'rate_limited' ? 'LongBridge paused: ' : 'LongBridge setup needed: ';
-
   return (
-    <div className="folio-banner border-b px-4 py-2">
-      <span className="font-semibold text-foreground">{title}</span>
-      <span className="text-foreground/78">{message}</span>
-      <span className="ml-2 text-foreground/54">{action}</span>
+    <div className="folio-banner flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
+      <span className="text-text-muted">{t('navigation.dataConnectionNotice')}</span>
+      <button type="button" onClick={() => { setSettingsTab('connections'); setSection('settings'); }} className="shrink-0 font-medium text-accent">{t('navigation.openConnections')} →</button>
     </div>
   );
 };

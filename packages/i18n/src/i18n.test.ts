@@ -20,9 +20,9 @@ describe('i18n instance (spec §4–5, §19)', () => {
 
   it('supports instant language switch on the same instance', async () => {
     const inst = createSyncI18n({ locale: 'en-US' });
-    expect(inst.t('navigation.today')).toBe('Today');
+    expect(inst.t('navigation.today')).toBe('Overview');
     await inst.changeLanguage('zh-CN');
-    expect(inst.t('navigation.today')).toBe('今日');
+    expect(inst.t('navigation.today')).toBe('总览');
   });
 
   it('falls back to en-US for a missing key so raw keys never leak (spec §82)', () => {

@@ -2,8 +2,8 @@
 export const today = {
   // hero
   quietWorkspace: 'Quiet workspace',
-  greeting: 'Good morning',
-  heroSubtitle: 'What do you want to understand about your portfolio today?',
+  greeting: 'Today’s research desk',
+  heroSubtitle: 'Continue a study, check its evidence, and keep your own judgment.',
   searchPlaceholder: 'Search a security, e.g. NVDA.US',
   searchAria: 'Search a security',
   quickActionDeepResearch: 'Deep Research',

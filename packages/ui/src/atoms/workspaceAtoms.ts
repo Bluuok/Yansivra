@@ -43,10 +43,10 @@ export type NavSection =
   | 'events'
   | 'profile';
 
-export const navSectionAtom = persistedAtom<NavSection>('navSection', 'sessions');
+export const navSectionAtom = persistedAtom<NavSection>('navSection', 'today');
 
 /** Whether the Agent Panel is visible (collapse/expand in the shell). */
-export const agentPanelVisibleAtom = persistedAtom<boolean>('agentPanelVisible', true);
+export const agentPanelVisibleAtom = persistedAtom<boolean>('agentPanelVisible', false);
 /** Active tab within the Settings section. */
 export type SettingsTab =
   | 'general'

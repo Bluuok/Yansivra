@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAtom, useSetAtom } from 'jotai';
 import {
@@ -19,6 +19,7 @@ import {
   Trash2,
   UserRound,
   Zap,
+  ChevronDown,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -36,16 +37,22 @@ type SidebarItem = { key: NavSection; labelKey: string; icon: LucideIcon };
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { key: 'today', labelKey: 'today', icon: LayoutDashboard },
-  { key: 'discover', labelKey: 'discover', icon: Compass },
-  { key: 'watchlist', labelKey: 'workspace', icon: ChartNoAxesCombined },
-  { key: 'portfolio', labelKey: 'portfolio', icon: BriefcaseBusiness },
-  { key: 'compare', labelKey: 'compare', icon: GitCompareArrows },
-  { key: 'alerts', labelKey: 'alerts', icon: Bell },
   { key: 'research', labelKey: 'research', icon: BookOpen },
-  { key: 'thesis', labelKey: 'thesis', icon: FileText },
+  { key: 'thesis', labelKey: 'review', icon: FileText },
+  { key: 'portfolio', labelKey: 'assets', icon: BriefcaseBusiness },
+];
+const RESEARCH_TOOLS: SidebarItem[] = [
+  { key: 'watchlist', labelKey: 'watchlist', icon: ChartNoAxesCombined },
+  { key: 'discover', labelKey: 'discover', icon: Compass },
+  { key: 'compare', labelKey: 'compare', icon: GitCompareArrows },
+  { key: 'events', labelKey: 'events', icon: CalendarDays },
+  { key: 'alerts', labelKey: 'alerts', icon: Bell },
+];
+const ADVANCED_TOOLS: SidebarItem[] = [
+  { key: 'sessions', labelKey: 'sessions', icon: CirclePlus },
   { key: 'skills', labelKey: 'skills', icon: Zap },
   { key: 'evaluation', labelKey: 'evaluation', icon: FlaskConical },
-  { key: 'events', labelKey: 'events', icon: CalendarDays },
+  { key: 'profile', labelKey: 'profile', icon: UserRound },
 ];
 
 const SidebarNavButton: React.FC<{
@@ -65,7 +72,6 @@ const SidebarNavButton: React.FC<{
     >
       <Icon className="h-4 w-4 shrink-0" strokeWidth={active ? 2 : 1.7} />
       <span className="folio-sidebar-nav-label">{label}</span>
-      {item.key === 'alerts' && <span className="folio-sidebar-alert-dot" aria-hidden="true" />}
     </button>
   );
 };
@@ -78,27 +84,31 @@ export const Sidebar: React.FC = () => {
   const createSession = useSetAtom(createSessionAtom);
   const deleteSession = useSetAtom(deleteSessionAtom);
   const [navSection, setNavSection] = useAtom(navSectionAtom);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  useEffect(() => {
+    if (ADVANCED_TOOLS.some((item) => item.key === navSection)) setAdvancedOpen(true);
+  }, [navSection]);
   const showWorkspaceContext = navSection === 'sessions' || navSection === 'watchlist';
 
   return (
     <aside className="folio-sidebar h-full w-full overflow-hidden bg-surface" data-testid="sidebar">
       <div className="folio-sidebar-content flex h-full min-w-0 flex-col px-3 py-5">
         <div className="folio-sidebar-brand mb-6 px-2">
-          <div className="folio-sidebar-brand-name">Folio</div>
+          <div className="folio-sidebar-brand-name">Folio<span className="text-accent"> Desk</span></div>
           <div className="folio-sidebar-brand-kicker">{t('navigation.institutionalResearch')}</div>
         </div>
 
         <button
           type="button"
-          aria-label={t('navigation.newSession')}
-          onClick={() => void createSession(client)}
+          aria-label={t('navigation.startResearch')}
+          onClick={() => setNavSection('research')}
           className="folio-sidebar-new-analysis mb-6 flex h-9 w-full items-center justify-center gap-2 rounded-[4px] px-3 text-[12px] font-semibold"
         >
           <CirclePlus className="h-4 w-4" />
-          <span>{t('navigation.newSession')}</span>
+          <span>{t('navigation.startResearch')}</span>
         </button>
 
-        <nav aria-label={t('navigation.globalNavAria')} className="folio-sidebar-nav flex min-h-0 flex-1 flex-col gap-1">
+        <nav aria-label={t('navigation.globalNavAria')} className="folio-sidebar-nav flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
           {SIDEBAR_ITEMS.map((item) => (
             <SidebarNavButton
               key={item.key}
@@ -108,16 +118,18 @@ export const Sidebar: React.FC = () => {
               onClick={() => setNavSection(item.key)}
             />
           ))}
-          <SidebarNavButton
-            item={{ key: 'profile', labelKey: 'profile', icon: UserRound }}
-            label={t('navigation.profile')}
-            active={navSection === 'profile'}
-            onClick={() => setNavSection('profile')}
-          />
+          <div className="folio-sidebar-section-label folio-sidebar-nav-label mb-2 mt-6 px-3">{t('navigation.researchTools')}</div>
+          {RESEARCH_TOOLS.map((item) => <SidebarNavButton key={item.key} item={item} label={t(`navigation.${item.labelKey}`)} active={navSection === item.key} onClick={() => setNavSection(item.key)} />)}
+          <button type="button" onClick={() => setAdvancedOpen((open) => !open)} aria-expanded={advancedOpen} aria-label={t('navigation.advancedTools')} className="folio-sidebar-nav-item mt-3 text-text-muted">
+            <ChevronDown className={`h-4 w-4 shrink-0 ${advancedOpen ? 'rotate-180' : ''}`} />
+            <span className="folio-sidebar-nav-label">{t('navigation.advancedTools')}</span>
+          </button>
+          {advancedOpen && ADVANCED_TOOLS.map((item) => <SidebarNavButton key={item.key} item={item} label={t(`navigation.${item.labelKey}`)} active={navSection === item.key} onClick={() => setNavSection(item.key)} />)}
         </nav>
 
         {showWorkspaceContext && (
           <section className="folio-sidebar-context mt-4 min-h-0 border-t border-border pt-3">
+            <button type="button" aria-label={t('navigation.newSession')} onClick={() => void createSession(client)} className="mb-2 flex w-full items-center gap-2 px-2 text-xs text-accent"><CirclePlus className="h-3.5 w-3.5" />{t('navigation.newSession')}</button>
             <div className="flex items-center justify-between px-2 pb-2">
               <span className="folio-sidebar-section-label">{t('navigation.sessions')}</span>
               <span className="tnum text-[10px] text-foreground/40">{sessions.length}</span>

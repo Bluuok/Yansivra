@@ -3,23 +3,23 @@
 /* CRAFT AGENT THEME - Apple/macOS 6 Color System */
 :root {
   /* Keep the package stylesheet aligned with the Electron renderer. */
-  --font-global-stack: "SF Mono", "JetBrains Mono", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", ui-monospace, monospace;
+  --font-global-stack: "Inter", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
   --font-sans-stack: var(--font-global-stack);
   --font-display-stack: var(--font-global-stack);
-  --font-numeric-stack: var(--font-global-stack);
+  --font-numeric-stack: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
 
   /* === 6 BASE COLORS === */
-  --background: oklch(0.985 0.002 260);
+  --background: #f6f5f1;
   --background-elevated: color-mix(in srgb, var(--foreground) 1.5%, var(--background));
   --foreground: oklch(0.19 0.012 260);
   --foreground-dimmed: color-mix(in srgb, var(--foreground) 80%, var(--background));
   --foreground-rgb: 35, 37, 43;
-  --accent: oklch(0.62 0.19 253);
-  --accent-rgb: 10, 132, 255;
+  --accent: #304b78;
+  --accent-rgb: 48, 75, 120;
   --info: oklch(0.75 0.16 70);
   --info-rgb: 180, 120, 40;
-  --success: oklch(0.55 0.17 145);
-  --success-rgb: 34, 120, 60;
+  --success: #304b78;
+  --success-rgb: 48, 75, 120;
   --destructive: oklch(0.58 0.24 28);
   --destructive-rgb: 180, 60, 50;
 
@@ -52,7 +52,7 @@
   --mac-control-hover: color-mix(in srgb, var(--foreground) 6%, white);
   --mac-surface: rgba(255, 255, 255, 0.78);
   --mac-surface-solid: oklch(1 0 0);
-  --mac-blue: #0a84ff;
+  --mac-blue: #304b78;
   --mac-blue-hover: #0071e3;
   --mac-blue-soft: rgba(10, 132, 255, 0.12);
   --mac-green: #30d158;
