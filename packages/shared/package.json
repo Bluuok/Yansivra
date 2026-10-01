@@ -9,6 +9,7 @@
     "./capabilities": "./src/capabilities/index.ts",
     "./resources": "./src/resources/index.ts",
     "./thesis": "./src/thesis/index.ts",
+    "./journal": "./src/journal/index.ts",
     "./research-diff": "./src/research-diff/index.ts",
     "./compare": "./src/compare/index.ts",
     "./portfolio-risk": "./src/portfolio-risk/index.ts",

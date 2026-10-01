@@ -34,6 +34,11 @@ import type {
   Quote,
   ResearchDiff,
   ResearchReport,
+  CreateJudgmentInput,
+  AddJudgmentReviewInput,
+  ListJudgmentsInput,
+  JudgmentEntry,
+  JudgmentPage,
   PerformanceHorizon,
   SkillPerformance,
   StrategyPerformance,
@@ -256,6 +261,12 @@ export interface FinagentClient {
     strategyCalibration: (input: { horizon: PerformanceHorizon }) => Promise<ApiResult<StrategyCalibration[]>>;
   };
   automation?: AutomationChannel;
+  journal: {
+    createFromReport: (input: CreateJudgmentInput) => Promise<ApiResult<JudgmentEntry>>;
+    list: (input?: ListJudgmentsInput) => Promise<ApiResult<JudgmentPage>>;
+    get: (input: { entryId: string }) => Promise<ApiResult<JudgmentEntry>>;
+    addReview: (input: AddJudgmentReviewInput) => Promise<ApiResult<JudgmentEntry>>;
+  };
   thesis?: {
     list: (symbol?: string) => Promise<ApiResult<InvestmentThesis[]>>;
     getReport: (symbol: string) => Promise<ApiResult<ResearchReport | null>>;
@@ -371,6 +382,12 @@ export const fallbackClient: FinagentClient = {
     listOpinions: missingClient('outcome.listOpinions'),
     listOutcomes: missingClient('outcome.listOutcomes'),
     evaluateDue: missingClient('outcome.evaluateDue'),
+  },
+  journal: {
+    createFromReport: missingClient('journal.createFromReport'),
+    list: missingClient('journal.list'),
+    get: missingClient('journal.get'),
+    addReview: missingClient('journal.addReview'),
   },
   thesis: {
     list: missingClient('thesis.list'),

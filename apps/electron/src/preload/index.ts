@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import type { CreateJudgmentInput, AddJudgmentReviewInput, ListJudgmentsInput } from '@finagent/core';
 
 interface ProviderSettingsInput {
   apiKey?: string;
@@ -9,6 +10,12 @@ interface ProviderSettingsInput {
 }
 
 export interface ElectronAPI {
+  journal: {
+    createFromReport: (input: CreateJudgmentInput) => Promise<unknown>;
+    list: (input?: ListJudgmentsInput) => Promise<unknown>;
+    get: (input: { entryId: string }) => Promise<unknown>;
+    addReview: (input: AddJudgmentReviewInput) => Promise<unknown>;
+  };
   window: {
     minimize: () => Promise<void>;
     maximize: () => Promise<void>;
@@ -269,6 +276,12 @@ const electronAPI: ElectronAPI = {
     listReports: (input: { symbol?: string }) => ipcRenderer.invoke('research:listReports', input),
     getReport: (input: { reportId: string }) => ipcRenderer.invoke('research:getReport', input),
     getDiff: (input: { symbol: string }) => ipcRenderer.invoke('research:getDiff', input),
+  },
+  journal: {
+    createFromReport: (input: CreateJudgmentInput) => ipcRenderer.invoke('journal:createFromReport', input),
+    list: (input?: ListJudgmentsInput) => ipcRenderer.invoke('journal:list', input),
+    get: (input: { entryId: string }) => ipcRenderer.invoke('journal:get', input),
+    addReview: (input: AddJudgmentReviewInput) => ipcRenderer.invoke('journal:addReview', input),
   },
   thesis: {
     list: (symbol?: string) => ipcRenderer.invoke('thesis:list', symbol),

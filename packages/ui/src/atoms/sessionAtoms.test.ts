@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
 import { createStore } from 'jotai';
-import type { FinagentClient } from '../client';
+import { fallbackClient, type FinagentClient } from '../client';
 import type { Run, SessionMeta } from '@finagent/core';
 import {
   activeMessagesAtom,
@@ -30,6 +30,7 @@ function makeSession(title: string): SessionMeta {
 
 function makeClient(): FinagentClient {
   return {
+    journal: fallbackClient.journal,
     kernel: {
       hydrate: async () => ({ ok: true as const, data: { sessions: savedSessions } }),
       createSession: async (title?: string) => {

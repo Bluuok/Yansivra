@@ -6,6 +6,8 @@ import { registerAboutIpc } from './about.ts';
 import { writeSupportBundle } from '@finagent/shared/diagnostics';
 import { loadFinagentEnv } from './loadEnv.ts';
 import { getRuntimeRoot } from '@finagent/shared/resources';
+import { JsonFileStore } from '@finagent/shared';
+import { JournalRepository, JournalService } from '@finagent/shared/journal';
 let mainWindow: BrowserWindow | null = null;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(__dirname, '../..');
@@ -29,6 +31,10 @@ app.on('second-instance', () => {
   mainWindow?.focus();
 });
 const agentKernelHost = new AgentKernelHost();
+const journalService = new JournalService({
+  repository: new JournalRepository(new JsonFileStore(app.getPath('userData'))),
+  getReport: (reportId) => agentKernelHost.researchGetReport({ reportId }),
+});
 registerAboutIpc();
 const isDev = !app.isPackaged;
 
@@ -109,6 +115,11 @@ ipcMain.handle('window:close', () => mainWindow?.close());
 ipcMain.handle('window:isMaximized', () => mainWindow?.isMaximized());
 
 // Agent Kernel IPC
+ipcMain.handle('journal:createFromReport', async (_event, input: unknown) => toIpcResult(() => journalService.createFromReport(input)));
+ipcMain.handle('journal:list', async (_event, input: unknown) => toIpcResult(() => journalService.list(input)));
+ipcMain.handle('journal:get', async (_event, input: unknown) => toIpcResult(() => journalService.get(input)));
+ipcMain.handle('journal:addReview', async (_event, input: unknown) => toIpcResult(() => journalService.addReview(input)));
+
 ipcMain.handle('kernel:hydrate', async () =>
   toIpcResult(() => agentKernelHost.hydrate())
 );

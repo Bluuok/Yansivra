@@ -81,6 +81,12 @@ function createElectronClient(): FinagentClient {
       getReport: (input) => ipcResult(window.electronAPI.research.getReport(input)),
       getDiff: (input) => ipcResult(window.electronAPI.research.getDiff(input)),
     },
+    journal: {
+      createFromReport: (input) => ipcResult(window.electronAPI.journal.createFromReport(input)),
+      list: (input) => ipcResult(window.electronAPI.journal.list(input)),
+      get: (input) => ipcResult(window.electronAPI.journal.get(input)),
+      addReview: (input) => ipcResult(window.electronAPI.journal.addReview(input)),
+    },
     thesis: {
       list: (symbol?) => ipcResult(window.electronAPI.thesis.list(symbol)),
       getReport: (symbol) => ipcResult(window.electronAPI.thesis.getReport(symbol)),

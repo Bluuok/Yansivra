@@ -100,6 +100,12 @@ var electronAPI = {
     getReport: (input) => import_electron.ipcRenderer.invoke("research:getReport", input),
     getDiff: (input) => import_electron.ipcRenderer.invoke("research:getDiff", input)
   },
+  journal: {
+    createFromReport: (input) => import_electron.ipcRenderer.invoke("journal:createFromReport", input),
+    list: (input) => import_electron.ipcRenderer.invoke("journal:list", input),
+    get: (input) => import_electron.ipcRenderer.invoke("journal:get", input),
+    addReview: (input) => import_electron.ipcRenderer.invoke("journal:addReview", input)
+  },
   thesis: {
     list: (symbol) => import_electron.ipcRenderer.invoke("thesis:list", symbol),
     getReport: (symbol) => import_electron.ipcRenderer.invoke("thesis:getReport", symbol),
