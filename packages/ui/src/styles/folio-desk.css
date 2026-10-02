@@ -26,6 +26,7 @@
 .desk-overview .folio-today-heading h1, .desk-journal > header h1 { font-size: 28px; line-height: 1.45; letter-spacing: -.4px; }
 .desk-overview .folio-stitch-card { border: 0; border-radius: 0; border-bottom: 1px solid var(--border); padding: 16px 0; background: transparent; box-shadow: none; }
 .desk-overview .folio-stitch-card-heading h2 { font-size: 16px; }
+.desk-overview :is(.folio-today-mover-columns h3, .folio-today-mini-row, .folio-today-mini-row strong, .folio-stitch-text-button), .desk-overview [class~="text-[11px]"] { font-size: 12px; }
 .desk-overview .folio-today-bento { gap: 22px 24px; align-items: start; }
 .desk-overview [data-testid="today-pending-reviews"] { border-left: 1px solid var(--border); padding-left: 24px; }
 .desk-overview [data-testid="today-pending-reviews"] > ul { max-height: 320px; overflow-y: auto; }
@@ -67,7 +68,7 @@
 .desk-reading .folio-pilot-report-section span, .desk-reading .folio-pilot-report-section > div:last-of-type { font-size: 12px; }
 .desk-reading .folio-pilot-case, .desk-reading .folio-pilot-evidence { border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding: 24px 0; background: transparent; box-shadow: none; }
 .desk-evidence-trigger { min-height: 32px; padding: 6px 0; font-size: 12px; cursor: pointer; }
-.desk-inspector { color: var(--foreground); overflow-wrap: anywhere; }
+.desk-inspector { background: var(--surface); border-color: var(--border); color: var(--foreground); overflow-wrap: anywhere; }
 .desk-inspector-control { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; min-height: 32px; border-radius: 5px; cursor: pointer; }
 .desk-inspector-control:hover { background: var(--surface-hover); }
 .desk-inspector-note { color: var(--foreground-muted); font-size: 12px; line-height: 1.8; margin: 12px 0 20px; }
