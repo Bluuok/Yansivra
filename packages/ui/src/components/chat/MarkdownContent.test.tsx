@@ -74,7 +74,7 @@ describe('MarkdownContent', () => {
     await act(async () => {
       root.render(
         <MarkdownContent
-          content={'[Phish](//evil.com/steal) [Also](//github.com/helsome/folio) [Ok](https://example.com)'}
+          content={'[Phish](//evil.com/steal) [Also](//github.com/example/project) [Ok](https://example.com)'}
         />
       );
     });

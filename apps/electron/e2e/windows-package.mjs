@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 import { freshProfile, launchDesktop, closeDesktop, captureDesktop, repoRoot } from './desktop-harness.mjs';
 
 assert.equal(process.platform, 'win32', 'this acceptance test runs on actual Windows');
@@ -44,13 +45,17 @@ try {
   assert.equal(session.ok, true);
   const start = await page.evaluate((sessionId) => window.electronAPI.kernel.startRun({ sessionId, content: '你好，请确认本地运行状态' }), session.data.id);
   assert.equal(start.ok, true);
-  await page.waitForFunction(async ({ sessionId, runId }) => {
-    const result = await window.electronAPI.kernel.listRuns(sessionId);
-    const run = result.ok && result.data.find((run) => run.id === runId);
-    return run && run.status !== 'running';
-  }, { sessionId: session.data.id, runId: start.data.id }, { timeout: 30_000 });
-  const runs = await page.evaluate((sessionId) => window.electronAPI.kernel.listRuns(sessionId), session.data.id);
-  assert.equal(runs.data.find((run) => run.id === start.data.id).status, 'completed');
+  const deadline = Date.now() + 30_000;
+  let runs;
+  do {
+    runs = await page.evaluate((sessionId) => window.electronAPI.kernel.listRuns(sessionId), session.data.id);
+    assert.equal(runs.ok, true, 'packaged runs must be readable through the real IPC');
+    const run = runs.data.find((run) => run.id === start.data.id);
+    if (run && run.status !== 'running') break;
+    await delay(100);
+  } while (Date.now() < deadline);
+  assert.equal(runs.data.find((run) => run.id === start.data.id)?.status, 'completed',
+    'packaged local Agent must actually complete within 30 seconds');
   const about = await page.evaluate(() => window.electronAPI.about.get());
   assert.equal(about.data.version, runtime.version);
   console.log(`PASS extracted unsigned ZIP outside source (${directory}): renderer, preload, main, ${skills.data.length} skills, bundled extension paths, finance tools, completed local Agent run, version and sandbox`);

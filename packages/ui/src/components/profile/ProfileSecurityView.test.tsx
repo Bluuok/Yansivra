@@ -74,7 +74,7 @@ describe('ProfileSecurityView', () => {
     await flushAsync()
 
     expect(container.querySelector('[data-testid="profile-view"]')).not.toBeNull()
-    expect(container.textContent).toContain('Local Folio workspace')
+    expect(container.textContent).toContain('Local Yansivra workspace')
     expect(container.textContent).toContain('Longbridge')
     expect(container.textContent).toContain('Demo account')
     expect(container.textContent).toContain('1.2.3')
