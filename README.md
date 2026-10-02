@@ -2,7 +2,7 @@
 
 <p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Yansivra" width="88" /></p>
 
-[English](README.en.md) · 简体中文 · [验证记录](docs/desktop-validation.md)
+[English](README.en.md) · 简体中文 · [验证记录](docs/yansivra-validation.md)
 
 **本地优先的 AI 投资研究与复盘桌面工作台。** 将证券行情、深度研究、证据来源、组合风险与个人判断放在同一条工作流中：研究一个标的，核对结论依据，留下当时的理由，再用后续复盘检查关键假设。
 

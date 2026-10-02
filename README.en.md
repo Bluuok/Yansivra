@@ -2,7 +2,7 @@
 
 <p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Yansivra" width="88" /></p>
 
-English · [简体中文](README.md) · [Validation record](docs/desktop-validation.md)
+English · [简体中文](README.md) · [Validation record](docs/yansivra-validation.md)
 
 **A local-first desktop workspace for AI investment research and personal review.** Follow a security from market context through research and supporting evidence, record your own reasoning, then revisit its assumptions with later observations.
 
