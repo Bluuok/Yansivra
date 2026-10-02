@@ -2,7 +2,7 @@
 
 <p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Folio Desk" width="88" /></p>
 
-English · [简体中文](README.md) · [Upstream Folio](https://github.com/helsome/folio) · [Validation record](docs/desktop-validation.md)
+English · [简体中文](README.md) · [Validation record](docs/desktop-validation.md)
 
 **A local-first desktop workspace for AI investment research and personal review.** Follow a security from market context through research and supporting evidence, record your own reasoning, then revisit its assumptions with later observations.
 
@@ -79,11 +79,5 @@ Acceptance tests use isolated profiles, hidden windows and the local provider. E
 Existing Longbridge / Massive data providers and Pi / model configuration remain available. Data CLIs, account access, model credentials and the external Pi runtime are not bundled in the ZIP. Live acceptance passed all 16 financial capabilities, a complete DeepSeek Flash report, judgment/review entry, and persistence after restart. That run used Longbridge data with a delayed Massive daily quote fallback because the Longbridge quote lacked its market timestamp. Earlier external timeouts correctly produced partial reports. Brokerage portfolio access remains denied by the provider; see the [validation record](docs/desktop-validation.md).
 
 Archived judgments and manual reviews require neither market nor model calls. The current release does not add PDF page navigation, scheduled reassessment, full-text search or trading. Evidence shows only fields retained by the report.
-
-## Upstream and scope
-
-Based on [helsome/folio](https://github.com/helsome/folio) and existing local contributions. This redevelopment covers desktop presentation/navigation, the journal service, report/review integration and Windows packaging validation. Existing market, Agent, research, portfolio, thesis, alerts and evaluation features are upstream capabilities; describing the complete product does not imply sole authorship.
-
-Existing copyright and third-party notices are retained. The upstream baseline has no standard root LICENSE; this branch does not assign it a new MIT/Apache license. Confirm applicable authorization before further distribution.
 
 [Scope](docs/desktop-redevelopment.md) · [Validation](docs/desktop-validation.md) · [Windows](docs/desktop-windows.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md)

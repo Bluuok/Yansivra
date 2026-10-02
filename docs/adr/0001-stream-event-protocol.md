@@ -2,7 +2,6 @@
 
 - **Status:** Proposed (awaiting review on #27)
 - **Date:** 2026-09-11
-- **Deciders:** helsome/folio maintainers, contributor for #27
 
 ## Context
 

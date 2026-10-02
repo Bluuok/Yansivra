@@ -2,7 +2,7 @@
 
 <p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Folio Desk" width="88" /></p>
 
-[English](README.en.md) · 简体中文 · [上游 Folio](https://github.com/helsome/folio) · [验证记录](docs/desktop-validation.md)
+[English](README.en.md) · 简体中文 · [验证记录](docs/desktop-validation.md)
 
 **本地优先的 AI 投资研究与复盘桌面工作台。** 将证券行情、深度研究、证据来源、组合风险与个人判断放在同一条工作流中：研究一个标的，核对结论依据，留下当时的理由，再用后续复盘检查关键假设。
 
@@ -79,12 +79,6 @@ bun run dev
 Longbridge / Massive 数据连接和 Pi / 模型配置沿用上游能力。行情 CLI、账户权限、模型凭据与 Pi 外部运行时不包含在 ZIP 中；请在设置中查看连接状态与报错。本机已通过长桥授权后的 16 项金融数据、DeepSeek Flash 完整研究报告、保存判断、追加复盘和重启持久化，记录见 [验证记录](docs/desktop-validation.md)。该次报价因长桥缺少行情时间而使用 Massive 备用日线，明确带延迟标记；外部请求超时仍会保留“部分完成”。长桥持仓与现金读取被服务端拒绝，券商账户真实集成仍未通过。
 
 判断与人工复盘不需要调用行情或模型。首版没有财报 PDF 原文定位、自动重新评估调度、全文搜索或自动交易。证据只有报告实际保留的字段，不虚构来源链接或页码。
-
-## 来源与维护范围
-
-本项目基于 [helsome/folio](https://github.com/helsome/folio) 及本地原有贡献继续维护。上游的行情、Agent、研究、组合、论点、提醒和评测能力保留；本轮改动集中于桌面视觉与导航、判断记录服务、报告与复盘闭环、Windows 资源与打包验证。完整产品能力不代表所有模块均由当前维护者原创。
-
-保留已有版权与第三方声明。所用上游基线根目录未提供标准 LICENSE，本分支没有替它补写 MIT/Apache 授权；进一步分发前应确认适用授权。
 
 - [桌面改版范围与阶段](docs/desktop-redevelopment.md)
 - [实际验证记录](docs/desktop-validation.md)
