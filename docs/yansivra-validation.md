@@ -1,5 +1,15 @@
 # Yansivra Windows 验证记录
 
+## 2026-10-02 真实流程续验与时间修复
+
+反重力使用同一会话完成修复后的类型检查、完整单元测试、构建打包与 Windows 包验收：**1739 pass、8 skip、0 fail**，7588 expect calls，189 files。新增加的 3 个回归用例覆盖逐笔成交的毫秒时间、空成交序列与正反排序 K 线的最新时间。桌面 UI 未改，复用当天已再次通过的 4 组桌面流程。
+
+最新 Windows ZIP 为 141,235,580 字节，SHA256：`247DFDE77F4AEF43892B12DC774E406C059D5ADEC6451FA8F4AC3B35E495C525`；主代理已独立计算核对。实际包内标题 Yansivra、本地 Agent completed、中文/空格路径解压验收均通过。反重力的最终日志位于本地忽略目录 `output/yansivra-time-*.log`。
+
+主代理另外在本机隔离资料中使用真实 Longbridge / Massive / DeepSeek Flash，完成 16 项公共研究能力、报告生成与导出、界面记录判断、保存复盘、重启恢复，并核查真实行情时间。完整范围、环境问题与券商账户权限限制见 [在线验收记录](yansivra-live-validation.md)。
+
+## 首次改名包验证（保留记录）
+
 验证日期：2026-10-02。环境为 Windows 11 10.0.26200.0、Bun 1.4.0（34cbb9a40）、Node.js v24.21.0、Electron 39.8.9。
 
 测试通过已登录的 Antigravity CLI 执行，模型为插件默认的 Gemini 3.8 Flash Medium。复测使用同一会话。生产源码与打包配置对应 `c60d2b4`；后续至 `f571f53` 的修改仅涉及测试断言、测试等待逻辑、示例链接与说明文档，因此沿用该版本的构建和打包产物。

@@ -109,15 +109,17 @@ export function toProviderError(error: unknown): ProviderError {
 
 function marketTimeMsFrom(data: unknown): number | undefined {
   const items = Array.isArray(data) ? data : [data];
+  let latest: number | undefined;
   for (const item of items) {
     if (!isRecord(item)) continue;
     const ts = item.timestamp;
     const seconds = typeof ts === 'number' ? ts : typeof ts === 'string' ? Number(ts) : undefined;
     if (typeof seconds === 'number' && Number.isFinite(seconds) && seconds > 0) {
-      return seconds * 1000;
+      const time = seconds * 1000;
+      latest = latest === undefined ? time : Math.max(latest, time);
     }
   }
-  return undefined;
+  return latest;
 }
 
 export function longbridgeProvenance(data?: unknown): ProviderProvenance {

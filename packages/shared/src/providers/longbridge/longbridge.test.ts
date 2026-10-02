@@ -86,6 +86,19 @@ const DISPATCH_CASES = [
 const provider = new LongbridgeFinancialDataProvider();
 
 describe('LongbridgeFinancialDataProvider', () => {
+  it('stamps K-line provenance with the newest bar regardless of response order', async () => {
+    const bars = [
+      { symbol: 'NVDA.US', time: '1786406400', open: '220', high: '225', low: '219', close: '223', volume: '1000' },
+      { symbol: 'NVDA.US', time: '1786492800', open: '220', high: '225', low: '219', close: '224', volume: '1000' },
+    ];
+    for (const ordered of [bars, [...bars].reverse()]) {
+      execaHandler = async () => ({ stdout: JSON.stringify(ordered) });
+      const result = await provider.execute('market.kline', { symbol: 'NVDA.US', period: '1d', count: 2 });
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(result.provenance.marketTime).toBe(1786492800000);
+    }
+  });
+
   it('declares identity, capabilities, and markets', () => {
     expect(provider.id).toBe('longbridge');
     expect(provider.name).toBe('Longbridge');

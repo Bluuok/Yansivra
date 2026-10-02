@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { createPhaseTwoCapabilities, createMarketCapitalFlowCapability, createMarketDepthCapability, createResearchEventsCapability, createPortfolioPositionsCapability } from './manifests/phase-two.ts';
+import { createPhaseTwoCapabilities, createMarketCapitalFlowCapability, createMarketDepthCapability, createMarketTradesCapability, createResearchEventsCapability, createPortfolioPositionsCapability } from './manifests/phase-two.ts';
 import type { CapabilityFetchers } from './fetchers.ts';
 
 function fetchers(overrides: Partial<CapabilityFetchers> = {}): CapabilityFetchers {
@@ -122,6 +122,22 @@ describe('phase-2 manifest input validation', () => {
       marketTime: 1710000000_000,
     });
     expect(result.provenance.marketTime! > 1e12).toBe(true);
+  });
+
+  it('uses the newest trade time in milliseconds even for ascending responses', async () => {
+    const trades = createMarketTradesCapability(fetchers({ getTrades: async () => [
+      { timestamp: 1710000000, price: 100, volume: 1, direction: 'up', type: '' },
+      { timestamp: 1710000060, price: 101, volume: 1, direction: 'up', type: '' },
+    ] }));
+    const result = await trades.execute({ symbol: 'NVDA.US' }, { now: () => 12345 });
+    expect(result.provenance.marketTime).toBe(1710000060000);
+    expect(result.summary).toContain('latest @ $101.00');
+  });
+
+  it('omits the market time for an empty trade response', async () => {
+    const trades = createMarketTradesCapability(fetchers());
+    const result = await trades.execute({ symbol: 'NVDA.US' }, {});
+    expect(result.provenance.marketTime).toBeUndefined();
   });
 
   it('validates research.events requires a known eventType', async () => {

@@ -66,13 +66,14 @@ export function createMarketTradesCapability(
     async execute(input, ctx) {
       const symbol = normalizeSymbol(input.symbol);
       const trades = await fetchers.getTrades(symbol, input.count ?? 20);
-      const latest = trades[0];
+      const latest = trades.reduce<TradeTick | undefined>((latest, trade) =>
+        latest === undefined || trade.timestamp > latest.timestamp ? trade : latest, undefined);
       return {
         data: trades,
         provenance: {
           provider: 'longbridge',
           fetchedAt: (ctx?.now ?? Date.now)(),
-          marketTime: latest?.timestamp,
+          marketTime: latest === undefined ? undefined : latest.timestamp * 1000,
           stale: false,
         },
         summary: `${trades.length} recent trades for ${symbol}${latest ? `, latest @ $${latest.price.toFixed(2)}` : ''}.`,
