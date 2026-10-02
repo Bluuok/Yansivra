@@ -35,6 +35,7 @@ export async function launchDesktop(profile, options = {}) {
     cwd: packaged ? profile : repoRoot,
     env,
     timeout: 45_000,
+    ...(options.recordVideo ? { recordVideo: options.recordVideo } : process.env.FINAGENT_TEST_VIDEO_DIR ? { recordVideo: { dir: process.env.FINAGENT_TEST_VIDEO_DIR, size: { width: 1366, height: 768 } } } : {}),
   });
   try {
   const page = await application.firstWindow({ timeout: 30_000 });
@@ -69,7 +70,22 @@ export async function captureDesktop(application, name) {
     try { return (await globalThis.__folioCapture).toPNG().toString('base64'); }
     finally { delete globalThis.__folioCapture; }
   });
-  const visible = await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].isVisible());
+  let visible = false;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      visible = await application.evaluate(({ BrowserWindow }) => {
+        globalThis.__folioVis = BrowserWindow.getAllWindows()[0].isVisible();
+        return globalThis.__folioVis;
+      });
+      break;
+    } catch (e) {
+      if (String(e).includes('garbage collected') && attempt < 2) {
+        await new Promise(r => setTimeout(r, 60));
+        continue;
+      }
+      throw e;
+    }
+  }
   if (visible) throw new Error('Screenshot capture unexpectedly showed the hidden test window');
   writeFileSync(join(outputRoot, name), Buffer.from(png, 'base64'));
 }
