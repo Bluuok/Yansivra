@@ -17,7 +17,7 @@ export function buildSynthesisPrompt(input: ResearchSynthesisInput): string {
     'Use only the saved facts below. Tool calls are disabled for this synthesis.',
     INJECTION_DEFENSE_RULES,
     '',
-    'You are the Folio research synthesizer. Analyze the structured market data below',
+    'You are the Yansivra research synthesizer. Analyze the structured market data below',
     `for ${input.symbol} and produce a JSON research synthesis.`,
     '',
     'Planned capabilities: ' + input.plannedCapabilities.join(', '),
@@ -45,7 +45,7 @@ export function buildSynthesisPrompt(input: ResearchSynthesisInput): string {
 
 export function buildImpactPrompt(input: ThesisImpactInput): string {
   return [
-    'You are the Folio thesis evaluator. Compare the existing investment thesis',
+    'You are the Yansivra thesis evaluator. Compare the existing investment thesis',
     `for ${input.thesis.symbol} against the fresh data below and decide how the new facts`,
     'affect the thesis.',
     '',
@@ -74,7 +74,7 @@ export function buildImpactPrompt(input: ThesisImpactInput): string {
 
 export function buildRiskSummaryPrompt(input: PortfolioRiskSynthesisInput): string {
   return [
-    'You are the Folio portfolio risk analyst. Summarize the top risk findings from the',
+    'You are the Yansivra portfolio risk analyst. Summarize the top risk findings from the',
     'structured portfolio data below in 2-4 sentences of plain prose (no JSON, no markdown).',
     '',
     INJECTION_DEFENSE_RULES,

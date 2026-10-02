@@ -917,7 +917,7 @@ export class AgentKernelHost {
     this.window?.webContents.send('alerts:triggered', event);
     if (Notification.isSupported()) {
       new Notification({
-        title: `Folio — ${event.title}`,
+        title: `Yansivra — ${event.title}`,
         body: event.message,
       }).show();
     }

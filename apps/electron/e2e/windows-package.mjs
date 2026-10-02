@@ -6,15 +6,15 @@ import { join, resolve } from 'node:path';
 import { freshProfile, launchDesktop, closeDesktop, captureDesktop, repoRoot } from './desktop-harness.mjs';
 
 assert.equal(process.platform, 'win32', 'this acceptance test runs on actual Windows');
-const archive = resolve(process.env.FINAGENT_TEST_ARCHIVE ?? join(repoRoot, 'dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip'));
+const archive = resolve(process.env.FINAGENT_TEST_ARCHIVE ?? join(repoRoot, 'dist/electron/Yansivra-0.5.0-beta.1-win-x64.zip'));
 assert.ok(existsSync(archive), 'build the Windows ZIP first');
-const directory = mkdtempSync(join(tmpdir(), 'Folio 中文 解压 '));
+const directory = mkdtempSync(join(tmpdir(), 'Yansivra 中文 解压 '));
 execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
   'Expand-Archive -LiteralPath $env:FOLIO_TEST_ARCHIVE -DestinationPath $env:FOLIO_TEST_EXTRACT -ErrorAction Stop'],
   { windowsHide: true, env: { ...process.env, FOLIO_TEST_ARCHIVE: archive, FOLIO_TEST_EXTRACT: directory } });
-const executable = join(directory, 'Folio Desk.exe');
+const executable = join(directory, 'Yansivra.exe');
 assert.ok(existsSync(executable));
-const profile = freshProfile('Folio 中文 资料 ', tmpdir());
+const profile = freshProfile('Yansivra 中文 资料 ', tmpdir());
 const { application, page } = await launchDesktop(profile, { executable });
 try {
   const runtime = await application.evaluate(({ app, BrowserWindow }) => ({
@@ -23,10 +23,10 @@ try {
     version: app.getVersion(), prefs: BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences(),
   }));
   assert.equal(runtime.packaged, true);
-  assert.equal(existsSync(join(runtime.resources, 'default_app.asar')), false, 'Electron default shell must not override Folio');
+  assert.equal(existsSync(join(runtime.resources, 'default_app.asar')), false, 'Electron default shell must not override Yansivra');
   assert.equal(runtime.profile, profile);
   assert.equal(runtime.version, '0.5.0-beta.1');
-  assert.equal(runtime.title, 'Folio Desk');
+  assert.equal(runtime.title, 'Yansivra');
   assert.equal(runtime.prefs.nodeIntegration, false);
   assert.equal(runtime.prefs.contextIsolation, true);
   assert.equal(runtime.prefs.sandbox, true);

@@ -94,7 +94,7 @@ export const Sidebar: React.FC = () => {
     <aside className="folio-sidebar h-full w-full overflow-hidden bg-surface" data-testid="sidebar">
       <div className="folio-sidebar-content flex h-full min-w-0 flex-col px-3 py-5">
         <div className="folio-sidebar-brand mb-6 px-2">
-          <div className="folio-sidebar-brand-name">Folio<span className="text-accent"> Desk</span></div>
+          <div className="folio-sidebar-brand-name">Yansivra</div>
           <div className="folio-sidebar-brand-kicker">{t('navigation.institutionalResearch')}</div>
         </div>
 

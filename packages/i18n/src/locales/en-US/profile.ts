@@ -1,8 +1,8 @@
 export const profile = {
   eyebrow: 'Workspace identity',
   title: 'Profile & Security',
-  subtitle: 'Review the local Folio workspace, connected providers, and runtime health.',
-  localWorkspace: 'Local Folio workspace',
+  subtitle: 'Review the local Yansivra workspace, connected providers, and runtime health.',
+  localWorkspace: 'Local Yansivra workspace',
   localWorkspaceDescription: 'Your research data and credentials remain managed by this desktop installation.',
   application: 'Application',
   channel: 'Channel',

@@ -55,9 +55,9 @@
   },
   "build": {
     "appId": "com.finagent.app",
-    "productName": "Folio Desk",
+    "productName": "Yansivra",
     "afterPack": "./scripts/after-pack.cjs",
-    "artifactName": "Folio-Desk-${version}-${os}-${arch}.${ext}",
+    "artifactName": "Yansivra-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "../../dist/electron"
     },

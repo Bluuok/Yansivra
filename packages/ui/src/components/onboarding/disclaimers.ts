@@ -14,7 +14,7 @@ export const DISCLAIMERS: readonly Disclaimer[] = [
     id: 'privacy',
     title: 'Privacy',
     body:
-      'Folio runs locally on your device. API keys and credentials are stored on your machine ' +
+      'Yansivra runs locally on your device. API keys and credentials are stored on your machine ' +
       'and never shared. Market-data providers receive only the requests made through your own accounts.',
   },
   {
@@ -28,7 +28,7 @@ export const DISCLAIMERS: readonly Disclaimer[] = [
     id: 'financial-information',
     title: 'Financial information',
     body:
-      'Nothing in Folio is financial advice. Market data may be delayed. You are solely ' +
+      'Nothing in Yansivra is financial advice. Market data may be delayed. You are solely ' +
       'responsible for your investment decisions.',
   },
 ] as const;

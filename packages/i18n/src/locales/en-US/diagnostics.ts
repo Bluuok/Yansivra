@@ -39,7 +39,7 @@ export const diagnostics = {
   no: 'No',
   markets: 'Markets: {{list}}',
   capabilities: 'Capabilities: {{list}}',
-  summaryFolio: 'Folio {{version}} ({{os}}/{{arch}})',
+  summaryFolio: 'Yansivra {{version}} ({{os}}/{{arch}})',
   summaryAgentRuntime: 'Agent runtime: {{provider}} ({{state}})',
   summaryLlm: 'LLM: {{provider}} / {{model}}',
   summaryBroker: 'Broker: {{status}} ({{count}} account(s))',

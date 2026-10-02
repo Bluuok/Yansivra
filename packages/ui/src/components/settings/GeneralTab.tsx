@@ -17,7 +17,7 @@ export const GeneralTab: React.FC = () => {
   const model = state.model;
 
   const rows: Array<{ label: string; value: string }> = [
-    { label: t('settings.rows.application'), value: 'Folio' },
+    { label: t('settings.rows.application'), value: 'Yansivra' },
     { label: t('settings.rows.agentRuntime'), value: state.runtimeProvider },
     { label: t('settings.rows.streaming'), value: state.isStreaming ? t('settings.enabled') : t('settings.disabled') },
     { label: t('settings.rows.activeModel'), value: model ? (model.name || `${model.provider}/${model.id}`) : '—' },

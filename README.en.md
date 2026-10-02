@@ -1,6 +1,6 @@
-# Folio Desk
+# Yansivra
 
-<p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Folio Desk" width="88" /></p>
+<p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Yansivra" width="88" /></p>
 
 English · [简体中文](README.md) · [Validation record](docs/desktop-validation.md)
 
@@ -35,21 +35,21 @@ Captured from real Windows Electron windows. Sample quotes carry badges; researc
 The local artifact is an **unsigned unpacked directory / ZIP**, without an installer or updater:
 
 ```text
-dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip
-dist/electron/win-unpacked/Folio Desk.exe
+dist/electron/Yansivra-0.5.0-beta.1-win-x64.zip
+dist/electron/win-unpacked/Yansivra.exe
 ```
 
-Extract the entire ZIP and run `Folio Desk.exe`, keeping its adjacent resource files. This branch contains source and build commands; it does not automatically publish a GitHub Release.
+Extract the entire ZIP and run `Yansivra.exe`, keeping its adjacent resource files. This branch contains source and build commands; it does not automatically publish a GitHub Release.
 
-The legacy Folio data directory, `com.finagent.app`, internal package names and environment variables remain compatible. No automatic migration is performed. This unsigned build skips executable metadata editing, so Explorer properties and the executable icon can still identify Electron. The application window uses the new icon. See [Windows notes](docs/desktop-windows.md).
+The legacy Yansivra data directory, `com.finagent.app`, internal package names and environment variables remain compatible. No automatic migration is performed. This unsigned build skips executable metadata editing, so Explorer properties and the executable icon can still identify Electron. The application window uses the new icon. See [Windows notes](docs/desktop-windows.md).
 
 ## Development
 
 Install Bun, Node.js and workspace dependencies. Windows dependency installation requires an environment that can create symbolic links.
 
 ```powershell
-git clone --branch desktop/redevelopment https://github.com/Bluuok/folio.git
-cd folio
+git clone https://github.com/Bluuok/Yansivra.git
+cd Yansivra
 bun install
 bun run dev
 ```

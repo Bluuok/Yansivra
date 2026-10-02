@@ -3,7 +3,7 @@ import type { NamespaceResource } from '../keys.ts';
 /** Settings surface (spec §21–22, §49). */
 export const settings = {
   language: 'Language',
-  languageDescription: 'Choose the language used by Folio Desk.',
+  languageDescription: 'Choose the language used by Yansivra.',
   /****************************************************************
    * Language selector values — these are endonyms, NOT translated:
    *   language.system   → "System Default" / "系统默认"
@@ -14,7 +14,7 @@ export const settings = {
   languageSystem: 'System Default',
   languageChanged: 'Language changed',
   theme: 'Theme',
-  themeDescription: 'Choose how Folio Desk follows your desktop theme.',
+  themeDescription: 'Choose how Yansivra follows your desktop theme.',
   themeLight: 'Light',
   themeDark: 'Dark',
   themeSystem: 'System',
@@ -34,7 +34,7 @@ export const settings = {
   disabled: 'Disabled',
   title: 'Settings',
   preferences: 'Preferences',
-  subtitle: 'Configure Folio Desk without leaving your finance workspace.',
+  subtitle: 'Configure Yansivra without leaving your finance workspace.',
   tabs: {
     general: 'General',
     llm: 'LLM',
@@ -168,7 +168,7 @@ export const settings = {
     couldNotRemoveApiKey: 'Could not remove API key.',
     langfuseConnection: 'Langfuse Connection',
     langfuseDesc:
-      'Folio Desk-side traces for Copilot and Deep Research: input, retrieval/tool spans, synthesis, report, and evaluation scores. Failures never block the agent.',
+      'Yansivra-side traces for Copilot and Deep Research: input, retrieval/tool spans, synthesis, report, and evaluation scores. Failures never block the agent.',
     langfuseTracing: 'Langfuse tracing',
     langfuseTracingEnabledDesc: 'Export Agent and Deep Research runs to Langfuse.',
     langfuseTracingDisabledDesc: 'Add Langfuse public and secret keys below to enable tracing.',

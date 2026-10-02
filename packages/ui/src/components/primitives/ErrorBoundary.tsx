@@ -33,7 +33,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
     // Surface for the operator; the ErrorLog ring buffer is fed by the main
     // process, so this stays a renderer-side console signal only.
-    console.error('Folio caught a renderer error:', error, info.componentStack);
+    console.error('Yansivra caught a renderer error:', error, info.componentStack);
   }
 
   reset = (): void => {

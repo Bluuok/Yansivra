@@ -2,29 +2,29 @@ import type { NamespaceResource } from '../keys.ts';
 
 /** First-run onboarding (spec §27–30, §71–72). Provider/model ids stay untranslated (§11). */
 export const onboarding = {
-  setupAria: 'Folio setup',
-  setupTitle: 'Set up Folio',
+  setupAria: 'Yansivra setup',
+  setupTitle: 'Set up Yansivra',
   stepPrefix: 'Step {{index}} of {{total}}',
   skip: 'Skip for now',
   back: 'Back',
   continue: 'Continue',
-  startFolio: 'Start Folio',
+  startFolio: 'Start Yansivra',
   language: 'Language',
   welcome: {
-    title: 'Welcome to Folio',
+    title: 'Welcome to Yansivra',
     titleShort: 'Welcome',
     subtitle:
       'A few minutes of setup gets your market data and AI connected. You can skip any step and return later from Settings.',
     accept: 'I understand and accept these terms.',
     disclaimerPrivacyTitle: 'Privacy',
     disclaimerPrivacyBody:
-      'Folio runs locally on your device. API keys and credentials are stored on your machine and never shared. Market-data providers receive only the requests made through your own accounts.',
+      'Yansivra runs locally on your device. API keys and credentials are stored on your machine and never shared. Market-data providers receive only the requests made through your own accounts.',
     disclaimerAiTitle: 'AI analysis',
     disclaimerAiBody:
       'AI-generated analysis is for informational purposes only and may be inaccurate or incomplete. Always verify outputs before relying on them.',
     disclaimerFinancialTitle: 'Financial information',
     disclaimerFinancialBody:
-      'Nothing in Folio is financial advice. Market data may be delayed. You are solely responsible for your investment decisions.',
+      'Nothing in Yansivra is financial advice. Market data may be delayed. You are solely responsible for your investment decisions.',
   },
   connectAi: {
     title: 'Connect AI',

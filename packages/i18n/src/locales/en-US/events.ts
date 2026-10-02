@@ -12,7 +12,7 @@ export const events = {
   noDescription: 'No description available.',
   openResearch: 'Open research for {{symbol}}',
   catalystEyebrow: 'Catalyst synthesis',
-  catalystTitle: 'Folio Agent',
+  catalystTitle: 'Yansivra Agent',
   catalystEmpty: 'Select an event with a symbol to carry its context into Research or Copilot.',
-  catalystHint: 'Folio does not invent a catalyst summary when the underlying event or research data is unavailable.',
+  catalystHint: 'Yansivra does not invent a catalyst summary when the underlying event or research data is unavailable.',
 } satisfies Record<string, string>;

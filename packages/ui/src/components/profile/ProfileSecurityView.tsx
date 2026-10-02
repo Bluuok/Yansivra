@@ -80,7 +80,7 @@ export const ProfileSecurityView: React.FC = () => {
               </div>
             </div>
             <dl className="folio-definition-grid mt-5">
-              <div><dt>{t('profile.application')}</dt><dd>Folio</dd></div>
+              <div><dt>{t('profile.application')}</dt><dd>Yansivra</dd></div>
               <div><dt>{t('profile.channel')}</dt><dd>{about?.channel ?? '—'}</dd></div>
               <div><dt>{t('profile.version')}</dt><dd>{about?.version ?? '—'}</dd></div>
               <div><dt>{t('profile.build')}</dt><dd>{about?.build ?? '—'}</dd></div>

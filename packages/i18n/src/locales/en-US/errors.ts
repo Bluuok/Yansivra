@@ -12,7 +12,7 @@ export const errors = {
     'An unexpected error occurred in this section. Retry, or open Diagnostics to inspect the app state and export a support bundle.',
   sectionOpenDiagnostics: 'Open Diagnostics',
   invalidArgument: 'The request was invalid.',
-  storageReadFailed: 'Could not read Folio data. Please try again.',
+  storageReadFailed: 'Could not read Yansivra data. Please try again.',
   storageWriteFailed: 'Could not save changes. Please try again.',
   piRuntimeNotFound: 'The agent runtime is not available.',
   piRuntimeError: 'The agent runtime encountered an error.',

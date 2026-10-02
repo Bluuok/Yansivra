@@ -30,7 +30,7 @@ export const TitleBar: React.FC = () => {
             className="h-[18px] w-[18px] rounded-[5px] shadow-sm"
             draggable={false}
           />
-          <span className="text-[13px] font-semibold text-foreground/78">Folio Desk</span>
+          <span className="text-[13px] font-semibold text-foreground/78">Yansivra</span>
         </div>
       </div>
 

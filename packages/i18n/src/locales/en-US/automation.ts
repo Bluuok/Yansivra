@@ -47,11 +47,11 @@ export const automation = {
   disabled: 'disabled',
   notification: {
     triggeredTitle: '{{type}} triggered',
-    materialBody: 'Material changes detected. Open Folio to review the latest research.',
-    allBody: 'Automated research completed. Open Folio to review the latest results.',
+    materialBody: 'Material changes detected. Open Yansivra to review the latest research.',
+    allBody: 'Automated research completed. Open Yansivra to review the latest results.',
     materialTitle: '{{symbol}} needs your attention',
     noMaterialTitle: '{{symbol}} reviewed',
-    materialBodyDetail: '{{type}} detected a material change{{pct}}. Open Folio to review it.',
+    materialBodyDetail: '{{type}} detected a material change{{pct}}. Open Yansivra to review it.',
     noMaterialBodyDetail: 'No changes above the materiality bar ({{type}}).',
   },
 } satisfies NamespaceResource;

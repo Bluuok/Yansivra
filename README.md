@@ -1,6 +1,6 @@
-# Folio Desk
+# Yansivra
 
-<p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Folio Desk" width="88" /></p>
+<p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Yansivra" width="88" /></p>
 
 [English](README.en.md) · 简体中文 · [验证记录](docs/desktop-validation.md)
 
@@ -35,21 +35,21 @@
 本轮产物是**未签名的可解压运行目录 / ZIP**，不包含安装器或自动更新。构建后位于：
 
 ```text
-dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip
-dist/electron/win-unpacked/Folio Desk.exe
+dist/electron/Yansivra-0.5.0-beta.1-win-x64.zip
+dist/electron/win-unpacked/Yansivra.exe
 ```
 
-解压整个 ZIP 后运行 `Folio Desk.exe`，保留同目录资源文件。此分支提供源码与本地打包命令，没有自动上传 GitHub Release。
+解压整个 ZIP 后运行 `Yansivra.exe`，保留同目录资源文件。此分支提供源码与本地打包命令，没有自动上传 GitHub Release。
 
-数据目录保留旧版 Folio 路径，应用 ID 仍为 `com.finagent.app`；不自动迁移数据。内部 `@finagent/*` 包名和 `FINAGENT_*` 配置保持兼容。未签名构建跳过可执行文件签名与元数据编辑，系统文件属性和 Explorer 图标可能仍显示 Electron；应用窗口使用新的产品图标。详见 [Windows 构建与运行边界](docs/desktop-windows.md)。
+数据目录保留旧版 Yansivra 路径，应用 ID 仍为 `com.finagent.app`；不自动迁移数据。内部 `@finagent/*` 包名和 `FINAGENT_*` 配置保持兼容。未签名构建跳过可执行文件签名与元数据编辑，系统文件属性和 Explorer 图标可能仍显示 Electron；应用窗口使用新的产品图标。详见 [Windows 构建与运行边界](docs/desktop-windows.md)。
 
 ## 开发与验证
 
 需要 Bun、Node.js 和工作区依赖。Windows 安装依赖需要可创建符号链接的环境。
 
 ```powershell
-git clone --branch desktop/redevelopment https://github.com/Bluuok/folio.git
-cd folio
+git clone https://github.com/Bluuok/Yansivra.git
+cd Yansivra
 bun install
 bun run dev
 ```

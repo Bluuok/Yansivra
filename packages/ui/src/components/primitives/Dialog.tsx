@@ -29,7 +29,7 @@ export const Dialog: React.FC<DialogProps> = ({
           )}
         >
           {title && <DialogPrimitive.Title className="mb-4 pr-8 text-[16px] font-semibold">{title}</DialogPrimitive.Title>}
-          <DialogPrimitive.Description className="sr-only">{title ?? 'Folio dialog'}</DialogPrimitive.Description>
+          <DialogPrimitive.Description className="sr-only">{title ?? 'Yansivra dialog'}</DialogPrimitive.Description>
           {children}
           <DialogPrimitive.Close asChild>
             <button

@@ -50,7 +50,7 @@ function createWindow() {
   const windowVisible =
     process.env.FINAGENT_E2E_VISIBLE === '1' || process.env.FINAGENT_E2E_HIDDEN !== '1';
   mainWindow = new BrowserWindow({
-    title: 'Folio Desk',
+    title: 'Yansivra',
     icon: join(appRoot, 'assets/desk-icon.png'),
     width: 1366,
     height: 800,
@@ -422,8 +422,8 @@ ipcMain.handle('diagnostics:export', async () =>
   toIpcResult(async () => {
     const bundle = await agentKernelHost.collectDiagnostics();
     const result = await dialog.showSaveDialog({
-      title: 'Export Folio diagnostics',
-      defaultPath: join(app.getPath('documents'), `folio-diagnostics-${Date.now()}.json`),
+      title: 'Export Yansivra diagnostics',
+      defaultPath: join(app.getPath('documents'), `yansivra-diagnostics-${Date.now()}.json`),
       filters: [{ name: 'JSON', extensions: ['json'] }],
     });
     if (result.canceled || !result.filePath) return { canceled: true };
