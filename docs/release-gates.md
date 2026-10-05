@@ -1,9 +1,11 @@
-# Folio V4 — Release Gates
+# Yansivra V4 — Release Gates
 
 Release pipeline: `internal` → `beta` → `stable`. V4 ships the first **Beta**
-candidate. Gates are enforced by `bun run release:check` (or CI step) before a
-tag may be cut. A build that fails ANY gate is `NOT RELEASEABLE` and must be
-labeled as an internal/unsigned build (spec §38–40).
+candidate. `bun run release:check` enforces the automated subset of these gates
+before a tag may be cut; the interaction, live-provider, privacy and signing
+checks described below require separate verification. The automatic release CI
+job is currently disabled. A build that fails any applicable gate is
+`NOT RELEASEABLE` and must be labeled as an internal/unsigned build (spec §38–40).
 
 ## Hard release blockers (any present → not Beta-ready, spec §64)
 
@@ -35,7 +37,7 @@ requires (see rules below). All levels must be green before a release tag.
 - Runs on every iteration while a package is being changed.
 - **Subagent rule (spec §65):** a subagent runs ONLY `bun test packages/<pkg>`
   and `bunx tsc --noEmit` inside its own touched packages. NEVER repo-wide
-  gates, NEVER launches Electron/Folio, no formatters/linters.
+  gates, NEVER launches Electron/Yansivra, no formatters/linters.
 - Whole-repo variant: `bun run test:unit`.
 
 ### LEVEL 2 — Integration (repo-wide, in the working tree)
@@ -54,7 +56,7 @@ requires (see rules below). All levels must be green before a release tag.
 
 | What | Command |
 |---|---|
-| Golden path A–H | `FINAGENT_AGENT_PROVIDER=local bun run test:e2e` |
+| Golden path A–H | `bun run test:e2e` |
 | Interaction contract sweep | `cd apps/electron && bun run test:interactions` |
 | Skills interactions | `cd apps/electron && bun run test:skills-interactions` |
 | Packaged app smoke | `bun run test:package-smoke` |
@@ -67,9 +69,9 @@ requires (see rules below). All levels must be green before a release tag.
   apps/electron/src/main/index.ts). The window is still created, the renderer
   loads and runs, and `--remote-debugging-port` keeps exposing it to CDP — the
   full DOM + IPC surface is exercisable while nothing appears on the desktop.
-- Each harness self-cleans its own CDP port (pkill of its
-  `remote-debugging-port=NNNN`) before spawning, so interrupted runs never
-  leave zombie windows behind.
+- The updated golden-path/V5 runners use dynamic CDP ports and temporary
+  profiles, and stop only the child they own. Playwright owns the lifecycle in
+  packaged smoke and fresh onboarding. No broad process-name/port kill is used there.
 
 ### LEVEL 4 — Visible / Release (manual debugging + release gates)
 
@@ -81,9 +83,10 @@ requires (see rules below). All levels must be green before a release tag.
 - `FINAGENT_E2E_VISIBLE=1` forces the window on for manual debugging only;
   it takes precedence over `FINAGENT_E2E_HIDDEN=1`. Automated runs must stay
   hidden.
-- **Release rule (spec §67):** `release:check` → package →
-  `test:package-smoke` + `test:fresh-install` against the packaged Folio.app
-  before a tag may be cut.
+- `release:check` already includes native packaging, packaged smoke and
+  fresh onboarding; do not repeat those gates. Windows uses the unpacked EXE
+  and ZIP; macOS uses the app and DMG. Public release also requires the online
+  business, licensing and signing checks below.
 
 ### E2E flag contract
 
@@ -96,13 +99,10 @@ requires (see rules below). All levels must be green before a release tag.
 
 ### KEEP_OPEN caveat (spec §63)
 
-`FINAGENT_E2E_KEEP_OPEN=1` is a debugging escape hatch: the harness skips its
-final kill, prints `KEEP_OPEN CDP port <port>` and exits, leaving the app
-running (hidden window + CDP still up). Automated runs — CI, `release:check`,
-`test:e2e`, `test:e2e:visible`, `test:package-smoke`, `test:fresh-install` —
-must never set it: they rely on the harness killing the app and reusing its
-CDP port on the next run. To clean up a kept-open instance:
-`pkill -f 'remote-debugging-port=<port>'`.
+`FINAGENT_E2E_KEEP_OPEN=1` is for manual debugging only. Golden-path/V5
+runners print the owned PID/CDP port and retain that instance. Automated
+runs must leave it off; `release:check` explicitly sets `0`. Clean up only
+the confirmed PID of your own test instance, avoiding other applications.
 
 ## Quality gates (run repeatedly, never only at the end, spec §69)
 
@@ -110,10 +110,10 @@ CDP port on the next run. To clean up a kept-open instance:
 |---|---|---|
 | Unit/integration | `bun run test:unit` | 0 fail |
 | Typecheck | `bun run typecheck` | clean |
-| Build | `bun run build` | clean (renderer + preload + main + extension) |
-| Electron E2E | `FINAGENT_AGENT_PROVIDER=local bun run test:e2e` | golden path A–H green |
+| Build | `bun run build`, then `bun run build:extension` in `apps/electron` | renderer, preload, main and both extensions built |
+| Electron E2E | `bun run test:e2e` | golden path A–H green |
 | Packaged smoke | `bun run test:package-smoke` | green (from outside repo) |
-| Fresh-install E2E | clean `userData`, no repo, onboarding → workbench → quote → portfolio → skills → research → thesis → alert → restart | green |
+| Offline fresh onboarding | `bun run test:fresh-install` in `apps/electron` | clean profile, disclaimers, AI skip, workbench and restart persistence; full online flow is separate |
 | Interaction audit | Playwright button-contract suite | every control: behavior OR disabled OR removed |
 | Provider smoke | connect Longbridge → status accurate → quote/kline/news/portfolio via router | green |
 | Secret scan | no keys/tokens in artifacts or bundle | clean |
@@ -139,13 +139,18 @@ Simulate a real new user — no git repo, no `.env`, no terminal:
 ## Release channel / versioning
 
 - SemVer in root `package.json` + `apps/electron/package.json`
-- Channel in `apps/electron/package.json` (`folia.channel`):
+- Channel in `apps/electron/package.json` (`yansivra.channel`):
   `internal` | `beta` | `stable`
 - About view shows version + build (git SHA) + channel
-- Tags: `vX.Y.Z-beta.N` → GitHub Release asset (DMG + checksums)
+- Local `release:package` stages the current version ZIP (Windows) or DMG (macOS) plus SHA256SUMS.txt in `dist/release`.
+- The GitHub Release workflow is disabled; tags/manual dispatch do not authorize uploading or publishing.
 
-## Signing policy
+## Signing and validation scope
 
-- No Apple credentials → unsigned `internal` build, labeled NOT RELEASEABLE
-- `beta`/`stable` channels REQUIRE signing + notarization configured in CI
-  (secrets-gated); the pipeline must not emit a "release" without them.
+- The current Windows ZIP is unsigned and is not declared ready for public distribution. macOS signing/notarization needs separate setup and real verification.
+- Public beta/stable distribution still requires licensing, each target platform's signing requirements and the full online business flow.
+- `release:check` stops at the first failed gate and uses `--isolate` for Bun tests. Build and extension gates run once; packaging consumes those outputs, and Node crypto writes checksums.
+- Golden-path A–H and V5 still depend on real financial data; a local Agent is not proof of offline execution. Set `FINAGENT_AGENT_PROVIDER=local` in the process environment first.
+- `test:desktop`, packaged smoke and fresh onboarding use isolated profiles/credentials. Their offline results do not validate Longbridge, external Pi, paid models or live research.
+- Interaction audits, provider smoke and artifact secret review remain acceptance requirements above; `release:check` does not automatically run those independent checks. Older interaction/visual audit entries retain platform and UI prerequisites that require separate verification.
+- Local builds do not publish. Passing local gates does not establish licensing, signing or full Beta readiness.

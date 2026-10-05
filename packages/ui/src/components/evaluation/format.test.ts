@@ -30,8 +30,8 @@ function baselineMetrics(base: number): Record<EvaluationMetricId, number> {
 
 const baseline: EvaluationBaseline = {
   id: 'baseline-1',
-  name: 'folio-agent-v1 baseline',
-  datasetId: 'folio-agent-v1',
+  name: 'yansivra-agent-v1 baseline',
+  datasetId: 'yansivra-agent-v1',
   datasetVersion: '1.0.0',
   experimentId: 'exp-old',
   gitSha: 'abc123d',
@@ -52,7 +52,7 @@ function experiment(
   return {
     id,
     name: `Experiment ${id}`,
-    datasetId: 'folio-agent-v1',
+    datasetId: 'yansivra-agent-v1',
     datasetVersion: '1.0.0',
     status: 'completed',
     mode: 'fixture',

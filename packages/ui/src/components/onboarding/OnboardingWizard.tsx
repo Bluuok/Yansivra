@@ -147,7 +147,7 @@ export const OnboardingWizard: React.FC<{ onComplete: () => void }> = ({ onCompl
             disabled={!canContinue}
             data-testid={isLast ? 'onboarding-finish' : 'onboarding-continue'}
           >
-            {isLast ? t('onboarding.startFolio') : t('onboarding.continue')}
+            {isLast ? t('onboarding.startYansivra') : t('onboarding.continue')}
           </Button>
         </div>
       </footer>

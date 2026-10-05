@@ -154,7 +154,7 @@ export const PortfolioSection: React.FC = () => {
     : 'Longbridge';
 
   return (
-    <div className="folio-portfolio-view space-y-4 overflow-y-auto bg-[#f7f8fa] p-4" data-testid="portfolio-view">
+    <div className="yansivra-portfolio-view space-y-4 overflow-y-auto bg-[#f7f8fa] p-4" data-testid="portfolio-view">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-[18px] font-semibold tracking-[-0.03em] text-foreground">{t('portfolio.title')}</h2>

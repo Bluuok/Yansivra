@@ -19,7 +19,7 @@ import {
   langfuseCredentialsFromEnv,
   scoresFromResearchReport,
 } from '../../packages/shared/src/evaluation/langfuse/index.ts';
-import { currentFolioVersion } from '../../packages/shared/src/evaluation/experiment-service.ts';
+import { currentYansivraVersion } from '../../packages/shared/src/evaluation/experiment-service.ts';
 
 interface CapturedBatch {
   type: string;
@@ -58,7 +58,7 @@ async function liveSecRetrieval(symbol: string): Promise<{ ok: boolean; status: 
   const url = 'https://data.sec.gov/submissions/CIK0001045810.json';
   try {
     const response = await fetch(url, {
-      headers: { 'user-agent': 'folio-langfuse-eval/0.4 (issue-14)' },
+      headers: { 'user-agent': 'yansivra-langfuse-eval/0.4 (issue-14)' },
       signal: AbortSignal.timeout(12_000),
     });
     const text = await response.text();
@@ -91,7 +91,7 @@ async function main(): Promise<void> {
   const finishedAt = Date.now();
 
   const ref = await backend.exportResearchRun({
-    folioRunId: result.summary.id,
+    yansivraRunId: result.summary.id,
     startedAt,
     completedAt: finishedAt,
     symbol: 'NVDA.US',
@@ -115,16 +115,16 @@ async function main(): Promise<void> {
       },
     ],
     report: result.report,
-    model: 'folio-local-synthesizer',
+    model: 'yansivra-local-synthesizer',
     provider: envCreds ? 'langfuse-cloud' : 'langfuse-local-mock',
     metadata: {
-      folioRunId: result.summary.id,
+      yansivraRunId: result.summary.id,
       runKind: 'evaluation',
       goldCaseId: 'gold-nvda-deep-research',
       datasetId: 'deep-research-gold',
       datasetVersion: 'v1',
-      folioVersion: currentFolioVersion(),
-      model: 'folio-local-synthesizer',
+      yansivraVersion: currentYansivraVersion(),
+      model: 'yansivra-local-synthesizer',
       symbol: 'NVDA.US',
     },
   });
@@ -155,7 +155,7 @@ async function main(): Promise<void> {
 
   console.log(`Eval run: ${result.summary.id}`);
   console.log(`Dataset: deep-research-gold@v1`);
-  console.log(`Model: folio-local-synthesizer`);
+  console.log(`Model: yansivra-local-synthesizer`);
   console.log(`Trace: ${ref.traceId}`);
   console.log(`Trace URL: ${ref.url ?? '(local mock)'}`);
   console.log(`Live SEC retrieval: ${live.ok ? `ok ${live.status} ${live.bytes}B` : `failed ${live.url}`}`);

@@ -7,7 +7,7 @@ export interface SessionManagerOptions {
   sessions: SessionRepository;
   messages: MessageRepository;
   runs: RunRepository;
-  /** Directory holding one runtime session file per Folio session. */
+  /** Directory holding one runtime session file per Yansivra session. */
   piSessionDir: string;
   now?: () => number;
 }

@@ -309,7 +309,8 @@ export class RunManager {
     let failure: ApiError | undefined;
     let answer = '';
     const toolCalls: ToolCall[] = [];
-    let sawTerminal = false;
+    let terminalEvent: AgentEvent | undefined;
+    let persistenceFailure: ApiError | undefined;
 
     try {
       await this.runtime.ensureSession({
@@ -329,7 +330,10 @@ export class RunManager {
           workspaceContext,
           locale,
         })) {
-          this.emit(event, protocol);
+          // A terminal notification must describe durable state, including
+          // the assistant message. Keep it until final persistence succeeds.
+          if (event.type === 'run_completed' || event.type === 'run_failed') terminalEvent = event;
+          else this.emit(event, protocol);
           if (event.type === 'message_delta' || event.type === 'message_completed') {
             answer = event.payload.answer;
             // 保留最新文本快照，使 cancelled 事件能带出部分回答（ADR 0001）。
@@ -338,10 +342,8 @@ export class RunManager {
             toolCalls.push(event.payload.toolCall);
           } else if (event.type === 'run_failed') {
             failure = event.payload.error;
-            sawTerminal = true;
           } else if (event.type === 'run_completed') {
             answer = event.payload.answer;
-            sawTerminal = true;
           }
 
           // Budgets and detectors are evaluated after the event is accounted for,
@@ -377,50 +379,64 @@ export class RunManager {
     }
     run.completedAt = now;
 
-    await this.runs.update(run);
+    try {
+      await this.runs.update(run);
 
-    // V8.1 §38–39: an *infrastructure* failure (Pi process failed to start /
-    // stay up) is not an answer — do not persist an assistant-style message
-    // that would spam the conversation. The renderer shows a dedicated banner
-    // instead. Real failures (tool errors, task failures) keep the message.
-    const isInfraFailure = run.status === 'failed' && isRuntimeInfraCode(run.error?.code);
-    if (!isInfraFailure) {
-      const assistantMessage: Message = {
-        id: protocol.messageId,
-        role: 'assistant',
-        content: answer || (run.status === 'failed' ? run.error?.message ?? 'Run failed.' : ''),
-        timestamp: now,
-        toolCalls: toolCalls.map(toRecord),
-        financialEvidence: buildFinancialEvidence({
-          sessionId: run.sessionId,
-          runId: run.id,
-          toolCalls,
-        }),
-      };
-      await this.sessions.appendMessage(run.sessionId, assistantMessage);
+      // V8.1 §38–39: an *infrastructure* failure (Pi process failed to start /
+      // stay up) is not an answer — do not persist an assistant-style message
+      // that would spam the conversation. The renderer shows a dedicated banner
+      // instead. Real failures (tool errors, task failures) keep the message.
+      const isInfraFailure = run.status === 'failed' && isRuntimeInfraCode(run.error?.code);
+      if (!isInfraFailure) {
+        const assistantMessage: Message = {
+          id: protocol.messageId,
+          role: 'assistant',
+          content: answer || (run.status === 'failed' ? run.error?.message ?? 'Run failed.' : ''),
+          timestamp: now,
+          toolCalls: toolCalls.map(toRecord),
+          financialEvidence: buildFinancialEvidence({
+            sessionId: run.sessionId,
+            runId: run.id,
+            toolCalls,
+          }),
+        };
+        await this.sessions.appendMessage(run.sessionId, assistantMessage);
+      }
+      await this.sessions.updateSession(run.sessionId, {
+        status: 'idle',
+        recentSymbols: collectSymbols(toolCalls),
+      });
+    } catch (error) {
+      persistenceFailure = toApiError(error);
+      run.status = 'failed';
+      run.error = persistenceFailure;
+      // The run file may still be writable when message/session persistence
+      // failed. Never claim this checkpoint succeeded if storage rejects it.
+      try { await this.runs.update(run); }
+      catch (checkpointError) {
+        console.warn('[RunManager] Failure checkpoint was not persisted:', toApiError(checkpointError).code);
+      }
     }
-    await this.sessions.updateSession(run.sessionId, {
-      status: 'idle',
-      recentSymbols: collectSymbols(toolCalls),
-    });
 
     if (active) this.clearWallClockTimer(active);
 
-    // The run is fully settled (persisted) only now; only then allow the next run.
+    // Release the slot after settlement succeeds or its storage failure is handled.
     this.activeRun = null;
 
-    // Adapters emit the terminal event themselves; synthesize it only when the
-    // stream failed before producing one (e.g. runtime spawn failure), so the
-    // UI always observes a terminal event. 合成事件仍持有原 run 的 protocol
-    // （sequence 续排、messageId 不丢），activeRun 解锁不影响。
-    if (!sawTerminal) {
-      if (stop !== undefined) {
-        this.emitRunEvent(run, protocol, 'run_failed', { error: stopError(stop) });
-      } else if (cancelled) {
-        this.emitRunEvent(run, protocol, 'run_failed', {
-          error: { code: 'RUN_CANCELLED', message: 'Run cancelled by user.' },
-        });
-      } else if (failure) {
+    // Publish exactly one terminal event after persistence; a storage error
+    // replaces the runtime's apparent success and releases the runtime slot.
+    if (persistenceFailure) {
+      this.emitRunEvent(run, protocol, 'run_failed', { error: persistenceFailure });
+    } else if (stop !== undefined) {
+      this.emitRunEvent(run, protocol, 'run_failed', { error: stopError(stop) });
+    } else if (cancelled) {
+      this.emitRunEvent(run, protocol, 'run_failed', {
+        error: { code: 'RUN_CANCELLED', message: 'Run cancelled by user.' },
+      });
+    } else if (terminalEvent) {
+      this.emit(terminalEvent, protocol);
+    } else {
+      if (failure) {
         this.emitRunEvent(run, protocol, 'run_failed', { error: failure });
       } else {
         this.emitRunEvent(run, protocol, 'run_completed', { answer, toolCalls });
@@ -433,7 +449,7 @@ export class RunManager {
    * requests cancellation, so the caller stops consuming events and the run
    * settles as `cancelled` — never as an ordinary success — carrying its partial
    * answer, its tool calls and the machine-readable reason it stopped.
-   * @param event - the event that was just broadcast.
+   * @param event - the runtime event that was just accounted for.
    * @returns true when the run was stopped and cancellation was requested.
    */
   private async applyBudget(event: AgentEvent): Promise<boolean> {

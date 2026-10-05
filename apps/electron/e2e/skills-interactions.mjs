@@ -1,4 +1,4 @@
-// Folio Skills page interaction test — standalone Node runner over raw CDP
+// Yansivra Skills page interaction test — standalone Node runner over raw CDP
 // (playwright-core; the same harness style as e2e/run.mjs). Covers the Skills
 // home rework: loading/list, readiness badge, detail drawer, advanced
 // expand/collapse, resource content, keyboard activation, and optimistic

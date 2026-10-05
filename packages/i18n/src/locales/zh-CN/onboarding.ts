@@ -9,7 +9,7 @@ export const onboarding = {
   skip: '暂时跳过',
   back: '返回',
   continue: '继续',
-  startFolio: '开始使用 Yansivra',
+  startYansivra: '开始使用 Yansivra',
   language: '语言',
   welcome: {
     title: '欢迎使用 Yansivra',

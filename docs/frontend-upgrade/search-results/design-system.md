@@ -1,4 +1,4 @@
-## Design System: Folio Desk
+## Design System: Yansivra
 
 ### Pattern
 - **Name:** Portfolio Grid

@@ -9,7 +9,7 @@ import { parseCsv, parsePaste } from './parsers.ts'
 import { ManualPortfolioRepository } from './repository.ts'
 
 function tempStore(): JsonFileStore {
-  return new JsonFileStore(mkdtempSync(join(tmpdir(), 'folio-manual-portfolios-')))
+  return new JsonFileStore(mkdtempSync(join(tmpdir(), 'yansivra-manual-portfolios-')))
 }
 
 const INPUT = {
@@ -113,7 +113,7 @@ describe('ManualPortfolioRepository', () => {
   })
 
   it('treats a corrupt file as empty and never throws', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'folio-manual-portfolios-'))
+    const dir = mkdtempSync(join(tmpdir(), 'yansivra-manual-portfolios-'))
     writeFileSync(join(dir, 'manual-portfolios.json'), 'not json{')
     const repository = new ManualPortfolioRepository(new JsonFileStore(dir))
     expect(await repository.list()).toEqual([])
@@ -129,7 +129,7 @@ describe('ManualPortfolioRepository', () => {
     ['a non-array portfolios field', '{"portfolios":{}}'],
   ] as const) {
     it(`treats ${description} as empty and allows a new portfolio to be created`, async () => {
-      const dir = mkdtempSync(join(tmpdir(), 'folio-manual-portfolios-'))
+      const dir = mkdtempSync(join(tmpdir(), 'yansivra-manual-portfolios-'))
       writeFileSync(join(dir, 'manual-portfolios.json'), contents)
       const repository = new ManualPortfolioRepository(new JsonFileStore(dir))
 

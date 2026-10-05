@@ -78,12 +78,12 @@ export const EventsView: React.FC = () => {
   const state = loading ? 'loading' : error ? 'error' : events.length === 0 ? 'empty' : null;
 
   return (
-    <main className="folio-page folio-events-view flex h-full min-h-0 flex-col overflow-y-auto bg-background" data-testid="events-view">
-      <header className="folio-page-header flex shrink-0 items-start justify-between gap-4 border-b border-border bg-surface px-6 py-5">
+    <main className="yansivra-page yansivra-events-view flex h-full min-h-0 flex-col overflow-y-auto bg-background" data-testid="events-view">
+      <header className="yansivra-page-header flex shrink-0 items-start justify-between gap-4 border-b border-border bg-surface px-6 py-5">
         <div>
-          <div className="folio-eyebrow"><CalendarDays className="h-3.5 w-3.5" />{t('events.eyebrow')}</div>
-          <h1 className="folio-page-title">{t('events.title')}</h1>
-          <p className="folio-page-subtitle">{t('events.subtitle')}</p>
+          <div className="yansivra-eyebrow"><CalendarDays className="h-3.5 w-3.5" />{t('events.eyebrow')}</div>
+          <h1 className="yansivra-page-title">{t('events.title')}</h1>
+          <p className="yansivra-page-subtitle">{t('events.subtitle')}</p>
         </div>
         <Button variant="outline" size="sm" onClick={() => void refresh()} disabled={loading}>
           <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -92,15 +92,15 @@ export const EventsView: React.FC = () => {
       </header>
 
       <div className="grid min-h-0 flex-1 gap-5 p-6 xl:grid-cols-[minmax(0,1fr)_19rem]">
-        <section className="folio-page-section min-w-0">
-          <div className="folio-section-heading">
+        <section className="yansivra-page-section min-w-0">
+          <div className="yansivra-section-heading">
             <div>
-              <div className="folio-eyebrow">{t('events.upcomingEyebrow')}</div>
+              <div className="yansivra-eyebrow">{t('events.upcomingEyebrow')}</div>
               <h2>{t('events.upcomingTitle')}</h2>
             </div>
             <span className="flex items-center gap-2">
               {isDemo && <DemoBadge />}
-              <span className="folio-count-badge">{events.length || '—'}</span>
+              <span className="yansivra-count-badge">{events.length || '—'}</span>
             </span>
           </div>
 
@@ -109,21 +109,21 @@ export const EventsView: React.FC = () => {
           {state === 'empty' && <SectionState kind="empty" message={t('events.empty')} />}
 
           {events.length > 0 && (
-            <div className="folio-events-list" data-testid="events-list">
+            <div className="yansivra-events-list" data-testid="events-list">
               {events.map((event) => (
-                <article key={event.id} className="folio-event-row">
-                  <div className="folio-event-date tnum">{formatEventDate(event)}</div>
+                <article key={event.id} className="yansivra-event-row">
+                  <div className="yansivra-event-date tnum">{formatEventDate(event)}</div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="folio-event-type">{event.type || t('events.event')}</span>
-                      {event.symbol && <span className="folio-event-symbol">{event.symbol}</span>}
+                      <span className="yansivra-event-type">{event.type || t('events.event')}</span>
+                      {event.symbol && <span className="yansivra-event-symbol">{event.symbol}</span>}
                     </div>
                     <h3>{event.name || event.symbol || t('events.marketEvent')}</h3>
                     <p>{event.content || t('events.noDescription')}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     {event.symbol && (
-                      <button type="button" className="folio-icon-action" aria-label={t('events.openResearch', { symbol: event.symbol })} onClick={() => openResearch(event.symbol)}>
+                      <button type="button" className="yansivra-icon-action" aria-label={t('events.openResearch', { symbol: event.symbol })} onClick={() => openResearch(event.symbol)}>
                         <ArrowUpRight className="h-4 w-4" />
                       </button>
                     )}
@@ -134,8 +134,8 @@ export const EventsView: React.FC = () => {
           )}
         </section>
 
-        <aside className="folio-events-rail folio-page-section h-fit">
-          <div className="folio-eyebrow"><Sparkles className="h-3.5 w-3.5" />{t('events.catalystEyebrow')}</div>
+        <aside className="yansivra-events-rail yansivra-page-section h-fit">
+          <div className="yansivra-eyebrow"><Sparkles className="h-3.5 w-3.5" />{t('events.catalystEyebrow')}</div>
           <h2 className="mt-2">{t('events.catalystTitle')}</h2>
           <p className="mt-2 text-[12px] leading-relaxed text-foreground/58">{t('events.catalystEmpty')}</p>
           <div className="mt-5 border-t border-border pt-4 text-[11px] leading-relaxed text-foreground/42">

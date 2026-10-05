@@ -2,7 +2,7 @@
 //
 // Copilot answers may embed a small set of versioned, schema-validated blocks
 // next to Markdown text. Blocks are carried inside the answer string as
-// fenced code (`folio-block` language) so persistence and reload come free:
+// fenced code (`yansivra-block` language) so persistence and reload come free:
 // the renderer parses, validates, and either renders deterministically or
 // degrades to text. Renderers only read the typed fields below — a block can
 // never cause arbitrary code to execute.
@@ -11,7 +11,7 @@
 export const ANSWER_BLOCK_SCHEMA_VERSION = 1;
 
 /** Fence language that marks a typed block inside an answer string. */
-export const ANSWER_BLOCK_FENCE_LANG = 'folio-block';
+export const ANSWER_BLOCK_FENCE_LANG = 'yansivra-block';
 
 /**
  * Canonical unit semantics. Values are plain numbers — units and currencies

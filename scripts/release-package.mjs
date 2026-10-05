@@ -1,98 +1,41 @@
 #!/usr/bin/env node
-// Folio release packaging (spec §38).
-//
-//   bun run release:package
-//
-// Builds the full app (renderer + preload + main + extension), packages it
-// with electron-builder (mac: `dir` for internal runs + `dmg` for release,
-// unsigned `identity=null`), then stages the DMG(s) and a `shasum -a 256`
-// checksum manifest under `dist/release/`.
-//
-// Signing/notarization are opt-in via environment (CI injects Apple secrets):
-//   APPLE_CERTIFICATE_BASE64        -> CSC_LINK (p12, base64)
-//   APPLE_CERT_PASSWORD             -> CSC_KEY_PASSWORD
-//   APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID -> notarization
-// When the certificate secrets are absent the app is built unsigned. Secrets
-// are never logged or echoed; electron-builder consumes them from the process
-// environment only.
-
+// Build local platform artifacts and SHA256SUMS.txt. This script never publishes.
 import { execFileSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { platformArtifacts, stageArtifacts } from './release-artifacts.mjs';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const repoRoot = join(here, '..');
-const electronRoot = join(repoRoot, 'apps', 'electron');
-const electronDist = join(repoRoot, 'dist', 'electron');
-const releaseDir = join(repoRoot, 'dist', 'release');
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+const electronRoot = join(repoRoot, 'apps/electron');
+const platform = platformArtifacts(process.platform);
+const metadata = JSON.parse(readFileSync(join(electronRoot, 'package.json'), 'utf8'));
+const run = (args, cwd, env = process.env) => execFileSync('bun', args, { cwd, env, stdio: 'inherit' });
+const skipBuild = process.argv.includes('--skip-build');
+if (process.argv.slice(2).some(value => !['--', '--skip-build'].includes(value))) throw new Error('Usage: release-package.mjs [--skip-build]');
 
-function run(command, args, cwd, env) {
-  const label = `${command} ${args.join(' ')}`;
-  console.log(`\n> ${label}`);
-  execFileSync(command, args, {
-    cwd,
-    env: env ?? process.env,
-    stdio: 'inherit',
-  });
+if (!skipBuild) {
+  run(['run', 'build'], repoRoot);
+  run(['run', 'build:extension'], electronRoot);
+} else {
+  for (const name of ['src/main/index.js', 'src/preload/index.cjs', 'dist/renderer/index.html', 'build/extensions/finagent/index.js', 'build/extensions/langsmith/index.js']) {
+    if (!existsSync(join(electronRoot, name))) throw new Error(`Prebuilt artifact missing: ${name}; run the build gates first.`);
+  }
 }
 
-// 1. Canonical build: packages + renderer + preload + main.
-run('bun', ['run', 'build'], repoRoot);
-
-// 2. Bundle the Pi extension (shipped via extraResources).
-run('bun', ['run', 'build:extension'], electronRoot);
-
-// 3. Package with electron-builder (dir + dmg). Sign only when a certificate is
-//    provided; otherwise `identity=null` (from package.json) keeps it unsigned.
-const signingEnabled = Boolean(
-  process.env.APPLE_CERTIFICATE_BASE64 && process.env.APPLE_CERT_PASSWORD
-);
-
-const builderArgs = [];
 const builderEnv = { ...process.env };
+const args = ['run', 'package:builder', ...platform.builderArgs];
+const signingEnabled = process.platform === 'darwin' && Boolean(process.env.APPLE_CERTIFICATE_BASE64 && process.env.APPLE_CERT_PASSWORD);
 if (signingEnabled) {
-  // Override `identity=null` so electron-builder auto-discovers the Developer ID
-  // certificate imported from CSC_LINK.
-  builderArgs.push('--config.mac.identity=');
+  args.push('--config.mac.identity=');
   builderEnv.CSC_LINK = process.env.APPLE_CERTIFICATE_BASE64;
   builderEnv.CSC_KEY_PASSWORD = process.env.APPLE_CERT_PASSWORD;
   builderEnv.CSC_IDENTITY_AUTO_DISCOVERY = 'true';
 }
-
-// Bake the exact git SHA + channel into the packed package.json (folio.buildSha
-// / folio.channel) so the About view reports real values at runtime without a
-// build-time env var. CI injects both; local builds keep the source values.
-if (process.env.FINAGENT_BUILD_SHA) {
-  builderArgs.push(`--config.extraMetadata.folio.buildSha=${process.env.FINAGENT_BUILD_SHA}`);
-}
-if (process.env.FINAGENT_CHANNEL) {
-  builderArgs.push(`--config.extraMetadata.folio.channel=${process.env.FINAGENT_CHANNEL}`);
-}
-
-run('bun', ['run', 'package:builder', ...builderArgs], electronRoot, builderEnv);
-
-// 4. Stage DMG(s) + SHA256SUMS.txt under dist/release/.
-mkdirSync(releaseDir, { recursive: true });
-
-const dmgs = readdirSync(electronDist).filter((name) => name.endsWith('.dmg'));
-if (dmgs.length === 0) {
-  console.error('\nrelease:package FAILED — electron-builder produced no .dmg under dist/electron/.');
-  process.exit(1);
-}
-
-for (const dmg of dmgs) {
-  copyFileSync(join(electronDist, dmg), join(releaseDir, dmg));
-}
-
-// `shasum -a 256` output format (bare filenames, two-space separator) so the
-// manifest is verifiable with `shasum -c SHA256SUMS.txt` from dist/release/.
-const shasum = execFileSync('shasum', ['-a', '256', ...dmgs], {
-  cwd: releaseDir,
-  encoding: 'utf8',
-});
-writeFileSync(join(releaseDir, 'SHA256SUMS.txt'), shasum);
-
-console.log(`\nrelease:package OK — ${dmgs.join(', ')} staged in ${releaseDir}`);
-console.log(`Signing: ${signingEnabled ? 'enabled' : 'disabled (unsigned)'}`);
-console.log('Checksums:\n' + shasum);
+if (process.env.FINAGENT_BUILD_SHA) args.push(`--config.extraMetadata.yansivra.buildSha=${process.env.FINAGENT_BUILD_SHA}`);
+if (process.env.FINAGENT_CHANNEL) args.push(`--config.extraMetadata.yansivra.channel=${process.env.FINAGENT_CHANNEL}`);
+run(args, electronRoot, builderEnv);
+const result = stageArtifacts({ directory: join(repoRoot, 'dist/electron'), destination: join(repoRoot, 'dist/release'),
+  platform: process.platform, productName: metadata.build.productName, version: metadata.version });
+console.log(`release:package OK: ${result.names.join(', ')}; SHA256SUMS.txt uses SHA-256 on ${process.platform}.`);
+console.log(`Apple signing: ${signingEnabled ? 'enabled' : 'disabled'}. No upload or Release was executed.`);

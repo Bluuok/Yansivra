@@ -47,3 +47,6 @@ output/
 
 # Project-local development skills; never ship in the investment SkillHub.
 .agents/skills/
+
+# Safe tracked template; actual local environment files remain private.
+!.env.example

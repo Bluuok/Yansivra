@@ -11,7 +11,7 @@ import { AlertRuleRepository } from './rules-repository.ts';
 import { fakeCap, failingCap, makeRegistry } from './testing.ts';
 
 function tempStore(): JsonFileStore {
-  return new JsonFileStore(mkdtempSync(join(tmpdir(), 'folio-alerts-')));
+  return new JsonFileStore(mkdtempSync(join(tmpdir(), 'yansivra-alerts-')));
 }
 
 function openStatus(market = 'US'): MarketStatus[] {
@@ -250,7 +250,7 @@ describe('AlertEngine rating change across ticks', () => {
 
 describe('AlertEngine portfolio drawdown persistence', () => {
   it('uses the initial peak after recreating the engine and repository', async () => {
-    const rootDir = mkdtempSync(join(tmpdir(), 'folio-alerts-drawdown-'));
+    const rootDir = mkdtempSync(join(tmpdir(), 'yansivra-alerts-drawdown-'));
     const store = new JsonFileStore(rootDir);
     let nowMs = 1000;
     const clock = () => nowMs;

@@ -14,7 +14,7 @@ import type { JsonFileStore } from '../storage/json-file-store.ts';
 import { DEFAULT_EVALUATION_SETTINGS, sanitizeSettings } from './settings.ts';
 
 export interface TraceLinkRecord {
-  /** Folio run id. */
+  /** Yansivra run id. */
   runId: string;
   traceRef: TraceReference;
   recordedAt: number;

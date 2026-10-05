@@ -135,7 +135,7 @@ export class LangfuseEvaluationBackend implements EvaluationBackend {
       batch.traceId,
       batch.events,
       snapshot.startedAt,
-      snapshot.metadata.folioSessionId,
+      snapshot.metadata.yansivraSessionId,
       snapshot.metadata.threadId,
       snapshot.metadata
     );
@@ -154,8 +154,8 @@ export class LangfuseEvaluationBackend implements EvaluationBackend {
       traceId,
       sessionId,
       threadId,
-      runId: typeof (metadata as { folioRunId?: string }).folioRunId === 'string'
-        ? (metadata as { folioRunId: string }).folioRunId
+      runId: typeof (metadata as { yansivraRunId?: string }).yansivraRunId === 'string'
+        ? (metadata as { yansivraRunId: string }).yansivraRunId
         : traceId,
       url: this.traceUrl(traceId),
     };

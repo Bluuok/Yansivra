@@ -14,7 +14,7 @@ export function createPhaseTwoRegistry(fetchers?: CapabilityFetchers) {
 }
 
 /**
- * The full Folio V3 registry: phase-1 + phase-2 capabilities, one source of
+ * The full Yansivra V3 registry: phase-1 + phase-2 capabilities, one source of
  * truth for agent tools, UI availability, and product workflows.
  */
 export function createFullRegistry(fetchers?: CapabilityFetchers) {

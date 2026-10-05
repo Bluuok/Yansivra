@@ -1,6 +1,6 @@
 # Langfuse tracing for Agent / Deep Research
 
-Folio exports Copilot and Deep Research runs to Langfuse through a single
+Yansivra exports Copilot and Deep Research runs to Langfuse through a single
 boundary (`LangfuseEvaluationBackend`). Call sites never import Langfuse event
 types. If Langfuse is disabled, misconfigured, or unreachable, the agent path
 still completes and a diagnostic is recorded.
@@ -19,16 +19,16 @@ Turn tracing **off** with `LANGFUSE_TRACING=false` even if keys are present.
 
 ## Trace / span structure
 
-One Folio run maps to **one Langfuse trace**, not a single LLM generation.
+One Yansivra run maps to **one Langfuse trace**, not a single LLM generation.
 
-### Copilot (`folio.agent_run`)
+### Copilot (`yansivra.agent_run`)
 
 - root trace: user input + final answer, tags, metadata
 - `tool.<name>` span per tool call (quote, news, …)
 - `agent.generation` when model / token usage is known
 - `agent.error` on terminal failure
 
-### Deep Research (`folio.deep_research`)
+### Deep Research (`yansivra.deep_research`)
 
 - root trace: symbol / query + report summary
 - `research.input`
@@ -40,13 +40,13 @@ One Folio run maps to **one Langfuse trace**, not a single LLM generation.
 
 Tags (filterable):
 
-- `folio`
+- `yansivra`
 - `run_kind:normal` \| `run_kind:evaluation`
 - `gold_case:<id>`
 - `dataset:<id>@<version>`
 - `model:<id>` / `provider:<id>` / `strategy:<id>` / `agent:<version>`
 
-Root metadata always includes `folioRunId` and `runKind`, plus gold case /
+Root metadata always includes `yansivraRunId` and `runKind`, plus gold case /
 dataset / model fields when this is an evaluation run.
 
 ## Score schema

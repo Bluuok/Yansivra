@@ -276,7 +276,7 @@ mock.module('@finagent/shared', () => ({
   EvaluationStore: class {
     getSettingsSync = () => ({
       tracingEnabled: false,
-      langsmithProject: 'folio-agent',
+      langsmithProject: 'yansivra-agent',
       langsmithEndpoint: '',
       langfuseTracingEnabled: false,
       langfuseHost: '',
@@ -319,7 +319,7 @@ mock.module('@finagent/shared', () => ({
     JSON.stringify({ publicKey, secretKey }),
   scoresFromResearchReport: () => [],
   scoresFromAgentRun: () => [],
-  currentFolioVersion: () => 'test',
+  currentYansivraVersion: () => 'test',
   EvaluationRedactor: class {
     redactAnswer = (answer: string | undefined) => answer;
     redactToolCall = (toolCall: unknown) => toolCall;

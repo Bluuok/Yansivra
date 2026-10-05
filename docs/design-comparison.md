@@ -1,4 +1,4 @@
-# Folio 设计稿 vs 当前实现 对比报告
+# Yansivra 设计稿 vs 当前实现 对比报告
 
 > 数据来源：Stitch 设计稿 **Minimalist Personal Portfolio**（桌面端，11 屏）。
 > 对比基准：`packages/ui` 当前工作区实现。
@@ -90,7 +90,7 @@
 
 当前实现：
 - ✅ ProfileSecurityView（本地工作区健康检查：AI/行情/Skills/Runtime + 健康状态）
-- ❌ 设计稿是 SaaS 账户体系（2FA/API Keys/会话管理）；Folio 是 **local-first 桌面应用**，该屏刻意做了本地化改写 — 属于**有意差异**，建议保留现实现（设计稿可作为远期云同步功能的参考）。
+- ❌ 设计稿是 SaaS 账户体系（2FA/API Keys/会话管理）；Yansivra 是 **local-first 桌面应用**，该屏刻意做了本地化改写 — 属于**有意差异**，建议保留现实现（设计稿可作为远期云同步功能的参考）。
 
 ### 2.10 Institutional Research Workbench（另一版 Today）
 与 2.2 同源，额外有底部 Dock 导航（Today/Markets/Research/Copilot）— 当前用侧栏方案，无需对齐。
@@ -113,7 +113,7 @@
 | 7 | 设计稿三栏固定布局（240/弹性/400） | 低 | 现有布局更符合桌面应用习惯 |
 | 8 | `market-up/down`、`provenance-link`、JetBrains Mono 数据字体 token | 低 | 统一 design token 时一并处理 |
 
-> 注：设计稿中的机构化数据（$12.45M / $1.24B 组合、Jane Doe 分析师、公司邮箱/2FA）与 Folio 的个人投资助手定位不符，示例数据已按个人规模（约 $128K 组合）重制，见 §4。
+> 注：设计稿中的机构化数据（$12.45M / $1.24B 组合、Jane Doe 分析师、公司邮箱/2FA）与 Yansivra 的个人投资助手定位不符，示例数据已按个人规模（约 $128K 组合）重制，见 §4。
 
 ---
 

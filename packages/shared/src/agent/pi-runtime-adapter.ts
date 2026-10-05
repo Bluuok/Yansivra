@@ -36,7 +36,7 @@ export interface PiRuntimeAdapterOptions {
   marketData?: MarketDataService;
   rpcClient?: PiRpcClient;
   rpc?: PiRpcClientOptions;
-  /** Directory holding one JSONL session file per Folio session. */
+  /** Directory holding one JSONL session file per Yansivra session. */
   sessionDir?: string;
   /** Skill hub used to build the progressive skill index in the system prompt. */
   skillHub?: SkillHub;
@@ -71,11 +71,11 @@ interface RuntimeSessionState {
 const DEFAULT_THINKING_LEVELS = ['off', 'minimal', 'low', 'medium', 'high', 'xhigh', 'max'];
 
 /**
- * Pi runtime adapter: maps Folio sessions to Pi JSONL session files and turns
- * the raw Pi event stream into Folio AgentEvents.
+ * Pi runtime adapter: maps Yansivra sessions to Pi JSONL session files and turns
+ * the raw Pi event stream into Yansivra AgentEvents.
  *
  * One Pi process is shared; session isolation comes from per-session session
- * files (`switch_session`), so each Folio session keeps its own conversation
+ * files (`switch_session`), so each Yansivra session keeps its own conversation
  * that survives app restarts.
  */
 export class PiRuntimeAdapter implements AgentRuntime {
@@ -300,7 +300,7 @@ export class PiRuntimeAdapter implements AgentRuntime {
   async disposeSession(sessionId: string): Promise<void> {
     const state = this.sessions.get(sessionId);
     this.sessions.delete(sessionId);
-    // Remove the Pi conversation file together with the Folio session. The
+    // Remove the Pi conversation file together with the Yansivra session. The
     // path is deterministic per session, so this works even when the session
     // was created but never ran.
     await unlink(join(this.sessionDir, `${sessionId}.jsonl`)).catch(() => undefined);
@@ -532,8 +532,8 @@ function buildPrompt(
  */
 const TYPED_BLOCK_INSTRUCTION = [
   'Optional typed answer blocks: after your Markdown answer you may append up to two data blocks for concrete tool-returned figures.',
-  'A block is a fenced code block with language folio-block whose body is exactly one JSON object, e.g.',
-  '```folio-block',
+  'A block is a fenced code block with language yansivra-block whose body is exactly one JSON object, e.g.',
+  '```yansivra-block',
   '{"version":1,"type":"metric_grid","metrics":[{"label":"Last","value":123.45,"unit":"price","currency":"USD","asOf":"2026-01-15T00:00:00Z","evidenceIds":["tool-call-id"]}]}',
   '```',
   'Types: metric_grid (KPI cards), data_table (columns with keys/labels/units + rows), time_series_chart (points t=ISO ascending, v=number), comparison_table (columns + labeled rows).',
@@ -563,7 +563,7 @@ const CITATION_INSTRUCTION = [
   'Inline citations: when you state a fact taken from a tool result, append a citation marker immediately after the claim.',
   'A marker is exactly ⟦cite:<tool-call-id>⟧ where <tool-call-id> is the id from that tool result\'s EVIDENCE line.',
   'Example: "AAPL last traded at 182.31 USD.⟦cite:get_quote-1737012345678⟧"',
-  'Only cite ids that appeared in this conversation, never invent ids, and never place markers inside folio-block fences or code blocks.',
+  'Only cite ids that appeared in this conversation, never invent ids, and never place markers inside yansivra-block fences or code blocks.',
 ].join('\n');
 
 function buildSkillIndexSection(

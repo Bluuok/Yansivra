@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowUp, ChevronLeft, ChevronRight, Square, Sparkles } from 'lucide-react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import type { ApiError, FolioTrace, PortfolioSnapshot, Quote, ToolCall } from '@finagent/core';
+import type { ApiError, YansivraTrace, PortfolioSnapshot, Quote, ToolCall } from '@finagent/core';
 import {
   activeMessagesAtom,
   activeSessionIdAtom,
@@ -31,7 +31,7 @@ import { QuoteCard } from './structured/QuoteCard';
 import { PortfolioRiskCard } from './structured/PortfolioRiskCard';
 import { AgentAmbientField, type AgentMotionState } from '../motion/AgentAmbientField';
 
-const folioLogoUrl = new URL('../../assets/desk-logo.svg', import.meta.url).href;
+const yansivraLogoUrl = new URL('../../assets/desk-logo.svg', import.meta.url).href;
 
 // ---------------------------------------------------------------------------
 // Defensive parsing of structured tool results (get_quote / get_portfolio).
@@ -100,7 +100,7 @@ export const AgentPanel: React.FC = () => {
 
   const [input, setInput] = useState('');
   const [sendError, setSendError] = useState<string | null>(null);
-  const [traceDialog, setTraceDialog] = useState<{ runId: string; trace: FolioTrace | null } | null>(null);
+  const [traceDialog, setTraceDialog] = useState<{ runId: string; trace: YansivraTrace | null } | null>(null);
   const [traceLoading, setTraceLoading] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
   const bodyEndRef = useRef<HTMLDivElement>(null);
@@ -221,11 +221,11 @@ export const AgentPanel: React.FC = () => {
     return (
       <aside
         data-testid="agent-panel"
-        className="folio-agent-panel flex h-full w-full flex-col items-center justify-center border-l mac-section-divider bg-background"
+        className="yansivra-agent-panel flex h-full w-full flex-col items-center justify-center border-l mac-section-divider bg-background"
       >
         <div className="px-6 text-center">
           <img
-            src={folioLogoUrl}
+            src={yansivraLogoUrl}
             alt=""
             className="mx-auto mb-4 h-14 w-14 rounded-[16px] shadow-[0_14px_38px_rgba(var(--accent-rgb),0.18)]"
             draggable={false}
@@ -252,11 +252,11 @@ export const AgentPanel: React.FC = () => {
   return (
     <aside
       data-testid="agent-panel"
-      className="folio-agent-panel mac-sidebar flex h-full w-full flex-col border-l mac-section-divider"
+      className="yansivra-agent-panel mac-sidebar flex h-full w-full flex-col border-l mac-section-divider"
     >
       {/* Header: model + thinking selectors and collapse affordance */}
-      <div className="folio-agent-header flex items-center gap-1.5 border-b mac-section-divider px-4 py-3">
-        <div className="folio-agent-title mr-auto">{t('agent.panel.title')}</div>
+      <div className="yansivra-agent-header flex items-center gap-1.5 border-b mac-section-divider px-4 py-3">
+        <div className="yansivra-agent-title mr-auto">{t('agent.panel.title')}</div>
         <ModelSelector disabled={isRunning} />
         <ThinkingSelector disabled={isRunning} />
         <div className="flex-1" />
@@ -272,7 +272,7 @@ export const AgentPanel: React.FC = () => {
       </div>
 
       {/* Workspace context chip */}
-      <div className="folio-agent-context border-b mac-section-divider px-3 py-2">
+      <div className="yansivra-agent-context border-b mac-section-divider px-3 py-2">
         <ContextChip />
       </div>
 
@@ -280,7 +280,7 @@ export const AgentPanel: React.FC = () => {
       <div
         ref={bodyRef}
         onScroll={handleBodyScroll}
-        className="folio-agent-body flex-1 overflow-y-auto scrollbar-hover"
+        className="yansivra-agent-body flex-1 overflow-y-auto scrollbar-hover"
       >
         <div className="flex flex-col gap-3 p-3">
           {runView?.infraError && (
@@ -290,7 +290,7 @@ export const AgentPanel: React.FC = () => {
             />
           )}
           {isRunning ? (
-            <div className="folio-agent-activity-surface rounded-[10px] border border-border bg-surface-muted px-3 py-2" data-testid="agent-activity-surface">
+            <div className="yansivra-agent-activity-surface rounded-[10px] border border-border bg-surface-muted px-3 py-2" data-testid="agent-activity-surface">
               <AgentAmbientField state={agentMotionState} />
               <div className="relative flex items-center gap-2 text-[11px] text-foreground/64">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden="true" />
@@ -325,7 +325,7 @@ export const AgentPanel: React.FC = () => {
       </div>
 
       {/* Input / send / stop — send lives inline in the composer (Stitch design) */}
-      <div className="folio-agent-composer border-t mac-section-divider bg-surface px-3 py-3">
+      <div className="yansivra-agent-composer border-t mac-section-divider bg-surface px-3 py-3">
         <div className="relative">
           <textarea
             data-testid="agent-input"
@@ -335,14 +335,14 @@ export const AgentPanel: React.FC = () => {
             placeholder={isRunning ? t('agent.panel.inputRunningPlaceholder') : t('agent.panel.inputPlaceholder')}
             disabled={isRunning}
             rows={2}
-            className="mac-input folio-agent-textarea w-full resize-none px-3 py-2.5 pr-11 text-[13px] leading-relaxed text-foreground placeholder:text-foreground/38 focus:border-[rgba(var(--accent-rgb),0.34)] focus:outline-none focus:ring-2 focus:ring-accent/25 disabled:opacity-50"
+            className="mac-input yansivra-agent-textarea w-full resize-none px-3 py-2.5 pr-11 text-[13px] leading-relaxed text-foreground placeholder:text-foreground/38 focus:border-[rgba(var(--accent-rgb),0.34)] focus:outline-none focus:ring-2 focus:ring-accent/25 disabled:opacity-50"
           />
           {!isRunning && (
             <button
               type="button"
               onClick={() => void handleSend()}
               disabled={!input.trim()}
-              className="mac-primary-button folio-agent-send absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full transition-smooth active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-45"
+              className="mac-primary-button yansivra-agent-send absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-full transition-smooth active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-45"
               aria-label={t('agent.panel.sendMessage')}
             >
               <ArrowUp className="h-4 w-4" strokeWidth={1.8} />
@@ -435,7 +435,7 @@ const SuggestionChips: React.FC<{ onPick: (text: string) => void }> = ({ onPick 
   const prompts = (t(groupKey, { returnObjects: true }) as string[]) ?? [];
   if (prompts.length === 0) return null;
   return (
-    <div className="folio-agent-suggestions px-3 pb-1" data-testid="agent-suggestions">
+    <div className="yansivra-agent-suggestions px-3 pb-1" data-testid="agent-suggestions">
       <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[.12em] text-foreground/36">
         <Sparkles className="h-3 w-3" strokeWidth={1.8} />
         {t('agent.suggestions.title')}

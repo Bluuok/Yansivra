@@ -61,7 +61,7 @@ export function buildFinancialEvidence(input: BuildFinancialEvidenceInput): Fina
       ...(result.evidence?.lineage ?? []),
       {
         kind: 'normalization',
-        description: 'Mapped provider output into the canonical Folio capability result.',
+        description: 'Mapped provider output into the canonical Yansivra capability result.',
         version: FINANCIAL_NORMALIZATION_VERSION,
       },
     ];

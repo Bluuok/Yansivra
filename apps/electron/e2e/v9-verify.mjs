@@ -91,7 +91,7 @@ async function main() {
       const growth = page.locator('[data-testid="strategy-card-growth"]');
       await growth.waitFor({ timeout: 5000 });
       const attrs = await growth.evaluate((el) => { const a = {}; for (const n of el.attributes) a[n.name] = n.value; return a; });
-      const stored = await page.evaluate(() => localStorage.getItem('folio.prefs.lastStrategy.NVDA.US'));
+      const stored = await page.evaluate(() => localStorage.getItem('yansivra.prefs.lastStrategy.NVDA.US'));
       if (!stored) throw new Error('no persisted strategy, attrs=' + JSON.stringify(attrs));
       if (!/growth/.test(stored)) throw new Error('persisted wrong strategy: ' + stored);
     });

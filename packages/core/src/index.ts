@@ -10,7 +10,7 @@ export * from './stream-events.ts';
 
 export interface Quote {
   symbol: string;
-  /** Folio canonical instrument id when the quote was resolved through the catalog. */
+  /** Yansivra canonical instrument id when the quote was resolved through the catalog. */
   instrumentId?: string;
   lastPrice: number;
   change: number;
@@ -67,14 +67,14 @@ export interface NewsItem {
   url: string;
   timestamp: number;
   symbols: string[];
-  /** Folio canonical instrument id when news was fetched for a resolved listing. */
+  /** Yansivra canonical instrument id when news was fetched for a resolved listing. */
   instrumentId?: string;
 }
 
 /** Static reference info for a security. */
 export interface StaticInfo {
   symbol: string;
-  /** Folio canonical instrument id when profile data was resolved through the catalog. */
+  /** Yansivra canonical instrument id when profile data was resolved through the catalog. */
   instrumentId?: string;
   name: string;
   exchange?: string;
@@ -298,7 +298,7 @@ export type AgentEventPayload =
   | RunCompletedPayload
   | RunFailedPayload;
 
-/** Runtime-side session handle that maps a Folio session to a runtime conversation. */
+/** Runtime-side session handle that maps a Yansivra session to a runtime conversation. */
 export interface RuntimeSession {
   sessionId: string;
   runtimeSessionId?: string;
@@ -518,7 +518,7 @@ export interface LlmTestResult {
 /**
  * Long-lived agent runtime abstraction.
  *
- * A runtime owns runtime conversations (one per Folio session), executes runs
+ * A runtime owns runtime conversations (one per Yansivra session), executes runs
  * as streaming AgentEvent sequences, and supports cancellation.
  */
 export interface AgentRuntime {
@@ -571,7 +571,7 @@ export interface Skill {
   };
 }
 
-// ── Folio V3 domains ───────────────────────────────────────────────────────
+// ── Yansivra V3 domains ───────────────────────────────────────────────────────
 export * from './answer-blocks.ts';
 export * from './citations.ts';
 export * from './capability.ts';

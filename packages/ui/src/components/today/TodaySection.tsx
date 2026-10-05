@@ -16,7 +16,7 @@ interface TodaySectionProps {
 }
 
 export const TodaySection: React.FC<TodaySectionProps> = ({ title, action, children, className }) => (
-  <section className={`folio-today-section min-w-0 rounded-[12px] border border-border bg-surface-raised px-4 py-4 shadow-none ${className ?? ''}`}>
+  <section className={`yansivra-today-section min-w-0 rounded-[12px] border border-border bg-surface-raised px-4 py-4 shadow-none ${className ?? ''}`}>
     <header className="mb-3 flex items-center justify-between gap-3">
       <h3 className="text-[10.5px] font-semibold uppercase tracking-[.12em] text-foreground/48">{title}</h3>
       {action}

@@ -67,7 +67,7 @@ export function isCitationSourceId(value: unknown): value is string {
 
 /**
  * Split answer text into plain-text and citation-marker segments. Only run
- * this on text segments — markers inside `folio-block` fences stay untouched
+ * this on text segments — markers inside `yansivra-block` fences stay untouched
  * (block evidence is referenced via `evidenceIds`, not inline markers).
  */
 export function parseCitationSegments(text: string): CitationSegment[] {

@@ -187,7 +187,7 @@ describe('LongBridge errors', () => {
     const previousPath = process.env.PATH;
     const previousPathExt = process.env.PATHEXT;
     process.env.PATH = '';
-    process.env.PATHEXT = '.FOLIO-MISSING-TEST';
+    process.env.PATHEXT = '.YANSIVRA-MISSING-TEST';
     execaHandler = async () => {
       throw Object.assign(new Error('Command failed with exit code 1: longbridge --version'), {
         exitCode: 1,
@@ -207,7 +207,7 @@ describe('LongBridge errors', () => {
   });
 
   it.skipIf(process.platform !== 'win32')('preserves exit-code-1 failures when the Windows CLI exists on PATH', async () => {
-    const directory = mkdtempSync(join(tmpdir(), 'folio-existing-cli-'));
+    const directory = mkdtempSync(join(tmpdir(), 'yansivra-existing-cli-'));
     const previousPath = process.env.PATH;
     writeFileSync(join(directory, 'longbridge.exe'), 'test executable candidate');
     process.env.PATH = directory;

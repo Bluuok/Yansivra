@@ -1,4 +1,4 @@
-# Folio Desk：Skills 安装与执行手册
+# Yansivra：Skills 安装与执行手册
 
 > 服务于[统一前端方案](README.md)。这些是后续开发执行步骤，不是本次已经替用户完成的安装、设计搜索或页面实现。
 > 区分：文章原文推荐；2026-10-01 查询到的官方使用方式；本项目规定的执行分工。
@@ -16,7 +16,7 @@
 | Magic UI / Aceternity UI / Motion | 组件源码或运行时依赖 | 按统一方案选择少量组件后才决定安装；不是 Skill，也不因为文章提到了就整库装入。 |
 | `AGENTS.md` | 项目指令文件 | 用来固化经产品适配的前端约束，不是软件安装包；本 PR 提供模板，不覆盖现有全局配置。 |
 
-两个开发 Skill 应位于 Codex/Claude 的开发配置中。**不要放进 Folio 的投资技能目录 `skills/`，不要加入 SkillHub，不要打包到 Electron。** 用户最终运行桌面应用不需要安装这些设计 Skill。
+两个开发 Skill 应位于 Codex/Claude 的开发配置中。**不要放进 Yansivra 的投资技能目录 `skills/`，不要加入 SkillHub，不要打包到 Electron。** 用户最终运行桌面应用不需要安装这些设计 Skill。
 
 ## 2. 先检查现有安装
 
@@ -54,7 +54,7 @@ uipro init --ai cursor
 
 当前上游 README 使用 **`ui-ux-pro-max-cli`** 作为 npm 包名，命令仍是 `uipro`，并说明旧 `uipro-cli` 版本已过时；它列出 codex 与 universal 安装目标。为避免依赖旧发现目录，本轮新安装优先选择生成 `.agents/skills/` 的 universal 目标。已有能被 Codex 发现的 codex 安装不必迁移。[D3]
 
-在 **Folio 仓库根目录的 PowerShell** 中可按以下步骤预览。此代码是待执行配方，本次未运行：
+在 **Yansivra 仓库根目录的 PowerShell** 中可按以下步骤预览。此代码是待执行配方，本次未运行：
 
 ```powershell
 # 先查看官方包元信息并取得确切版本；不要直接给整个应用升级依赖。
@@ -100,14 +100,14 @@ py -3 --version
 if ($LASTEXITCODE -ne 0) { throw 'Python 不可用，尚未执行设计检索。' }
 
 # 先查询，不立即覆盖项目设计文件。
-py -3 "$search" "investment research desktop" --design-system -p "Folio Desk" -f markdown
+py -3 "$search" "investment research desktop" --design-system -p "Yansivra" -f markdown
 py -3 "$search" "editorial archival asymmetric" --domain style
 py -3 "$search" "Chinese longform reading" --domain typography
 py -3 "$search" "rapid animation interrupted" --domain ux
 py -3 "$search" "React 18 state preservation" --stack react
 ```
 
-这些是为 Folio 编写的待执行查询，不是声称已经从数据库得到匹配。每个查询保持单一意图；返回空或离题时最多收窄重试一次，仍无匹配就记录“无验证匹配”，不要伪造查询结果、伪造推荐字体或不断改关键词直到凑到想要的答案。[D4]
+这些是为 Yansivra 编写的待执行查询，不是声称已经从数据库得到匹配。每个查询保持单一意图；返回空或离题时最多收窄重试一次，仍无匹配就记录“无验证匹配”，不要伪造查询结果、伪造推荐字体或不断改关键词直到凑到想要的答案。[D4]
 
 对图表、表单、键盘焦点、长标签等问题，按实际发现的缺陷另做一个明确 domain 查询，不一开始就加载所有规则或几十个 Skill。搜索中不带用户持仓、API 密钥、报告全文等私有资料。
 
@@ -133,7 +133,7 @@ py -3 "$search" "React 18 state preservation" --stack react
 读取 docs/frontend-upgrade/README.md、skills-workflow.md 和
 frontend-rules.template.md，以当前 main 为基线实施前端升级，不执行旧 PR #2/#3。
 先核验 frontend-design 与 ui-ux-pro-max 的实际可发现路径；缺失按手册安装，
-已有则复用。不得声称未执行的 Skill 已运行，不得改 Folio 的投资 skills/。
+已有则复用。不得声称未执行的 Skill 已运行，不得改 Yansivra 的投资 skills/。
 先运行适合 Electron/React 的设计检索，保留输入、真实输出和筛选理由，
 由 frontend-design 建立一套 MASTER，做总览、研究、复盘的静态样稿并截图自评。
 静态稿达标后，复用现有数据与 IPC 接线，再实现受真实状态驱动的汇聚、

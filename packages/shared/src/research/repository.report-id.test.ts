@@ -7,7 +7,7 @@ import { JsonFileStore } from '../storage/json-file-store.ts';
 import { ResearchReportRepository } from './repository.ts';
 
 async function withRepository(work: (repository: ResearchReportRepository, root: string) => Promise<void>): Promise<void> {
-  const root = await mkdtemp(join(tmpdir(), 'folio-research-report-id-'));
+  const root = await mkdtemp(join(tmpdir(), 'yansivra-research-report-id-'));
   try {
     await work(new ResearchReportRepository(new JsonFileStore(root)), root);
   } finally {

@@ -39,7 +39,7 @@ const ThesisCard: React.FC<ThesisCardProps> = ({ thesis, onReEvaluate, onEdit })
   const badge = STANCE_BADGE[thesis.stance];
   return (
     <div
-      className="folio-thesis-card rounded-[12px] border border-[#dfe5ed] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.035)]"
+      className="yansivra-thesis-card rounded-[12px] border border-[#dfe5ed] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.035)]"
       data-testid="thesis-card"
     >
       <div className="flex items-center justify-between gap-2">
@@ -138,8 +138,8 @@ export const ThesisPanel: React.FC = () => {
 
   if (!symbol) {
     return (
-      <div data-testid="thesis-panel" className="folio-thesis-view flex h-full items-center justify-center bg-[#f6f8fb] p-4">
-        <div className="folio-thesis-empty mx-auto w-full max-w-sm rounded-[12px] border border-[#dfe5ed] bg-white p-5 text-center shadow-[0_1px_2px_rgba(15,23,42,0.035)]">
+      <div data-testid="thesis-panel" className="yansivra-thesis-view flex h-full items-center justify-center bg-[#f6f8fb] p-4">
+        <div className="yansivra-thesis-empty mx-auto w-full max-w-sm rounded-[12px] border border-[#dfe5ed] bg-white p-5 text-center shadow-[0_1px_2px_rgba(15,23,42,0.035)]">
           <div className="text-[15px] font-semibold text-foreground">{t('thesis.empty.title')}</div>
           <p className="mt-1 text-[12px] text-foreground/54">{t('thesis.empty.subtitle')}</p>
           <Button
@@ -176,12 +176,12 @@ export const ThesisPanel: React.FC = () => {
   };
 
   return (
-    <div className="folio-thesis-view flex h-full flex-col overflow-y-auto bg-[#f6f8fb] p-4" data-testid="thesis-panel">
-      <div className="folio-thesis-header mb-4 flex items-end justify-between gap-4 border-b border-[#dfe5ed] pb-4">
+    <div className="yansivra-thesis-view flex h-full flex-col overflow-y-auto bg-[#f6f8fb] p-4" data-testid="thesis-panel">
+      <div className="yansivra-thesis-header mb-4 flex items-end justify-between gap-4 border-b border-[#dfe5ed] pb-4">
         <div>
-          <p className="folio-eyebrow">{t('thesis.thesis')}</p>
-          <h2 className="folio-thesis-title">{symbol}</h2>
-          <p className="folio-thesis-subtitle">{t('thesis.noReportFor', { symbol })}</p>
+          <p className="yansivra-eyebrow">{t('thesis.thesis')}</p>
+          <h2 className="yansivra-thesis-title">{symbol}</h2>
+          <p className="yansivra-thesis-subtitle">{t('thesis.noReportFor', { symbol })}</p>
         </div>
         {report && (
           <Button
@@ -249,7 +249,7 @@ export const ThesisPanel: React.FC = () => {
         </div>
       )}
 
-      <div className="folio-thesis-history mt-5 border-t border-[#dfe5ed] pt-4">
+      <div className="yansivra-thesis-history mt-5 border-t border-[#dfe5ed] pt-4">
         <h3 className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#7f8b9d]">
           {t('thesis.reEvaluationHistory')}
         </h3>

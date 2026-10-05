@@ -141,7 +141,7 @@ import {
   serializeLangfuseCredential,
   scoresFromAgentRun,
   scoresFromResearchReport,
-  currentFolioVersion,
+  currentYansivraVersion,
   EvaluationRedactor,
   PiRuntimeAdapter,
   sanitizeSettings,
@@ -259,7 +259,7 @@ export class AgentKernelHost {
   private readonly kernel: AgentKernel;
   private readonly credentials: CredentialStore;
   private readonly skillHub: SkillHub;
-  /** Full Folio V3 capability registry: agent tools + UI + product workflows. */
+  /** Full Yansivra V3 capability registry: agent tools + UI + product workflows. */
   private readonly registry: CapabilityRegistry;
   private readonly executor: CapabilityExecutor;
   private readonly researchService: ResearchService;
@@ -656,7 +656,7 @@ export class AgentKernelHost {
   }
 
   // -------------------------------------------------------------------------
-  // Folio V3: capabilities, research, thesis, compare, alerts, portfolio risk
+  // Yansivra V3: capabilities, research, thesis, compare, alerts, portfolio risk
   // -------------------------------------------------------------------------
 
   /** Capability metadata for UI availability (schemas never cross IPC). */
@@ -835,7 +835,7 @@ export class AgentKernelHost {
   private async runAgentPrompt(content: string, signal?: AbortSignal, recovery?: ResearchSynthesisInput['recovery']): Promise<string> {
     // Keep synthesis runs out of the user's copilot history. The run still
     // uses the normal kernel/runtime contract, but its session is internal.
-    const session = await this.kernel.sessions.createSession('__folio_internal_research__');
+    const session = await this.kernel.sessions.createSession('__yansivra_internal_research__');
     let agentRunId: string | undefined;
     let cleanup = () => {};
     try {
@@ -1217,7 +1217,7 @@ export class AgentKernelHost {
     return this.evaluationStore.listBaselines();
   }
 
-  /** V9.1: persisted trace-link lookup for a folio run id (reuses the store; no new correlation). */
+  /** V9.1: persisted trace-link lookup for a yansivra run id (reuses the store; no new correlation). */
   async getEvaluationTraceLink(input: unknown): Promise<{ runId: string; traceRef?: TraceReference; recordedAt?: number } | undefined> {
     const request = requireObject(input);
     const runId = requireString(request.runId, 'runId');
@@ -1396,8 +1396,8 @@ export class AgentKernelHost {
       await this.persistTraceLink(runId, ref);
     } else {
       ref = await this.traceCorrelation.recordRun({
-        folioRunId: runId,
-        folioSessionId: sessionId,
+        yansivraRunId: runId,
+        yansivraSessionId: sessionId,
         threadId,
         startedAt: pending.startedAt,
         completedAt: endedAt,
@@ -1452,7 +1452,7 @@ export class AgentKernelHost {
     if (!this.langfuseBackend) return undefined;
     try {
       const ref = await this.langfuseBackend.exportAgentRun({
-        folioRunId: input.runId,
+        yansivraRunId: input.runId,
         sessionId: input.sessionId,
         threadId: input.threadId,
         startedAt: input.startedAt,
@@ -1462,11 +1462,11 @@ export class AgentKernelHost {
         toolCalls: input.toolCalls,
         error: input.error,
         metadata: {
-          folioRunId: input.runId,
-          folioSessionId: input.sessionId,
+          yansivraRunId: input.runId,
+          yansivraSessionId: input.sessionId,
           threadId: input.threadId,
           runKind: 'normal',
-          folioVersion: currentFolioVersion(),
+          yansivraVersion: currentYansivraVersion(),
         },
       });
       if (ref.traceId) {
@@ -1504,7 +1504,7 @@ export class AgentKernelHost {
     try {
       const finishedAt = result.summary.finishedAt ?? Date.now();
       const ref = await this.langfuseBackend.exportResearchRun({
-        folioRunId: result.summary.id,
+        yansivraRunId: result.summary.id,
         startedAt: result.summary.startedAt,
         completedAt: finishedAt,
         symbol: result.summary.symbol,
@@ -1521,11 +1521,11 @@ export class AgentKernelHost {
           status: result.summary.completedCapabilities.includes(id) ? 'success' : 'unavailable',
         })),
         report: result.report,
-        model: this.evaluationSettings.langfuseTracingEnabled ? 'folio-synthesizer' : undefined,
+        model: this.evaluationSettings.langfuseTracingEnabled ? 'yansivra-synthesizer' : undefined,
         metadata: {
-          folioRunId: result.summary.id,
+          yansivraRunId: result.summary.id,
           runKind: 'normal',
-          folioVersion: currentFolioVersion(),
+          yansivraVersion: currentYansivraVersion(),
           symbol: result.summary.symbol,
           strategyId: result.report?.strategyId,
         },
@@ -2521,7 +2521,7 @@ export class AgentKernelHost {
 
   // -------------------------------------------------------------------------
 
-  /** Runtime env for each Pi spawn: Folio-owned provider overrides + skills dir. */
+  /** Runtime env for each Pi spawn: Yansivra-owned provider overrides + skills dir. */
   private async buildRuntimeEnv(): Promise<NodeJS.ProcessEnv> {
     const overrides: Array<Record<string, unknown>> = [];
     const baseUrlEnv = process.env.ANTHROPIC_BASE_URL;
@@ -2564,7 +2564,7 @@ export class AgentKernelHost {
           env.LANGSMITH_PI_ENDPOINT = this.evaluationSettings.langsmithEndpoint;
         }
         env.LANGSMITH_PI_METADATA = JSON.stringify({
-          app: 'folio',
+          app: 'yansivra',
           environment: 'production',
           privacyLevel: this.evaluationSettings.privacyLevel,
         });

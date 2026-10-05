@@ -1,6 +1,6 @@
 # 开发技能安装记录
 
-2026-10-02，工作区 `E:/zzzz/folio`。这两个技能只在 `.agents/skills` 中使用，受 `.gitignore` 排除；不放入投资 `skills/`，不进入 Electron extraResources，不改变全局代理路由。当前执行者已直接阅读技能文件；安装器所说的重启仅用于后续自动发现。
+2026-10-02，工作区 `E:/zzzz/yansivra`。这两个技能只在 `.agents/skills` 中使用，受 `.gitignore` 排除；不放入投资 `skills/`，不进入 Electron extraResources，不改变全局代理路由。当前执行者已直接阅读技能文件；安装器所说的重启仅用于后续自动发现。
 
 | 技能 | 官方来源和固定版本 | 本地 SKILL.md SHA256 | 许可 |
 | --- | --- | --- | --- |
@@ -11,7 +11,7 @@ UIUX search.py SHA256：`8373e2dd2d560d9853ec116140de0e0d5bee45a6abe5e041173c84e
 CLI npm integrity：`sha512-D0J/C40xrzzi5si6ZLtRGbEE5v3QjL7d4wJNnasmP3yfDSrGiuqVCdwQiqCNnIkbqOuVoA/uonR2o1WKXh3urw==`。官方 README 的 `--dry-run` 在该发行版实际报 unknown option；先查 `init --help`，再安装，没有使用 force/global。
 
 ```powershell
-python <codex-skill-installer>/scripts/install-skill-from-github.py --repo anthropics/skills --ref 8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4 --path skills/frontend-design --dest E:/zzzz/folio/.agents/skills
+python <codex-skill-installer>/scripts/install-skill-from-github.py --repo anthropics/skills --ref 8a1541c4a3ffa5a20a5a91de0dcf3f0bab1d1ef4 --path skills/frontend-design --dest E:/zzzz/yansivra/.agents/skills
 npx --yes ui-ux-pro-max-cli@2.15.0 init --ai universal
 ```
 

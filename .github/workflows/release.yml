@@ -10,6 +10,8 @@ permissions:
 
 jobs:
   release:
+    # Disabled after takeover; confirm targets, costs and authorization before enabling.
+    if: ${{ false }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:

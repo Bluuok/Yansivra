@@ -221,10 +221,10 @@ export const ResearchPanel: React.FC = () => {
   };
 
   return (
-    <div className="folio-pilot-shell flex h-full flex-col" data-testid="research-panel">
-      <div className="folio-research-topbar">
-        <span className="folio-research-topbar-title">{t('research.workspace.title')}</span>
-        <label className="folio-research-command-search">
+    <div className="yansivra-pilot-shell flex h-full flex-col" data-testid="research-panel">
+      <div className="yansivra-research-topbar">
+        <span className="yansivra-research-topbar-title">{t('research.workspace.title')}</span>
+        <label className="yansivra-research-command-search">
           <Search className="h-3.5 w-3.5 shrink-0" />
           <input
             value={symbolInput}
@@ -240,10 +240,10 @@ export const ResearchPanel: React.FC = () => {
           />
         </label>
       </div>
-      <div className="folio-pilot-research-header">
+      <div className="yansivra-pilot-research-header">
         <div>
-          <h2 className="folio-pilot-research-title">{t('research.deepResearch')}</h2>
-          <p className="folio-pilot-subtitle">
+          <h2 className="yansivra-pilot-research-title">{t('research.deepResearch')}</h2>
+          <p className="yansivra-pilot-subtitle">
             {symbol
               ? t('research.subtitleFor', { symbol })
               : t('research.subtitleEmpty')}
@@ -296,7 +296,7 @@ export const ResearchPanel: React.FC = () => {
         </div>
       )}
 
-      <div className="folio-pilot-research-content">
+      <div className="yansivra-pilot-research-content">
         {recoverableRuns.map((run) => (
           <div key={run.id} data-testid="research-recovery" className="mb-3 rounded-xl border border-border bg-surface p-4">
             <p className="text-sm font-semibold">{t('research.recovery.title', { symbol: run.symbol })}</p>
@@ -315,7 +315,7 @@ export const ResearchPanel: React.FC = () => {
         ))}
         {!symbol && <SymbolEntry error={symbolError} value={symbolInput} onChange={setSymbolInput} onSubmit={handleSymbolEntrySubmit} />}
 
-        {symbol && (report?.symbol === symbol ? <details className="folio-pilot-strategy-context"><summary>{t('navigation.kLines')} · {symbol}</summary><ResearchMarketWorkspace symbol={symbol} report={report} activeRun={activeRun?.status ?? null} loading={loading} onStart={() => void handleStart()} /></details> :
+        {symbol && (report?.symbol === symbol ? <details className="yansivra-pilot-strategy-context"><summary>{t('navigation.kLines')} · {symbol}</summary><ResearchMarketWorkspace symbol={symbol} report={report} activeRun={activeRun?.status ?? null} loading={loading} onStart={() => void handleStart()} /></details> :
           <ResearchMarketWorkspace
             symbol={symbol}
             report={report && report.symbol === symbol ? report : null}
@@ -328,14 +328,14 @@ export const ResearchPanel: React.FC = () => {
         {symbol && reports.length > 0 && <label className="desk-form mb-4 block text-xs text-text-muted">{t('research.workspace.history')}<select data-testid="research-report-select" value={report?.symbol === symbol ? report.id : ''} onChange={(event) => { const selected = reports.find((item) => item.id === event.target.value); if (selected) { setFocusedRunId(null); setReport(selected); } }}>{reports.map((item) => <option key={item.id} value={item.id}>{new Date(item.generatedAt).toLocaleString()} · {t(`research.runStatus.${item.runStatus}`)}</option>)}</select></label>}
 
         {symbol && !activeRun && (!report || report.symbol !== symbol) && (
-          <div className="folio-research-strategy-section">
-            <div className="folio-research-section-kicker">{t('research.researchStrategy')}</div>
+          <div className="yansivra-research-strategy-section">
+            <div className="yansivra-research-section-kicker">{t('research.researchStrategy')}</div>
             <StrategyPicker value={strategyId} onChange={handleStrategyChange} recommendedId={recommendedStrategy} />
           </div>
         )}
 
         {symbol && !activeRun && report && report.symbol === symbol && (
-          <details className="folio-pilot-strategy-context">
+          <details className="yansivra-pilot-strategy-context">
             <summary>{t('research.researchStrategy')}</summary>
             <div className="pt-3">
               <StrategyPicker value={strategyId} onChange={handleStrategyChange} recommendedId={recommendedStrategy} />
@@ -353,7 +353,7 @@ export const ResearchPanel: React.FC = () => {
               report={report}
               nextAction={
                 thesisSaved ? (
-                  <div data-testid="thesis-saved-banner" className="folio-pilot-next-action text-[12.5px] font-medium text-positive">
+                  <div data-testid="thesis-saved-banner" className="yansivra-pilot-next-action text-[12.5px] font-medium text-positive">
                     {t('research.next.thesisSaved')}
                   </div>
                 ) : (

@@ -1,4 +1,4 @@
-# Folio Evaluation Methodology (spec §116)
+# Yansivra Evaluation Methodology (spec §116)
 
 Why these metrics, how success is defined, why deterministic evaluation comes
 first, LLM judge limitations, dataset versioning, regression thresholds and
@@ -74,8 +74,8 @@ default for gates.
 
 ## 6. Dataset versioning (spec §25)
 
-`folio-agent-v1` is immutable once experiments reference it. Fixes and new
-cases produce `folio-agent-v1.1` (or a new id). Baselines pin
+`yansivra-agent-v1` is immutable once experiments reference it. Fixes and new
+cases produce `yansivra-agent-v1.1` (or a new id). Baselines pin
 `datasetVersion`; comparisons across versions are not made.
 
 ## 7. Regression thresholds (spec §76–78)

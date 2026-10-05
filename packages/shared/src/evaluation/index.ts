@@ -1,4 +1,4 @@
-// Folio V7 — Agent Evaluation & LangSmith Observability (evaluation module).
+// Yansivra V7 — Agent Evaluation & LangSmith Observability (evaluation module).
 export * from './settings.ts';
 export * from './redactor.ts';
 export * from './backend.ts';
@@ -13,4 +13,4 @@ export * from './evaluators/index.ts';
 export * from './judges/index.ts';
 export * from './datasets/index.ts';
 export * from './langfuse/index.ts';
-export { currentFolioVersion, currentGitSha } from './experiment-service.ts';
+export { currentYansivraVersion, currentGitSha } from './experiment-service.ts';

@@ -2,7 +2,7 @@
 
 # LongBridge 技能安装指南
 
-本文档引导你完成 Finance Agent 的 LongBridge 集成安装与配置。
+本文档引导你完成 Yansivra 的 LongBridge 集成安装与配置。
 
 ---
 
@@ -74,15 +74,15 @@ Claude：[使用 LongBridge 技能获取行情]
 
 ---
 
-## 3. Finance Agent 集成
+## 3. Yansivra 集成
 
-Finance Agent 通过 `longbridge-tools` 包调用 LongBridge CLI。Electron 主进程通过 `@finagent/shared` 中的 `MarketDataService` 调用它，因此自选清单与聊天共享缓存、请求合并与规范化错误。
+Yansivra 通过 `longbridge-tools` 包调用 LongBridge CLI。Electron 主进程通过 `@finagent/shared` 中的 `MarketDataService` 调用它，因此自选清单与聊天共享缓存、请求合并与规范化错误。
 
 ### 架构
 
 ```
 ┌─────────────────────────────────────┐
-│      本地 Finance Agent 后端         │
+│      本地 Yansivra 后端         │
 │  packages/shared/src/agent/         │
 │                                     │
 │  - IntentRouter                     │

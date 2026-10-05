@@ -1,4 +1,4 @@
-// Folio V7 — Agent Engineering Evaluation domain types.
+// Yansivra V7 — Agent Engineering Evaluation domain types.
 //
 // These types are the shared contract between:
 //   - the benchmark dataset (EvaluationCase / EvaluationDataset)
@@ -102,7 +102,7 @@ export interface EvaluationCase {
 }
 
 export interface EvaluationDataset {
-  /** Stable id, e.g. "folio-agent-v1". */
+  /** Stable id, e.g. "yansivra-agent-v1". */
   id: string;
   /** Semantic version; bump on any case change so experiments stay comparable (spec §25). */
   version: string;
@@ -550,7 +550,7 @@ export type ExperimentStatus = 'queued' | 'running' | 'completed' | 'failed' | '
 
 export interface ExperimentMetadata {
   gitSha?: string;
-  folioVersion?: string;
+  yansivraVersion?: string;
   runtimeVersion?: string;
   piVersion?: string;
   providerConfiguration?: Record<string, unknown>;
@@ -678,7 +678,7 @@ export interface EvaluationSettings {
   langsmithProject: string;
   /** Custom/self-hosted endpoint (empty = LangSmith cloud). */
   langsmithEndpoint: string;
-  /** Folio-side Langfuse exporter for Agent / Deep Research traces. Independent of LangSmith. */
+  /** Yansivra-side Langfuse exporter for Agent / Deep Research traces. Independent of LangSmith. */
   langfuseTracingEnabled: boolean;
   /** Langfuse host (empty = https://cloud.langfuse.com). */
   langfuseHost: string;

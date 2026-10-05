@@ -3,7 +3,7 @@
 // path (AgentKernel -> RunManager -> Pi runtime), with budgets small enough that
 // the run must be stopped by the guard rather than by the model finishing.
 //
-//   source ~/.folio-e2e.env
+//   source ~/.yansivra-e2e.env
 //   bun scripts/eval/budget-smoke.ts --prompt "..." --max-model-calls 2
 //   bun scripts/eval/budget-smoke.ts --prompt "..." --loop-threshold 2 --max-tool-calls 20
 //
@@ -144,7 +144,7 @@ async function main(): Promise<number> {
     return 1;
   }
 
-  const runtimeDir = await mkdtemp(join(tmpdir(), 'folio-budget-smoke-'));
+  const runtimeDir = await mkdtemp(join(tmpdir(), 'yansivra-budget-smoke-'));
   const kernel = new AgentKernel({
     provider: 'pi-runtime',
     storageDir: join(runtimeDir, 'store'),

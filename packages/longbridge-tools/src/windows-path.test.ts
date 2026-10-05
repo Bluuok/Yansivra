@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { isLongBridgeOnWindowsPath } from './executor.ts';
 
-const directory = mkdtempSync(join(tmpdir(), 'folio-longbridge-path-'));
+const directory = mkdtempSync(join(tmpdir(), 'yansivra-longbridge-path-'));
 const empty = join(directory, 'empty');
 const binaries = join(directory, 'CLI with spaces');
 mkdirSync(empty);

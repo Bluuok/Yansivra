@@ -595,13 +595,13 @@ describe('ConnectionStore', () => {
     const connections = new ConnectionStore(store);
     await connections.setConfig('massive', {
       enabled: true,
-      endpoint: 'https://folio_user:sup3rsecret@db.host.internal:5432/api',
+      endpoint: 'https://yansivra_user:sup3rsecret@db.host.internal:5432/api',
     });
 
     // At-rest file must not carry the password.
     const raw = await store.read<Record<string, unknown>>('connections.json', {});
     expect(JSON.stringify(raw)).not.toContain('sup3rsecret');
-    expect(JSON.stringify(raw)).not.toContain('folio_user:');
+    expect(JSON.stringify(raw)).not.toContain('yansivra_user:');
     // Host/path survive so the target stays readable.
     expect(JSON.stringify(raw)).toContain('db.host.internal:5432/api');
     expect(JSON.stringify(raw)).toContain('[REDACTED]');

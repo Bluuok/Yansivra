@@ -75,21 +75,21 @@ export const DailyBriefSection: React.FC<DailyBriefSectionProps> = ({ onManage }
     }
     return (
       <div className="space-y-3">
-        <div className="folio-daily-brief-overview">
+        <div className="yansivra-daily-brief-overview">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="folio-daily-brief-count">{activeBrief.items.length}</span>
+            <span className="yansivra-daily-brief-count">{activeBrief.items.length}</span>
             <div className="min-w-0">
-              <div className="folio-daily-brief-overview-label">{t('today.dailyBriefAttention')}</div>
-              <div className="folio-daily-brief-overview-copy">{t('today.dailyBriefCount', { count: activeBrief.items.length })}</div>
+              <div className="yansivra-daily-brief-overview-label">{t('today.dailyBriefAttention')}</div>
+              <div className="yansivra-daily-brief-overview-copy">{t('today.dailyBriefCount', { count: activeBrief.items.length })}</div>
             </div>
           </div>
-          <div className="folio-daily-brief-updated">
+          <div className="yansivra-daily-brief-updated">
             <span className="h-1.5 w-1.5 rounded-full bg-[#12b76a]" />
             {t('today.dailyBriefUpdated')}
           </div>
           <span className="sr-only">{activeBrief.summary}</span>
         </div>
-        <ul className="folio-daily-brief-list" data-testid="brief-items">
+        <ul className="yansivra-daily-brief-list" data-testid="brief-items">
           {activeBrief.items.map((item) => (
             <BriefRow
               key={item.id}
@@ -102,8 +102,8 @@ export const DailyBriefSection: React.FC<DailyBriefSectionProps> = ({ onManage }
           ))}
         </ul>
         {activeBrief.quiet.count > 0 && (
-          <div className="folio-daily-brief-quiet" data-testid="brief-quiet">
-            <span className="folio-daily-brief-quiet-dot" />
+          <div className="yansivra-daily-brief-quiet" data-testid="brief-quiet">
+            <span className="yansivra-daily-brief-quiet-dot" />
             <span>{t('today.dailyBriefQuietLabel')}</span>
             <span className="text-foreground/45">{activeBrief.quiet.message}</span>
           </div>
@@ -115,7 +115,7 @@ export const DailyBriefSection: React.FC<DailyBriefSectionProps> = ({ onManage }
   return (
     <TodaySection
       title={t('today.dailyBrief')}
-      className="folio-daily-brief-section"
+      className="yansivra-daily-brief-section"
       action={
         <div className="flex items-center gap-2">
           {brief === null && !briefLoading && <DemoBadge />}
@@ -143,8 +143,8 @@ const BriefRow: React.FC<BriefRowProps> = ({ item, expanded, onToggle }) => {
   const { t } = useTranslation()
   const message = briefMessage(item, t)
   return (
-    <li className="folio-daily-brief-row">
-      <span className={`folio-daily-brief-severity ${SEVERITY_RAIL[item.severity]}`} aria-hidden="true" />
+    <li className="yansivra-daily-brief-row">
+      <span className={`yansivra-daily-brief-severity ${SEVERITY_RAIL[item.severity]}`} aria-hidden="true" />
       <div className="min-w-0">
         <div className="flex min-w-0 items-center gap-2">
           <span className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${SOURCE_DOT[item.source]}`} />
@@ -152,10 +152,10 @@ const BriefRow: React.FC<BriefRowProps> = ({ item, expanded, onToggle }) => {
         </div>
         {message && <div className="mt-1 truncate text-[11.5px] text-foreground/54">{message}</div>}
       </div>
-      <div className="folio-daily-brief-meta">
-        <span className="folio-daily-brief-source">{t(`today.source.${item.source}`)}</span>
+      <div className="yansivra-daily-brief-meta">
+        <span className="yansivra-daily-brief-source">{t(`today.source.${item.source}`)}</span>
         {item.payload !== undefined && (
-          <button type="button" onClick={onToggle} className="folio-daily-brief-details" aria-expanded={expanded}>
+          <button type="button" onClick={onToggle} className="yansivra-daily-brief-details" aria-expanded={expanded}>
             {expanded ? t('today.hide') : t('today.whySeeingThis')}
           </button>
         )}

@@ -30,7 +30,7 @@ const makeService = (store = new JsonFileStore(root)) => new JournalService({
   getReport: async (id) => { loads++; return reports.get(id); },
 });
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'folio-journal-'));
+  root = await mkdtemp(join(tmpdir(), 'yansivra-journal-'));
   reports = new Map([[reportA.id, structuredClone(reportA)], ['report-B', { ...structuredClone(reportA), id: 'report-B', summary: 'Latest B', generatedAt: NOW }]]);
   loads = 0;
 });

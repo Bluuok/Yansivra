@@ -1,9 +1,10 @@
 > 本文是 [release-gates.md](release-gates.md) 的中文翻译；如有出入，以英文原文为准。
 
-# Folio V4 — 发布门槛
+# Yansivra V4 — 发布门槛
 
 发布流水线：`internal` → `beta` → `stable`。V4 交付首个 **Beta** 候选版本。
-门槛由 `bun run release:check`（或 CI 步骤）在打标签前强制执行。任何一项门槛
+`bun run release:check` 在打标签前强制执行本文门槛中的自动化子集；交互、真实数据源、
+隐私及签名检查仍需按文末说明独立验证。当前自动发布 CI 任务已停用。任何适用门槛
 未通过的构建均为 `NOT RELEASEABLE`（不可发布），必须标记为 internal/未签名构建
 （规格 §38–40）。
 
@@ -34,7 +35,7 @@
 
 - 包被改动期间每次迭代都要运行。
 - **子代理规则（规格 §65）：** 子代理只在自己改动的包内运行 `bun test packages/<pkg>`
-  与 `bunx tsc --noEmit`。绝不运行仓库级门槛，绝不启动 Electron/Folio，不运行格式化器/lint。
+  与 `bunx tsc --noEmit`。绝不运行仓库级门槛，绝不启动 Electron/Yansivra，不运行格式化器/lint。
 - 仓库级变体：`bun run test:unit`。
 
 ### 层级 2 — 集成测试（仓库级，在工作树内）
@@ -53,7 +54,7 @@
 
 | 内容 | 命令 |
 |---|---|
-| 黄金路径 A–H | `FINAGENT_AGENT_PROVIDER=local bun run test:e2e` |
+| 黄金路径 A–H | `bun run test:e2e` |
 | 交互契约扫描 | `cd apps/electron && bun run test:interactions` |
 | 技能交互 | `cd apps/electron && bun run test:skills-interactions` |
 | 打包应用冒烟测试 | `bun run test:package-smoke` |
@@ -66,8 +67,8 @@
   apps/electron/src/main/index.ts 中的 `createWindow`）。窗口仍然创建，
   渲染进程照常加载运行，`--remote-debugging-port` 持续将其暴露给 CDP——
   桌面屏幕上什么都不出现，但完整 DOM + IPC 接口面都可被驱动。
-- 每个测试框架在启动前会自行清理自己的 CDP 端口（pkill 自己的
-  `remote-debugging-port=NNNN`），中断的运行不会留下僵尸窗口。
+- 已更新的黄金路径/V5 框架使用动态 CDP 端口与临时 profile，只关闭自己启动的
+  子进程；打包冒烟和首次引导由 Playwright 管理应用生命周期。不按进程名或端口批量杀进程。
 
 ### 层级 4 — 可见 / 发布（手动调试 + 发布门槛）
 
@@ -78,8 +79,9 @@
 
 - `FINAGENT_E2E_VISIBLE=1` 仅用于手动调试时强制显示窗口；
   它优先于 `FINAGENT_E2E_HIDDEN=1`。自动化运行必须保持隐藏。
-- **发布规则（规格 §67）：** 打标签前必须依次执行 `release:check` → 打包 →
-  针对打包后的 Folio.app 运行 `test:package-smoke` + `test:fresh-install`。
+- `release:check` 已包含本机平台打包、打包冒烟及首次引导，不需再重复这些门槛。
+  Windows 使用 `win-unpacked/Yansivra.exe` 和 ZIP，macOS 使用 `.app` 和 DMG。
+  本地门槛通过仍须完成下文在线业务、许可和签名要求，才可考虑公开发布。
 
 ### E2E 标志契约
 
@@ -92,12 +94,9 @@
 
 ### KEEP_OPEN 警告（规格 §63）
 
-`FINAGENT_E2E_KEEP_OPEN=1` 是调试逃生通道：测试框架跳过最后的关闭步骤，
-打印 `KEEP_OPEN CDP port <port>` 后退出，让应用继续运行（隐藏窗口 + CDP 保持）。
-自动化运行——CI、`release:check`、`test:e2e`、`test:e2e:visible`、
-`test:package-smoke`、`test:fresh-install`——绝不能设置它：它们依赖测试框架
-杀掉应用并在下次运行时复用其 CDP 端口。清理保持打开状态的实例：
-`pkill -f 'remote-debugging-port=<port>'`。
+`FINAGENT_E2E_KEEP_OPEN=1` 仅用于手动调试。黄金路径/V5 会打印
+自己启动的 PID 与 CDP 端口并保留该实例。自动化必须保持关闭；`release:check`
+会显式设置为 `0`。清理时只关闭确认属于本次测试的 PID，避免影响其他应用。
 
 ## 质量门槛（反复运行，绝不只是最后跑一次，规格 §69）
 
@@ -105,10 +104,10 @@
 |---|---|---|
 | 单元/集成测试 | `bun run test:unit` | 0 失败 |
 | 类型检查 | `bun run typecheck` | 干净 |
-| 构建 | `bun run build` | 干净（渲染进程 + preload + 主进程 + 扩展） |
-| Electron E2E | `FINAGENT_AGENT_PROVIDER=local bun run test:e2e` | 黄金路径 A–H 全绿 |
+| 构建 | `bun run build`，再在 `apps/electron` 运行 `bun run build:extension` | 渲染进程、preload、主进程及两个扩展均构建成功 |
+| Electron E2E | `bun run test:e2e` | 黄金路径 A–H 全绿 |
 | 打包冒烟测试 | `bun run test:package-smoke` | 全绿（在仓库外运行） |
-| 全新安装 E2E | 干净的 `userData`、无仓库，引导 → 工作台 → 行情 → 投资组合 → 技能 → 研究 → 论点 → 提醒 → 重启 | 全绿 |
+| 离线首次引导 | 在 `apps/electron` 运行 `bun run test:fresh-install` | 全新 profile、免责声明、跳过 AI、工作台及重启持久化通过；完整在线链路另行验收 |
 | 交互审计 | Playwright 按钮契约套件 | 每个控件：有行为 或 已禁用 或 已移除 |
 | 提供商冒烟测试 | 连接 Longbridge → 状态准确 → 经路由器的行情/K 线/新闻/投资组合 | 全绿 |
 | 密钥扫描 | 产物或打包内容中无密钥/令牌 | 干净 |
@@ -131,13 +130,18 @@
 ## 发布通道 / 版本管理
 
 - 根 `package.json` + `apps/electron/package.json` 中的 SemVer
-- `apps/electron/package.json` 中的通道（`folia.channel`）：
+- `apps/electron/package.json` 中的通道（`yansivra.channel`）：
   `internal` | `beta` | `stable`
 - About 视图显示版本 + 构建（git SHA）+ 通道
-- 标签：`vX.Y.Z-beta.N` → GitHub Release 资源（DMG + 校验和）
+- 本地 `release:package` 在 `dist/release` 准备当前版本的 ZIP（Windows）或 DMG（macOS）及 SHA256SUMS.txt。
+- GitHub Release 工作流当前禁用；标签或手动触发不会授权上传或发布。
 
-## 签名策略
+## 签名与验收范围
 
-- 无 Apple 凭证 → 未签名的 `internal` 构建，标记为 NOT RELEASEABLE
-- `beta`/`stable` 通道要求 CI 中配置签名 + 公证（凭密钥保护）；缺少它们时
-  流水线不得产出“release”。
+- 当前 Windows ZIP 未签名，不宣称可公开发行。macOS 的签名/公证需另行配置和真实验证。
+- `beta`/`stable` 的公开发行仍需许可、各目标平台签名要求及完整在线业务链路通过。
+- `release:check` 遇到首个失败立即停止；单测使用 `--isolate`。构建与扩展只执行一次，打包消费已构建产物，Node crypto 生成校验和。
+- 黄金路径 A–H 与 V5 仍依赖真实金融数据；选择 local Agent 不等于离线运行，需先在进程环境设置 `FINAGENT_AGENT_PROVIDER=local`。
+- `test:desktop`、打包冒烟和首次引导使用隔离 profile/凭据。离线通过不代表 Longbridge、外部 Pi、付费模型或在线研究已验证。
+- 交互审计、Provider 冒烟及产物密钥审查是上面的验收要求，当前 `release:check` 不自动运行这些独立检查。旧交互/视觉审计入口还有平台和 UI 前提，须单独核实。
+- 本地构建不执行发布；通过本地门槛不证明项目许可、签名或完整 Beta 就绪。

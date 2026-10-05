@@ -1,4 +1,4 @@
-// Folio interaction contract sweep — plain Node runner (same CDP harness
+// Yansivra interaction contract sweep — plain Node runner (same CDP harness
 // pattern as run.mjs). For each major user-facing control, asserts that a
 // click produces one of:
 //   aria    — aria-expanded/pressed/checked/selected state change
@@ -489,7 +489,7 @@ async function main() {
       page,
       'TitleBar > About (opens dialog)',
       'aside',
-      () => page.getByRole('button', { name: 'About Folio' }).click(),
+      () => page.getByRole('button', { name: 'About Yansivra' }).click(),
       { expect: 'dialog' }
     );
     await probe(

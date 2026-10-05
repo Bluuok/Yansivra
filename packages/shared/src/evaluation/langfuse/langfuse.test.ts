@@ -75,7 +75,7 @@ async function startMock(options?: { failIngest?: boolean; failHealth?: boolean;
 
 function agentSnapshot() {
   return {
-    folioRunId: 'run-agent-1',
+    yansivraRunId: 'run-agent-1',
     sessionId: 'session-1',
     startedAt: 1_700_000_000_000,
     completedAt: 1_700_000_001_500,
@@ -105,8 +105,8 @@ function agentSnapshot() {
     provider: 'local',
     usage: { input: 12, output: 40, total: 52 },
     metadata: {
-      folioRunId: 'run-agent-1',
-      folioSessionId: 'session-1',
+      yansivraRunId: 'run-agent-1',
+      yansivraSessionId: 'session-1',
       runKind: 'evaluation' as const,
       goldCaseId: 'gold-quote-1',
       datasetId: 'deep-research-gold',
@@ -151,7 +151,7 @@ function researchSnapshot() {
     'summary' | 'stance' | 'confidence' | 'sections' | 'bullCase' | 'bearCase' | 'risks' | 'capabilityRuns' | 'runStatus'
   >;
   return {
-    folioRunId: 'research-NVDA_US-1',
+    yansivraRunId: 'research-NVDA_US-1',
     startedAt: 1_700_000_000_000,
     completedAt: 1_700_000_004_000,
     symbol: 'NVDA.US',
@@ -179,9 +179,9 @@ function researchSnapshot() {
     model: 'local-synthesizer',
     provider: 'local',
     metadata: {
-      folioRunId: 'research-NVDA_US-1',
+      yansivraRunId: 'research-NVDA_US-1',
       runKind: 'normal' as const,
-      folioVersion: '0.4.0-beta.2',
+      yansivraVersion: '0.4.0-beta.2',
       symbol: 'NVDA.US',
     },
   };
@@ -190,14 +190,14 @@ function researchSnapshot() {
 describe('langfuse metadata', () => {
   it('emits filterable tags for evaluation gold cases', () => {
     const tags = langfuseTags({
-      folioRunId: 'r1',
+      yansivraRunId: 'r1',
       runKind: 'evaluation',
       goldCaseId: 'gold-quote-1',
       datasetId: 'deep-research-gold',
       datasetVersion: 'v1',
       model: 'anthropic/claude-sonnet',
     });
-    expect(tags).toContain('folio');
+    expect(tags).toContain('yansivra');
     expect(tags).toContain('run_kind:evaluation');
     expect(tags).toContain('gold_case:gold-quote-1');
     expect(tags).toContain('dataset:deep-research-gold@v1');
@@ -219,7 +219,7 @@ describe('langfuse exporter', () => {
   it('builds a multi-span agent trace, not a single LLM generation', () => {
     const batch = buildAgentTraceBatch(agentSnapshot());
     const types = batch.events.map((event) => `${event.type}:${String(event.body.name ?? '')}`);
-    expect(types.some((entry) => entry.startsWith('trace-create:folio.agent_run'))).toBe(true);
+    expect(types.some((entry) => entry.startsWith('trace-create:yansivra.agent_run'))).toBe(true);
     expect(types).toContain('span-create:tool.get_quote');
     expect(types).toContain('span-create:tool.get_news');
     expect(types).toContain('generation-create:agent.generation');
@@ -232,7 +232,7 @@ describe('langfuse exporter', () => {
   it('builds a deep-research trace with retrieval spans plus synthesis and report', () => {
     const batch = buildResearchTraceBatch(researchSnapshot());
     const names = batch.events.map((event) => String(event.body.name ?? ''));
-    expect(names).toContain('folio.deep_research');
+    expect(names).toContain('yansivra.deep_research');
     expect(names).toContain('research.input');
     expect(names).toContain('retrieval.market.quote');
     expect(names).toContain('retrieval.research.news');
@@ -359,7 +359,7 @@ describe('langfuse backend', () => {
   it('correlates an ingested Langfuse trace without treating it as LangSmith', async () => {
     const mock = await startMock();
     servers.push(mock);
-    const dir = await mkdtemp(join(tmpdir(), 'folio-lf-corr-'));
+    const dir = await mkdtemp(join(tmpdir(), 'yansivra-lf-corr-'));
     try {
       const store = new EvaluationStore(new JsonFileStore(dir));
       const backend = new LangfuseEvaluationBackend({
@@ -370,8 +370,8 @@ describe('langfuse backend', () => {
       await backend.exportAgentRun(agentSnapshot());
       const correlation = new TraceCorrelationService({ backend, store, now: () => 1_700_000_001_500 });
       const ref = await correlation.recordRun({
-        folioRunId: 'run-agent-1',
-        folioSessionId: 'session-1',
+        yansivraRunId: 'run-agent-1',
+        yansivraSessionId: 'session-1',
         startedAt: 1_700_000_000_000,
         completedAt: 1_700_000_001_500,
       });

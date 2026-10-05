@@ -37,7 +37,7 @@ describe('position weight currency boundary', () => {
     expect((await evaluate(snapshot({ marketValueBase: 400 })))?.payload?.weight).toBeCloseTo(0.4);
   });
   it('does not persist or notify a false alert, then recovers when conversion is available', async () => {
-    const store = new JsonFileStore(mkdtempSync(join(tmpdir(), 'folio-weight-currency-')));
+    const store = new JsonFileStore(mkdtempSync(join(tmpdir(), 'yansivra-weight-currency-')));
     const repository = new AlertRuleRepository(store);
     const events = new AlertEventLog(store);
     await repository.save(rule);

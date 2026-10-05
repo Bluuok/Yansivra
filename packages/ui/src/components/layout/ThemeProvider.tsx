@@ -1,7 +1,8 @@
+import '../../lib/branding-migration.ts';
 import React, { useEffect, useState } from 'react';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
-const STORAGE_KEY = 'folio.theme';
+const STORAGE_KEY = 'yansivra.theme';
 
 function systemIsDark(): boolean {
   return typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;

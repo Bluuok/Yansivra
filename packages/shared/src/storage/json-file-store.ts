@@ -1,9 +1,28 @@
 import { mkdir, open, readFile, rename, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
+import { setTimeout as delay } from 'node:timers/promises';
 import { dirname, join } from 'node:path';
 import { createCodeError } from '../agent/errors.ts';
 
 const publishLocks = new Map<string, Promise<void>>();
+const WINDOWS_RENAME_DELAYS = [10, 20, 40, 80, 160, 320, 640];
+
+async function replaceFile(tmp: string, target: string): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await rename(tmp, target);
+      return;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException)?.code;
+      if (process.platform !== 'win32' || !['EPERM', 'EACCES', 'EBUSY'].includes(code ?? '') || attempt >= WINDOWS_RENAME_DELAYS.length) {
+        throw error;
+      }
+      // Readers/antivirus may briefly hold a Windows sharing lock. Retry the
+      // atomic replacement; never unlink the last good target to bypass it.
+      await delay(WINDOWS_RENAME_DELAYS[attempt]!);
+    }
+  }
+}
 
 /**
  * Serialize only the final replacement for a target. Temporary files can be
@@ -15,7 +34,7 @@ async function publish(target: string, tmp: string): Promise<void> {
   let current: Promise<void>;
   current = previous
     .catch(() => undefined)
-    .then(() => rename(tmp, target));
+    .then(() => replaceFile(tmp, target));
   publishLocks.set(target, current);
   try {
     await current;

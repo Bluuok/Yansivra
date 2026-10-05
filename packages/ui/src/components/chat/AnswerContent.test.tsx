@@ -18,7 +18,7 @@ afterAll(() => {
 });
 
 const METRIC_GRID = [
-  '```folio-block',
+  '```yansivra-block',
   JSON.stringify({
     version: 1,
     type: 'metric_grid',
@@ -33,7 +33,7 @@ const METRIC_GRID = [
 ].join('\n');
 
 const TIME_SERIES = [
-  '```folio-block',
+  '```yansivra-block',
   JSON.stringify({
     version: 1,
     type: 'time_series_chart',
@@ -89,7 +89,7 @@ describe('AnswerContent', () => {
   });
 
   it('degrades a closed malformed block to text without crashing the message', async () => {
-    const content = 'Intro\n\n```folio-block\n{"version":1,"type":"metric_grid","metrics":"oops"}\n```\n\nOutro';
+    const content = 'Intro\n\n```yansivra-block\n{"version":1,"type":"metric_grid","metrics":"oops"}\n```\n\nOutro';
     const container = await renderContent(content);
     expect(container.querySelector('[data-testid="answer-block-invalid"]')).not.toBeNull();
     expect(container.textContent).toContain('Outro');
@@ -97,7 +97,7 @@ describe('AnswerContent', () => {
   });
 
   it('shows a loading placeholder for an unfinished streaming block', async () => {
-    const content = 'Intro\n\n```folio-block\n{"version":1,"type":"met';
+    const content = 'Intro\n\n```yansivra-block\n{"version":1,"type":"met';
     const container = await renderContent(content);
     expect(container.querySelector('[data-testid="answer-block-loading"]')).not.toBeNull();
     expect(container.querySelector('[data-testid="answer-block-invalid"]')).toBeNull();
@@ -105,7 +105,7 @@ describe('AnswerContent', () => {
 
   it('renders the DemoBadge for blocks sourced from demo data', async () => {
     const demoBlock = [
-      '```folio-block',
+      '```yansivra-block',
       JSON.stringify({
         version: 1,
         type: 'metric_grid',

@@ -33,7 +33,7 @@ describe('CSV leading empty records', () => {
   })
 
   it('persists only the actual holding with the correct column mapping', async () => {
-    const store = new JsonFileStore(mkdtempSync(join(tmpdir(), 'folio-leading-rows-')))
+    const store = new JsonFileStore(mkdtempSync(join(tmpdir(), 'yansivra-leading-rows-')))
     const draft = createDraft('csv', parseCsv(' \nCost,Symbol,Quantity\n180.5,AAPL.US,100'))
     const created = await new ManualPortfolioRepository(store).create(draftToPortfolioInput(draft, 'Import'))
     const reloaded = await new ManualPortfolioRepository(store).get(created.id)

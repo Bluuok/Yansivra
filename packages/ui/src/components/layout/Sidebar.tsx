@@ -68,10 +68,10 @@ const SidebarNavButton: React.FC<{
       aria-label={label}
       aria-pressed={active}
       onClick={onClick}
-      className={`folio-sidebar-nav-item ${active ? 'folio-sidebar-nav-item--active' : ''}`}
+      className={`yansivra-sidebar-nav-item ${active ? 'yansivra-sidebar-nav-item--active' : ''}`}
     >
       <Icon className="h-4 w-4 shrink-0" strokeWidth={active ? 2 : 1.7} />
-      <span className="folio-sidebar-nav-label">{label}</span>
+      <span className="yansivra-sidebar-nav-label">{label}</span>
     </button>
   );
 };
@@ -91,24 +91,24 @@ export const Sidebar: React.FC = () => {
   const showWorkspaceContext = navSection === 'sessions' || navSection === 'watchlist';
 
   return (
-    <aside className="folio-sidebar h-full w-full overflow-hidden bg-surface" data-testid="sidebar">
-      <div className="folio-sidebar-content flex h-full min-w-0 flex-col px-3 py-5">
-        <div className="folio-sidebar-brand mb-6 px-2">
-          <div className="folio-sidebar-brand-name">Yansivra</div>
-          <div className="folio-sidebar-brand-kicker">{t('navigation.institutionalResearch')}</div>
+    <aside className="yansivra-sidebar h-full w-full overflow-hidden bg-surface" data-testid="sidebar">
+      <div className="yansivra-sidebar-content flex h-full min-w-0 flex-col px-3 py-5">
+        <div className="yansivra-sidebar-brand mb-6 px-2">
+          <div className="yansivra-sidebar-brand-name">Yansivra</div>
+          <div className="yansivra-sidebar-brand-kicker">{t('navigation.institutionalResearch')}</div>
         </div>
 
         <button
           type="button"
           aria-label={t('navigation.startResearch')}
           onClick={() => setNavSection('research')}
-          className="folio-sidebar-new-analysis mb-6 flex h-9 w-full items-center justify-center gap-2 rounded-[4px] px-3 text-[12px] font-semibold"
+          className="yansivra-sidebar-new-analysis mb-6 flex h-9 w-full items-center justify-center gap-2 rounded-[4px] px-3 text-[12px] font-semibold"
         >
           <CirclePlus className="h-4 w-4" />
           <span>{t('navigation.startResearch')}</span>
         </button>
 
-        <nav aria-label={t('navigation.globalNavAria')} className="folio-sidebar-nav flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
+        <nav aria-label={t('navigation.globalNavAria')} className="yansivra-sidebar-nav flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto">
           {SIDEBAR_ITEMS.map((item) => (
             <SidebarNavButton
               key={item.key}
@@ -118,20 +118,20 @@ export const Sidebar: React.FC = () => {
               onClick={() => setNavSection(item.key)}
             />
           ))}
-          <div className="folio-sidebar-section-label folio-sidebar-nav-label mb-2 mt-6 px-3">{t('navigation.researchTools')}</div>
+          <div className="yansivra-sidebar-section-label yansivra-sidebar-nav-label mb-2 mt-6 px-3">{t('navigation.researchTools')}</div>
           {RESEARCH_TOOLS.map((item) => <SidebarNavButton key={item.key} item={item} label={t(`navigation.${item.labelKey}`)} active={navSection === item.key} onClick={() => setNavSection(item.key)} />)}
-          <button type="button" onClick={() => setAdvancedOpen((open) => !open)} aria-expanded={advancedOpen} aria-label={t('navigation.advancedTools')} className="folio-sidebar-nav-item mt-3 text-text-muted">
+          <button type="button" onClick={() => setAdvancedOpen((open) => !open)} aria-expanded={advancedOpen} aria-label={t('navigation.advancedTools')} className="yansivra-sidebar-nav-item mt-3 text-text-muted">
             <ChevronDown className={`h-4 w-4 shrink-0 ${advancedOpen ? 'rotate-180' : ''}`} />
-            <span className="folio-sidebar-nav-label">{t('navigation.advancedTools')}</span>
+            <span className="yansivra-sidebar-nav-label">{t('navigation.advancedTools')}</span>
           </button>
           {advancedOpen && ADVANCED_TOOLS.map((item) => <SidebarNavButton key={item.key} item={item} label={t(`navigation.${item.labelKey}`)} active={navSection === item.key} onClick={() => setNavSection(item.key)} />)}
         </nav>
 
         {showWorkspaceContext && (
-          <section className="folio-sidebar-context mt-4 min-h-0 border-t border-border pt-3">
+          <section className="yansivra-sidebar-context mt-4 min-h-0 border-t border-border pt-3">
             <button type="button" aria-label={t('navigation.newSession')} onClick={() => void createSession(client)} className="mb-2 flex w-full items-center gap-2 px-2 text-xs text-accent"><CirclePlus className="h-3.5 w-3.5" />{t('navigation.newSession')}</button>
             <div className="flex items-center justify-between px-2 pb-2">
-              <span className="folio-sidebar-section-label">{t('navigation.sessions')}</span>
+              <span className="yansivra-sidebar-section-label">{t('navigation.sessions')}</span>
               <span className="tnum text-[10px] text-foreground/40">{sessions.length}</span>
             </div>
             <div className="max-h-28 overflow-y-auto">
@@ -156,7 +156,7 @@ export const Sidebar: React.FC = () => {
               ))}
               {sessions.length === 0 && <div className="px-2 py-2 text-[11px] text-foreground/40">{t('navigation.noSessions')}</div>}
             </div>
-            <button type="button" onClick={() => setNavSection('watchlist')} className="folio-sidebar-context-heading mt-3 flex w-full items-center gap-2 px-2 text-left">
+            <button type="button" onClick={() => setNavSection('watchlist')} className="yansivra-sidebar-context-heading mt-3 flex w-full items-center gap-2 px-2 text-left">
               <Activity className="h-3.5 w-3.5" />
               <span>{t('navigation.watchlist')}</span>
             </button>
@@ -166,14 +166,14 @@ export const Sidebar: React.FC = () => {
           </section>
         )}
 
-        <div className="folio-sidebar-footer mt-auto border-t border-border pt-3">
+        <div className="yansivra-sidebar-footer mt-auto border-t border-border pt-3">
           <SidebarNavButton
             item={{ key: 'settings', labelKey: 'settings', icon: Settings }}
             label={t('navigation.settings')}
             active={navSection === 'settings'}
             onClick={() => setNavSection('settings')}
           />
-          <div className="folio-sidebar-support flex items-center gap-2 px-3 py-2 text-[11px] text-foreground/45">
+          <div className="yansivra-sidebar-support flex items-center gap-2 px-3 py-2 text-[11px] text-foreground/45">
             <CircleHelp className="h-4 w-4" />
             <span>{t('navigation.support')}</span>
           </div>

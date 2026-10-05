@@ -36,7 +36,7 @@ describe('buildFinancialEvidence', () => {
     expect(first.id).toBe(second.id);
     expect(first).toMatchObject({
       schemaVersion: 'financial-evidence/v1',
-      normalizationVersion: 'folio-normalization/v1',
+      normalizationVersion: 'yansivra-normalization/v1',
       provider: 'longbridge',
       instrumentId: 'AAPL.US',
       capabilityId: 'market.quote',
@@ -49,7 +49,7 @@ describe('buildFinancialEvidence', () => {
       unit: 'price',
       currency: 'USD',
     });
-    expect(first.lineage.at(-1)?.version).toBe('folio-normalization/v1');
+    expect(first.lineage.at(-1)?.version).toBe('yansivra-normalization/v1');
   });
 
   it('keeps 6-digit A-share symbol arguments as the instrument id', () => {

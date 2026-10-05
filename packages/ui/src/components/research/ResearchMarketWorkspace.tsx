@@ -54,9 +54,9 @@ const formatCompact = (value: number | undefined): string => {
 };
 
 const STANCE_TONE = {
-  bullish: 'folio-research-decision--positive',
-  bearish: 'folio-research-decision--negative',
-  neutral: 'folio-research-decision--neutral',
+  bullish: 'yansivra-research-decision--positive',
+  bearish: 'yansivra-research-decision--negative',
+  neutral: 'yansivra-research-decision--neutral',
 } as const;
 
 /**
@@ -144,7 +144,7 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
 
   const confidence = report ? Math.round(report.confidence * 100) : 0;
   const stance = report?.stance ?? 'neutral';
-  const stanceTone = report ? STANCE_TONE[stance] : 'folio-research-decision--empty';
+  const stanceTone = report ? STANCE_TONE[stance] : 'yansivra-research-decision--empty';
   const stanceLabel = report
     ? t(`research.stance.${stance}`)
     : t('research.workspace.awaitingDecision');
@@ -155,70 +155,70 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
       : 'idle';
 
   return (
-    <section className="folio-research-workspace" data-testid="research-market-workspace">
-      <div className="folio-research-market-main">
-        <div className="folio-research-asset-header">
-          <div className="folio-research-asset-copy min-w-0">
-            <div className="folio-research-asset-overline">
-              <span className="folio-research-market-dot" aria-hidden="true" />
+    <section className="yansivra-research-workspace" data-testid="research-market-workspace">
+      <div className="yansivra-research-market-main">
+        <div className="yansivra-research-asset-header">
+          <div className="yansivra-research-asset-copy min-w-0">
+            <div className="yansivra-research-asset-overline">
+              <span className="yansivra-research-market-dot" aria-hidden="true" />
               <span>{currency} · {quote ? t('research.workspace.live') : t('research.workspace.marketStatus')}</span>
             </div>
-            <div className="folio-research-asset-identity">
-              <h1 className="folio-research-symbol">{symbol}</h1>
-              <span className="folio-research-asset-company">{companyName}</span>
+            <div className="yansivra-research-asset-identity">
+              <h1 className="yansivra-research-symbol">{symbol}</h1>
+              <span className="yansivra-research-asset-company">{companyName}</span>
             </div>
-            <div className="folio-research-price-line">
+            <div className="yansivra-research-price-line">
               <strong className="tnum">{formatPrice(quote?.lastPrice, currency)}</strong>
-              <span className={`folio-research-price-change tnum ${quote && quote.change >= 0 ? 'text-positive' : 'text-negative'}`}>
+              <span className={`yansivra-research-price-change tnum ${quote && quote.change >= 0 ? 'text-positive' : 'text-negative'}`}>
                 {formatSigned(quote?.change)} ({formatPercent(quote?.changePercent)})
               </span>
             </div>
-            <p className="folio-research-market-meta">
+            <p className="yansivra-research-market-meta">
               {quote?.timestamp
                 ? `${t('research.workspace.lastUpdated')} ${new Date(quote.timestamp * 1000).toLocaleString()}`
                 : t('research.workspace.marketDataUnavailable')}
             </p>
           </div>
-          <div className="folio-research-asset-actions">
+          <div className="yansivra-research-asset-actions">
             <button
               type="button"
               onClick={() => (watched ? removeFromWatchlist(symbol) : addToWatchlist(symbol))}
-              className={`folio-research-outline-button ${watched ? 'folio-research-outline-button--active' : ''}`}
+              className={`yansivra-research-outline-button ${watched ? 'yansivra-research-outline-button--active' : ''}`}
               aria-pressed={watched}
               data-testid="research-watchlist-toggle"
             >
               <Star className="h-3.5 w-3.5" fill={watched ? 'currentColor' : 'none'} />
               {watched ? t('research.workspace.inWatchlist') : t('research.workspace.addToWatchlist')}
             </button>
-            <button type="button" className="folio-research-icon-button" aria-label={t('research.workspace.moreActions')}>
+            <button type="button" className="yansivra-research-icon-button" aria-label={t('research.workspace.moreActions')}>
               <Ellipsis className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        <nav className="folio-research-tabs" aria-label={t('research.workspace.tabsAria')}>
-          <a className="folio-research-tab folio-research-tab--active" href="#research-overview">{t('research.workspace.overview')}</a>
-          <a className="folio-research-tab" href="#research-evidence" onClick={(event) => {
-            const content = event.currentTarget.closest<HTMLElement>('.folio-pilot-research-content');
-            const signals = content?.querySelector<HTMLElement>('[data-testid="research-report"] .folio-pilot-report-sections');
+        <nav className="yansivra-research-tabs" aria-label={t('research.workspace.tabsAria')}>
+          <a className="yansivra-research-tab yansivra-research-tab--active" href="#research-overview">{t('research.workspace.overview')}</a>
+          <a className="yansivra-research-tab" href="#research-evidence" onClick={(event) => {
+            const content = event.currentTarget.closest<HTMLElement>('.yansivra-pilot-research-content');
+            const signals = content?.querySelector<HTMLElement>('[data-testid="research-report"] .yansivra-pilot-report-sections');
             if (signals && content) { event.preventDefault(); content.scrollTo({ top: content.scrollTop + signals.getBoundingClientRect().top - content.getBoundingClientRect().top - 24, behavior: 'auto' }); }
           }}>{t('research.workspace.signals')}</a>
-          <a className="folio-research-tab" href="#research-evidence">{t('research.workspace.evidence')}</a>
-          <a className="folio-research-tab" href="#research-thesis">{t('research.workspace.thesis')}</a>
+          <a className="yansivra-research-tab" href="#research-evidence">{t('research.workspace.evidence')}</a>
+          <a className="yansivra-research-tab" href="#research-thesis">{t('research.workspace.thesis')}</a>
         </nav>
 
-        <div id="research-overview" className="folio-research-chart-panel">
-          <div className="folio-research-chart-toolbar">
-            <div className="folio-research-chart-toolbar-left">
-              <span className="folio-research-chart-mode"><Activity className="h-3.5 w-3.5" />{t('research.workspace.chartMode')}</span>
-              <div className="folio-research-periods">
+        <div id="research-overview" className="yansivra-research-chart-panel">
+          <div className="yansivra-research-chart-toolbar">
+            <div className="yansivra-research-chart-toolbar-left">
+              <span className="yansivra-research-chart-mode"><Activity className="h-3.5 w-3.5" />{t('research.workspace.chartMode')}</span>
+              <div className="yansivra-research-periods">
               {PERIODS.map((value) => (
                 <button
                   key={value}
                   type="button"
                   onClick={() => setPeriod(value)}
                   aria-pressed={period === value}
-                  className={`folio-research-period ${period === value ? 'folio-research-period--active' : ''}`}
+                  className={`yansivra-research-period ${period === value ? 'yansivra-research-period--active' : ''}`}
                 >
                   {value.toUpperCase()}
                 </button>
@@ -226,26 +226,26 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button type="button" className="folio-research-toolbar-control"><SlidersHorizontal className="h-3.5 w-3.5" />{t('research.workspace.indicators')}<ChevronDown className="h-3 w-3" /></button>
-              <button type="button" className="folio-research-icon-button" aria-label={t('research.workspace.expandChart')}><Maximize2 className="h-3.5 w-3.5" /></button>
+              <button type="button" className="yansivra-research-toolbar-control"><SlidersHorizontal className="h-3.5 w-3.5" />{t('research.workspace.indicators')}<ChevronDown className="h-3 w-3" /></button>
+              <button type="button" className="yansivra-research-icon-button" aria-label={t('research.workspace.expandChart')}><Maximize2 className="h-3.5 w-3.5" /></button>
             </div>
           </div>
-          <div className="folio-research-chart-canvas">
+          <div className="yansivra-research-chart-canvas">
             {chartLoading ? (
-              <div className="folio-research-chart-empty" data-testid="research-chart-loading">
-                <div className="folio-research-chart-skeleton" />
+              <div className="yansivra-research-chart-empty" data-testid="research-chart-loading">
+                <div className="yansivra-research-chart-skeleton" />
                 <span>{t('research.workspace.loadingChart')}</span>
               </div>
             ) : bars.length > 0 ? (
               <FinancialKLineChart bars={bars} symbol={symbol} period={period} showMA showEMA />
             ) : (
-              <div className="folio-research-chart-empty" data-testid="research-chart-empty">
+              <div className="yansivra-research-chart-empty" data-testid="research-chart-empty">
                 <BarChart3 className="h-5 w-5" />
                 <span>{chartError ?? t('research.workspace.noChartData')}</span>
               </div>
             )}
           </div>
-          <div className="folio-research-stat-strip">
+          <div className="yansivra-research-stat-strip">
             <ResearchStat label={t('research.workspace.open')} value={formatPrice(quote?.open, currency)} />
             <ResearchStat label={t('research.workspace.high')} value={formatPrice(quote?.high, currency)} />
             <ResearchStat label={t('research.workspace.low')} value={formatPrice(quote?.low, currency)} />
@@ -258,27 +258,27 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
         <EvidencePreview report={report} rows={evidenceRows} />
       </div>
 
-      <aside className={`folio-research-decision-rail ${stanceTone}`} aria-label={t('research.workspace.decision')}>
-        <div className="folio-research-rail-heading">
+      <aside className={`yansivra-research-decision-rail ${stanceTone}`} aria-label={t('research.workspace.decision')}>
+        <div className="yansivra-research-rail-heading">
           <div>
-            <span className="folio-research-rail-kicker">{t('research.workspace.signals')}</span>
+            <span className="yansivra-research-rail-kicker">{t('research.workspace.signals')}</span>
             <h2>{t('research.workspace.decision')}</h2>
           </div>
           <CircleHelp className="h-3.5 w-3.5" />
         </div>
-        <div className="folio-research-decision-status">
+        <div className="yansivra-research-decision-status">
           {activeRun && <AgentAmbientField state={ambientState} />}
-          <div className="folio-research-decision-card">
-            {report ? <ArrowUpRight className="folio-research-decision-icon h-7 w-7" /> : <Sparkles className="folio-research-decision-icon h-6 w-6" />}
+          <div className="yansivra-research-decision-card">
+            {report ? <ArrowUpRight className="yansivra-research-decision-icon h-7 w-7" /> : <Sparkles className="yansivra-research-decision-icon h-6 w-6" />}
             <div>
               <strong>{stanceLabel}</strong>
               <p>{report ? t('research.workspace.decisionSummary') : t('research.workspace.decisionEmptyHint')}</p>
             </div>
           </div>
         </div>
-        <div className="folio-research-confidence-row">
+        <div className="yansivra-research-confidence-row">
           <span>{t('research.confidence')}</span>
-          <div className="folio-research-confidence-ring" style={{ '--confidence': `${confidence * 3.6}deg` } as React.CSSProperties}>
+          <div className="yansivra-research-confidence-ring" style={{ '--confidence': `${confidence * 3.6}deg` } as React.CSSProperties}>
             <span>{report ? `${confidence}%` : '—'}</span>
           </div>
         </div>
@@ -286,9 +286,9 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
         <DecisionRow label={t('research.workspace.priceTarget')} value="—" />
         <DecisionRow label={t('research.workspace.potentialReturn')} value="—" />
         <DecisionRow label={t('research.workspace.keyRisk')} value={report?.risks[0] ?? '—'} multiline />
-        <div id="research-thesis" className="folio-research-next-action-block">
-          <div className="folio-research-next-action-label">{t('research.workspace.nextAction')}</div>
-          <button type="button" onClick={onStart} disabled={loading || Boolean(activeRun) || Boolean(report)} className="folio-research-next-action-button">
+        <div id="research-thesis" className="yansivra-research-next-action-block">
+          <div className="yansivra-research-next-action-label">{t('research.workspace.nextAction')}</div>
+          <button type="button" onClick={onStart} disabled={loading || Boolean(activeRun) || Boolean(report)} className="yansivra-research-next-action-button">
             <Activity className="h-4 w-4" />
             <span>
               <strong>{report ? t('research.workspace.reportReady') : activeRun ? t('research.synthesizing') : t('research.deepResearch')}</strong>
@@ -296,7 +296,7 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
             </span>
           </button>
         </div>
-        <div className="folio-research-source-count">
+        <div className="yansivra-research-source-count">
           <span>{t('research.workspace.sources')}</span>
           <strong>{evidenceRows.length || '—'}</strong>
         </div>
@@ -306,14 +306,14 @@ export const ResearchMarketWorkspace: React.FC<ResearchMarketWorkspaceProps> = (
 };
 
 const ResearchStat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div className="folio-research-stat">
+  <div className="yansivra-research-stat">
     <span>{label}</span>
     <strong>{value}</strong>
   </div>
 );
 
 const DecisionRow: React.FC<{ label: string; value: string; multiline?: boolean }> = ({ label, value, multiline = false }) => (
-  <div className={`folio-research-decision-row ${multiline ? 'folio-research-decision-row--multiline' : ''}`}>
+  <div className={`yansivra-research-decision-row ${multiline ? 'yansivra-research-decision-row--multiline' : ''}`}>
     <span>{label}</span>
     <strong>{value}</strong>
   </div>
@@ -325,32 +325,32 @@ const EvidencePreview: React.FC<{
 }> = ({ report, rows }) => {
   const { t } = useTranslation();
   return (
-    <section id="research-evidence" className="folio-research-evidence-panel" data-testid="research-evidence-preview">
-      <div className="folio-research-section-heading">
+    <section id="research-evidence" className="yansivra-research-evidence-panel" data-testid="research-evidence-preview">
+      <div className="yansivra-research-section-heading">
         <div>
-          <div className="folio-research-section-kicker"><Search className="h-3.5 w-3.5" />{t('research.workspace.evidence')}</div>
+          <div className="yansivra-research-section-kicker"><Search className="h-3.5 w-3.5" />{t('research.workspace.evidence')}</div>
           <h2>{t('research.workspace.evidenceTitle')} <span>{rows.length || '—'}</span></h2>
         </div>
         <div className="flex items-center gap-1.5">
-          <button type="button" className="folio-research-toolbar-control"><SlidersHorizontal className="h-3.5 w-3.5" />{t('research.workspace.filters')}</button>
-          <button type="button" className="folio-research-toolbar-control"><BarChart3 className="h-3.5 w-3.5" />{t('research.workspace.columns')}</button>
-          <button type="button" className="folio-research-icon-button" aria-label={t('research.workspace.moreActions')}><Ellipsis className="h-4 w-4" /></button>
+          <button type="button" className="yansivra-research-toolbar-control"><SlidersHorizontal className="h-3.5 w-3.5" />{t('research.workspace.filters')}</button>
+          <button type="button" className="yansivra-research-toolbar-control"><BarChart3 className="h-3.5 w-3.5" />{t('research.workspace.columns')}</button>
+          <button type="button" className="yansivra-research-icon-button" aria-label={t('research.workspace.moreActions')}><Ellipsis className="h-4 w-4" /></button>
         </div>
       </div>
       {rows.length === 0 ? (
-        <div className="folio-research-evidence-empty">
+        <div className="yansivra-research-evidence-empty">
           <Sparkles className="h-4 w-4" />
           <span>{report ? t('research.workspace.noEvidence') : t('research.workspace.evidenceEmptyHint')}</span>
         </div>
       ) : (
-        <div className="folio-research-evidence-table">
-          <div className="folio-research-evidence-head"><span>{t('research.workspace.source')}</span><span>{t('research.workspace.claim')}</span><span>{t('research.workspace.freshness')}</span><span>{t('research.confidence')}</span></div>
+        <div className="yansivra-research-evidence-table">
+          <div className="yansivra-research-evidence-head"><span>{t('research.workspace.source')}</span><span>{t('research.workspace.claim')}</span><span>{t('research.workspace.freshness')}</span><span>{t('research.confidence')}</span></div>
           {rows.map((row) => (
-            <div key={row.runId} className="folio-research-evidence-table-row">
-              <span className="folio-research-evidence-source"><span className="folio-research-source-mark">{row.sectionTitle.slice(0, 1)}</span>{t(semanticCapabilityLabelKey(row.capabilityId))}</span>
-              <span className="folio-research-evidence-claim">{row.claim}</span>
-              <span className="folio-research-evidence-freshness">{new Date(row.fetchedAt).toLocaleDateString()}</span>
-              <span className="folio-research-evidence-confidence"><i /><i /><i /><i /><i /></span>
+            <div key={row.runId} className="yansivra-research-evidence-table-row">
+              <span className="yansivra-research-evidence-source"><span className="yansivra-research-source-mark">{row.sectionTitle.slice(0, 1)}</span>{t(semanticCapabilityLabelKey(row.capabilityId))}</span>
+              <span className="yansivra-research-evidence-claim">{row.claim}</span>
+              <span className="yansivra-research-evidence-freshness">{new Date(row.fetchedAt).toLocaleDateString()}</span>
+              <span className="yansivra-research-evidence-confidence"><i /><i /><i /><i /><i /></span>
             </div>
           ))}
         </div>

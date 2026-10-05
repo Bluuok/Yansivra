@@ -1,4 +1,4 @@
-# Folio Desk 验证记录
+# Yansivra 验证记录
 
 环境：Windows 10.0.26200，Bun 1.4.0，Node 24.21.0，Electron 39.8.9。阶段回归使用独立临时 profile、隐藏窗口和本地 provider。文末的 DeepSeek 补充验收使用用户授权的真实 API Key 和项目内独立 profile。
 
@@ -48,7 +48,7 @@ AGY 首轮发现旧文案断言和初始面板可见性问题；主代理已同�
 
 ## 阶段 4：Windows 回归与交付整理
 
-版本 `0.5.0-beta.1`，产物显示名 Folio Desk。应用 ID、内部配置命名和旧 Folio 数据目录保持兼容。已更新中英文 README、窗口图标和真实产品截图。
+版本 `0.5.0-beta.1`，产物显示名 Yansivra。应用 ID、内部配置命名和旧 Yansivra 数据目录保持兼容。已更新中英文 README、窗口图标和真实产品截图。
 
 | 检查 | 最终结果 |
 | --- | --- |
@@ -69,21 +69,21 @@ AGY 首轮类型检查发现新增资源测试的 `delete` 属性类型不兼容
 
 补齐六组尺寸/缩放组合后，将窄屏图标栏断点由 900px 调整为 1000px，避免 1366×768 在 150% 内容缩放、右栏开启时最小面板宽度超出可见区。最终六组均检查中心/右栏最小可用宽度和右侧边界。
 
-本机验收进程的管理员角色检查为 `False`。打包应用从 `E:\temp\Folio 中文 解压 ...` 启动，使用独立中文/空格 profile；没有开发服务器、管理员安装或用户真实账户数据。
+本机验收进程的管理员角色检查为 `False`。打包应用从 `E:\temp\Yansivra 中文 解压 ...` 启动，使用独立中文/空格 profile；没有开发服务器、管理员安装或用户真实账户数据。
 
 最终本地产物：
 
 ```text
-dist/electron/Folio-Desk-0.5.0-beta.1-win-x64.zip
+dist/electron/Yansivra-0.5.0-beta.1-win-x64.zip
 141296688 bytes
 SHA256 7f55ccd0073ac4f5c9164d38187578829bd03a12bbe7d7f55ae6cfdbe575c0f6
 ```
 
-这是上述阶段的未签名可解压运行包。EXE 元数据编辑被跳过，Explorer 属性/图标可能保留 Electron；应用窗口显示新品牌。在线行情、真实 LLM、Pi 外部运行时、签名、安装器、自动更新和 Windows 多显示器 DPI 切换未作为上述阶段通过项。源码按阶段推送到 `Bluuok/folio` 的 `desktop/redevelopment` 分支；没有自动发布二进制 Release。
+这是上述阶段的未签名可解压运行包。EXE 元数据编辑被跳过，Explorer 属性/图标可能保留 Electron；应用窗口显示新品牌。在线行情、真实 LLM、Pi 外部运行时、签名、安装器、自动更新和 Windows 多显示器 DPI 切换未作为上述阶段通过项。源码按阶段推送到 `Bluuok/Yansivra` 的 `desktop/redevelopment` 分支；没有自动发布二进制 Release。
 
 ## 2026-10-01：DeepSeek Flash 补充验收
 
-使用官方 `https://api.deepseek.com/v1`，模型固定为 `deepseek-flash`，没有调用 Pro。真实 Pi CLI 版本为 `0.73.1`。Key 通过 Folio 的自定义 provider IPC 写入 Windows `safeStorage` 加密存储；凭据、profile、启动入口、测试脚本和截图留在被 Git 忽略的 `output/`，未写入源码或提交。
+使用官方 `https://api.deepseek.com/v1`，模型固定为 `deepseek-flash`，没有调用 Pro。真实 Pi CLI 版本为 `0.73.1`。Key 通过 Yansivra 的自定义 provider IPC 写入 Windows `safeStorage` 加密存储；凭据、profile、启动入口、测试脚本和截图留在被 Git 忽略的 `output/`，未写入源码或提交。
 
 实际请求从 Windows 程序的聊天输入框发送，经过 renderer、preload、主进程、Pi RPC 和官方 DeepSeek 服务。运行 `09a9d934-5aad-495b-879a-e102e28d291a` 为 `completed`，界面与持久化回答均为“DeepSeek 已连接，2 加 3 等于 5。”测试脚本耗时 6434ms；Pi 最终消息为 `stop`，报告 7307 输入 token、60 输出 token。关闭重开后，provider 仍为 `deepseek`，model 仍为 `deepseek-flash`。自定义模型未配置价格，Pi 的零成本字段仅是未定价的跟踪值，不代表实际账单为零。
 
@@ -95,13 +95,13 @@ SHA256 7f55ccd0073ac4f5c9164d38187578829bd03a12bbe7d7f55ae6cfdbe575c0f6
 
 38 项相关测试通过，全工作区类型检查通过。已有会话清理测试首次受到沙箱 `/tmp` 写权限限制，以本机临时目录权限重跑该文件的 19 项测试后全部通过。最终 ZIP 再次解压到源码外的中文/空格路径，真实 renderer、preload、main、13 个技能、扩展、工具、本地 Agent 和安全选项均通过。没有重跑全量单元测试，也没有调用 Pro 或其他模型。
 
-本机默认 `%APPDATA%\Folio` 目录的 Node 同目录重命名报 `EXDEV`，独立无凭据探针复现。因此本次配置使用 `output/Folio`；本机双击 `output/启动 Folio.cmd` 会选择该 profile、独立 Pi 配置目录和 Flash 模型。直接启动 EXE 不会自动选择这次配置目录。
+本机默认 `%APPDATA%\Yansivra` 目录的 Node 同目录重命名报 `EXDEV`，独立无凭据探针复现。因此本次配置使用 `output/Yansivra`；本机双击 `output/启动 Yansivra.cmd` 会选择该 profile、独立 Pi 配置目录和 Flash 模型。直接启动 EXE 不会自动选择这次配置目录。
 
 更新后的 ZIP：141214071 bytes，SHA256 `f69eb9f8b7b6695820728519f3be1e317b508e5f76f07d59cbf50f1317e6cd62`。真实结果见本机 `output/deepseek-live-result.json` 和 `output/deepseek-live.png`。本次只验证 LLM 连通与聊天持久化，在线行情和完整金融研究仍未验证。
 
 ## 2026-10-01：真实 Massive 数据与 Flash 研究闭环
 
-用户提供的 Massive Key 已通过实际桌面 IPC 保存到 Windows `safeStorage` 加密凭据存储，凭据文件仍在忽略的 `output/Folio` 中。Massive 设为主数据源；没有充值、购买套餐、注册新账户或执行交易。官方 Longbridge CLI `0.28.7` 已校验发布方 SHA256 后安装到本机忽略的 `output/runtime/longbridge`，仅由本机启动入口添加进程 PATH；账户本人尚未完成长桥授权。
+用户提供的 Massive Key 已通过实际桌面 IPC 保存到 Windows `safeStorage` 加密凭据存储，凭据文件仍在忽略的 `output/Yansivra` 中。Massive 设为主数据源；没有充值、购买套餐、注册新账户或执行交易。官方 Longbridge CLI `0.28.7` 已校验发布方 SHA256 后安装到本机忽略的 `output/runtime/longbridge`，仅由本机启动入口添加进程 PATH；账户本人尚未完成长桥授权。
 
 实测发现并修复：
 
@@ -146,9 +146,9 @@ SHA256 7f55ccd0073ac4f5c9164d38187578829bd03a12bbe7d7f55ae6cfdbe575c0f6
 本机最终修复产物（独立输出避免覆盖用户正在运行的包）：
 
 ```text
-dist/electron-authorized/Folio-Desk-0.5.0-beta.1-win-x64.zip
+dist/electron-authorized/Yansivra-0.5.0-beta.1-win-x64.zip
 141220805 bytes
 SHA256 5bd24d605f6eb527dccf944b80309e178aad853e548c2c2917bfac20d1df7717
 ```
 
-启动入口已指向修复版，继续使用原 `output/Folio` 资料；当前用户窗口保持打开，关闭后重新启动生效。真实接口证据、Flash 报告、截图和测试日志留在忽略的 `output/`，没有上传凭据、用户资料或二进制 Release。
+启动入口已指向修复版，继续使用原 `output/Yansivra` 资料；当前用户窗口保持打开，关闭后重新启动生效。真实接口证据、Flash 报告、截图和测试日志留在忽略的 `output/`，没有上传凭据、用户资料或二进制 Release。

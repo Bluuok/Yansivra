@@ -9,7 +9,7 @@ import { ResearchReportRepository } from './repository.ts';
 import { JsonFileStore } from '../storage/json-file-store.ts';
 
 it('hard-kills an executing service process and completes the same run in a fresh process', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'folio-hard-kill-'));
+  const dir = await mkdtemp(join(tmpdir(), 'yansivra-hard-kill-'));
   let child: ChildProcess | undefined;
   let spawnError: Error | undefined;
   const worker = fileURLToPath(new URL('./fixtures/crash-worker.ts', import.meta.url));

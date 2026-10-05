@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { setTimeout as delay } from 'node:timers/promises';
+import { hasCompletedAssistantAnswer, waitForValue } from './runtime-support.mjs';
 import { freshProfile, launchDesktop, closeDesktop, captureDesktop, repoRoot } from './desktop-harness.mjs';
 
 assert.equal(process.platform, 'win32', 'this acceptance test runs on actual Windows');
@@ -11,18 +11,22 @@ const archive = resolve(process.env.FINAGENT_TEST_ARCHIVE ?? join(repoRoot, 'dis
 assert.ok(existsSync(archive), 'build the Windows ZIP first');
 const directory = mkdtempSync(join(tmpdir(), 'Yansivra 中文 解压 '));
 execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
-  'Expand-Archive -LiteralPath $env:FOLIO_TEST_ARCHIVE -DestinationPath $env:FOLIO_TEST_EXTRACT -ErrorAction Stop'],
-  { windowsHide: true, env: { ...process.env, FOLIO_TEST_ARCHIVE: archive, FOLIO_TEST_EXTRACT: directory } });
+  'Expand-Archive -LiteralPath $env:YANSIVRA_TEST_ARCHIVE -DestinationPath $env:YANSIVRA_TEST_EXTRACT -ErrorAction Stop'],
+  { windowsHide: true, env: { ...process.env, YANSIVRA_TEST_ARCHIVE: archive, YANSIVRA_TEST_EXTRACT: directory } });
 const executable = join(directory, 'Yansivra.exe');
 assert.ok(existsSync(executable));
 const profile = freshProfile('Yansivra 中文 资料 ', tmpdir());
 const { application, page } = await launchDesktop(profile, { executable });
 try {
-  const runtime = await application.evaluate(({ app, BrowserWindow }) => ({
-    packaged: app.isPackaged, resources: process.resourcesPath, profile: app.getPath('userData'),
-    extension: process.env.FINAGENT_PI_EXTENSION, title: BrowserWindow.getAllWindows()[0].getTitle(),
-    version: app.getVersion(), prefs: BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences(),
-  }));
+  const runtime = await application.evaluate(({ app, BrowserWindow }) => {
+    // Keep the main-process probe alive while the Node inspector awaits it.
+    globalThis.__yansivraPackageRuntime = Promise.resolve({
+      packaged: app.isPackaged, resources: process.resourcesPath, profile: app.getPath('userData'),
+      extension: process.env.FINAGENT_PI_EXTENSION, title: BrowserWindow.getAllWindows()[0].getTitle(),
+      version: app.getVersion(), prefs: BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences(),
+    });
+    return globalThis.__yansivraPackageRuntime;
+  });
   assert.equal(runtime.packaged, true);
   assert.equal(existsSync(join(runtime.resources, 'default_app.asar')), false, 'Electron default shell must not override Yansivra');
   assert.equal(runtime.profile, profile);
@@ -45,17 +49,18 @@ try {
   assert.equal(session.ok, true);
   const start = await page.evaluate((sessionId) => window.electronAPI.kernel.startRun({ sessionId, content: '你好，请确认本地运行状态' }), session.data.id);
   assert.equal(start.ok, true);
-  const deadline = Date.now() + 30_000;
-  let runs;
-  do {
-    runs = await page.evaluate((sessionId) => window.electronAPI.kernel.listRuns(sessionId), session.data.id);
-    assert.equal(runs.ok, true, 'packaged runs must be readable through the real IPC');
-    const run = runs.data.find((run) => run.id === start.data.id);
-    if (run && run.status !== 'running') break;
-    await delay(100);
-  } while (Date.now() < deadline);
-  assert.equal(runs.data.find((run) => run.id === start.data.id)?.status, 'completed',
-    'packaged local Agent must actually complete within 30 seconds');
+  const evidence = await waitForValue(() => page.evaluate(async ({ sessionId, runId }) => {
+    const runs = await window.electronAPI.kernel.listRuns(sessionId);
+    if (!runs.ok) throw new Error('Packaged runs must be readable through real IPC');
+    const run = runs.data.find(run => run.id === runId);
+    if (!run || run.status === 'running') return false;
+    const messages = await window.electronAPI.kernel.getMessages(sessionId);
+    if (!messages.ok) throw new Error('Packaged assistant messages must be readable through real IPC');
+    if (run.status === 'completed' && !messages.data.some(message => message.role === 'assistant' && message.content?.trim() === run.answer?.trim())) return false;
+    return { run, messages: messages.data };
+  }, { sessionId: session.data.id, runId: start.data.id }), { timeoutMs: 30_000, label: 'extracted packaged Agent answer persistence' });
+  assert.equal(hasCompletedAssistantAnswer(evidence.run, evidence.messages), true,
+    'packaged local Agent must complete with its persisted assistant answer within 30 seconds');
   const about = await page.evaluate(() => window.electronAPI.about.get());
   assert.equal(about.data.version, runtime.version);
   console.log(`PASS extracted unsigned ZIP outside source (${directory}): renderer, preload, main, ${skills.data.length} skills, bundled extension paths, finance tools, completed local Agent run, version and sandbox`);

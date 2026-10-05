@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ExternalLink, ThumbsDown, ThumbsUp } from 'lucide-react';
-import type { EvaluationCase, EvaluationResultRecord, EvaluationRun, FolioTrace } from '@finagent/core';
+import type { EvaluationCase, EvaluationResultRecord, EvaluationRun, YansivraTrace } from '@finagent/core';
 import { useFinagentClient, type EvaluationExperimentDetail } from '../../client';
 import { Button } from '../primitives/Button';
 import { TraceInspector } from '../trace/TraceInspector';
@@ -75,7 +75,7 @@ export const CaseDetail: React.FC<{
   const [submitting, setSubmitting] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState<string | null>(null);
   const [feedbackError, setFeedbackError] = useState<string | null>(null);
-  const [traceDialog, setTraceDialog] = useState<{ loading: boolean; trace: FolioTrace | null } | null>(null);
+  const [traceDialog, setTraceDialog] = useState<{ loading: boolean; trace: YansivraTrace | null } | null>(null);
 
   useEffect(() => {
     if (detail) return;

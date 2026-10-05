@@ -1,4 +1,4 @@
-// Folio ↔ Langfuse metadata / tag contract (issue #14).
+// Yansivra ↔ Langfuse metadata / tag contract (issue #14).
 //
 // Tags are the filterable axis in the Langfuse UI; metadata is the structured
 // payload attached to the root trace. Keep both stable so evaluation runs,
@@ -8,12 +8,12 @@
 export type LangfuseRunKind = 'normal' | 'evaluation';
 
 export const LANGFUSE_DEFAULT_HOST = 'https://cloud.langfuse.com';
-export const LANGFUSE_TRACE_NAME_AGENT = 'folio.agent_run';
-export const LANGFUSE_TRACE_NAME_RESEARCH = 'folio.deep_research';
+export const LANGFUSE_TRACE_NAME_AGENT = 'yansivra.agent_run';
+export const LANGFUSE_TRACE_NAME_RESEARCH = 'yansivra.deep_research';
 
-export interface FolioLangfuseMetadata {
-  folioRunId: string;
-  folioSessionId?: string;
+export interface YansivraLangfuseMetadata {
+  yansivraRunId: string;
+  yansivraSessionId?: string;
   threadId?: string;
   runKind: LangfuseRunKind;
   goldCaseId?: string;
@@ -30,7 +30,7 @@ export interface FolioLangfuseMetadata {
   requestedModel?: string;
   requestedProvider?: string;
   agentVersion?: string;
-  folioVersion?: string;
+  yansivraVersion?: string;
   promptVersion?: string;
   strategyId?: string;
   symbol?: string;
@@ -51,9 +51,9 @@ function tagValue(value: string | undefined, max = 80): string | undefined {
   return cleaned.length > 0 ? cleaned : undefined;
 }
 
-/** Stable, filterable tags for a Folio run. */
-export function langfuseTags(meta: FolioLangfuseMetadata): string[] {
-  const tags = new Set<string>(['folio', `run_kind:${meta.runKind}`]);
+/** Stable, filterable tags for a Yansivra run. */
+export function langfuseTags(meta: YansivraLangfuseMetadata): string[] {
+  const tags = new Set<string>(['yansivra', `run_kind:${meta.runKind}`]);
   const gold = tagValue(meta.goldCaseId);
   if (gold) tags.add(`gold_case:${gold}`);
   const dataset = tagValue(meta.datasetId);
@@ -71,12 +71,12 @@ export function langfuseTags(meta: FolioLangfuseMetadata): string[] {
   return [...tags];
 }
 
-export function langfuseMetadataRecord(meta: FolioLangfuseMetadata): Record<string, unknown> {
+export function langfuseMetadataRecord(meta: YansivraLangfuseMetadata): Record<string, unknown> {
   const record: Record<string, unknown> = {
-    folioRunId: meta.folioRunId,
+    yansivraRunId: meta.yansivraRunId,
     runKind: meta.runKind,
   };
-  if (meta.folioSessionId) record.folioSessionId = meta.folioSessionId;
+  if (meta.yansivraSessionId) record.yansivraSessionId = meta.yansivraSessionId;
   if (meta.threadId) record.threadId = meta.threadId;
   if (meta.goldCaseId) record.goldCaseId = meta.goldCaseId;
   if (meta.datasetId) record.datasetId = meta.datasetId;
@@ -86,7 +86,7 @@ export function langfuseMetadataRecord(meta: FolioLangfuseMetadata): Record<stri
   if (meta.requestedModel) record.requestedModel = meta.requestedModel;
   if (meta.requestedProvider) record.requestedProvider = meta.requestedProvider;
   if (meta.agentVersion) record.agentVersion = meta.agentVersion;
-  if (meta.folioVersion) record.folioVersion = meta.folioVersion;
+  if (meta.yansivraVersion) record.yansivraVersion = meta.yansivraVersion;
   if (meta.promptVersion) record.promptVersion = meta.promptVersion;
   if (meta.strategyId) record.strategyId = meta.strategyId;
   if (meta.symbol) record.symbol = meta.symbol;

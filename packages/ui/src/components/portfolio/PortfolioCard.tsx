@@ -24,7 +24,7 @@ export const PortfolioCard: React.FC<PortfolioCardProps> = ({ view, isDemo = fal
   const pnlColor = isPositive ? 'text-[var(--mac-green)]' : 'text-[var(--mac-red)]';
 
   return (
-    <div className="folio-portfolio-summary-card rounded-[16px] border border-[var(--mac-border)] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="yansivra-portfolio-summary-card rounded-[16px] border border-[var(--mac-border)] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
       <div className="flex items-start justify-between gap-5">
         <div>
           <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-foreground/48">{t('portfolio.totalValue')}</div>

@@ -7,11 +7,11 @@ describe('parseAnswerSegments', () => {
     expect(parseAnswerSegments(content)).toEqual([{ kind: 'text', text: content }]);
   });
 
-  it('splits text and a closed folio-block fence, preserving order', () => {
+  it('splits text and a closed yansivra-block fence, preserving order', () => {
     const content = [
       'Intro paragraph.',
       '',
-      '```folio-block',
+      '```yansivra-block',
       '{"version":1,"type":"metric_grid","metrics":[]}',
       '```',
       '',
@@ -28,8 +28,8 @@ describe('parseAnswerSegments', () => {
     expect(segments[2].kind).toBe('text');
   });
 
-  it('treats an unclosed folio-block fence as a streaming block at the end', () => {
-    const content = 'Before\n\n```folio-block\n{"partial":';
+  it('treats an unclosed yansivra-block fence as a streaming block at the end', () => {
+    const content = 'Before\n\n```yansivra-block\n{"partial":';
     const segments = parseAnswerSegments(content);
     expect(segments).toHaveLength(2);
     expect(segments[1]).toEqual({ kind: 'block', body: '{"partial":', closed: false });
@@ -43,7 +43,7 @@ describe('parseAnswerSegments', () => {
 
   it('closes the block only at a bare fence line, not inline text', () => {
     const content = [
-      '```folio-block',
+      '```yansivra-block',
       '{"a":1}',
       'the closing fence is mentioned as ``` inside prose',
       '```',
@@ -57,11 +57,11 @@ describe('parseAnswerSegments', () => {
   it('handles multiple blocks between text', () => {
     const content = [
       'a',
-      '```folio-block',
+      '```yansivra-block',
       '1',
       '```',
       'b',
-      '```folio-block',
+      '```yansivra-block',
       '2',
       '```',
       'c',

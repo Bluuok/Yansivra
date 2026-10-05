@@ -171,7 +171,7 @@ export interface EvaluationChannel {
   listBaselines: () => Promise<ApiResult<EvaluationBaseline[]>>;
   submitFeedback: (input: { caseId: string; verdict: 'good' | 'bad'; note?: string }) => Promise<ApiResult<void>>;
   listFeedback: () => Promise<ApiResult<EvaluationFeedbackItem[]>>;
-  /** V9.1: persisted trace-link lookup for a folio run id (reuses the store). */
+  /** V9.1: persisted trace-link lookup for a yansivra run id (reuses the store). */
   getTraceLink: (
     input: { runId: string }
   ) => Promise<

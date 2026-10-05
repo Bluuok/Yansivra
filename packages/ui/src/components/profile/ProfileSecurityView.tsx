@@ -57,12 +57,12 @@ export const ProfileSecurityView: React.FC = () => {
   ];
 
   return (
-    <main className="folio-page folio-profile-view flex h-full min-h-0 flex-col overflow-y-auto bg-background" data-testid="profile-view">
-      <header className="folio-page-header flex shrink-0 items-start justify-between gap-4 border-b border-border bg-surface px-6 py-5">
+    <main className="yansivra-page yansivra-profile-view flex h-full min-h-0 flex-col overflow-y-auto bg-background" data-testid="profile-view">
+      <header className="yansivra-page-header flex shrink-0 items-start justify-between gap-4 border-b border-border bg-surface px-6 py-5">
         <div>
-          <div className="folio-eyebrow"><UserRound className="h-3.5 w-3.5" />{t('profile.eyebrow')}</div>
-          <h1 className="folio-page-title">{t('profile.title')}</h1>
-          <p className="folio-page-subtitle">{t('profile.subtitle')}</p>
+          <div className="yansivra-eyebrow"><UserRound className="h-3.5 w-3.5" />{t('profile.eyebrow')}</div>
+          <h1 className="yansivra-page-title">{t('profile.title')}</h1>
+          <p className="yansivra-page-subtitle">{t('profile.subtitle')}</p>
         </div>
         <Button variant="outline" size="sm" onClick={() => void refresh()} disabled={loadState === 'loading'}>
           {t('common.refresh')}
@@ -71,15 +71,15 @@ export const ProfileSecurityView: React.FC = () => {
 
       <div className="grid min-h-0 flex-1 gap-5 p-6 xl:grid-cols-[minmax(0,1fr)_19rem]">
         <div className="min-w-0 space-y-5">
-          <section className="folio-page-section folio-profile-identity">
+          <section className="yansivra-page-section yansivra-profile-identity">
             <div className="flex items-center gap-4">
-              <div className="folio-profile-avatar"><ShieldCheck className="h-6 w-6" /></div>
+              <div className="yansivra-profile-avatar"><ShieldCheck className="h-6 w-6" /></div>
               <div className="min-w-0">
                 <h2>{t('profile.localWorkspace')}</h2>
                 <p>{t('profile.localWorkspaceDescription')}</p>
               </div>
             </div>
-            <dl className="folio-definition-grid mt-5">
+            <dl className="yansivra-definition-grid mt-5">
               <div><dt>{t('profile.application')}</dt><dd>Yansivra</dd></div>
               <div><dt>{t('profile.channel')}</dt><dd>{about?.channel ?? '—'}</dd></div>
               <div><dt>{t('profile.version')}</dt><dd>{about?.version ?? '—'}</dd></div>
@@ -87,19 +87,19 @@ export const ProfileSecurityView: React.FC = () => {
             </dl>
           </section>
 
-          <section className="folio-page-section">
-            <div className="folio-section-heading">
-              <div><div className="folio-eyebrow">{t('profile.connectionsEyebrow')}</div><h2>{t('profile.connectionsTitle')}</h2></div>
+          <section className="yansivra-page-section">
+            <div className="yansivra-section-heading">
+              <div><div className="yansivra-eyebrow">{t('profile.connectionsEyebrow')}</div><h2>{t('profile.connectionsTitle')}</h2></div>
               <Button variant="ghost" size="sm" onClick={openConnections}><Settings2 className="mr-1.5 h-3.5 w-3.5" />{t('profile.manage')}</Button>
             </div>
             {loadState === 'loading' ? (
-              <div className="folio-skeleton-line" />
+              <div className="yansivra-skeleton-line" />
             ) : connections.length === 0 ? (
-              <div className="folio-empty-state">{t('profile.noConnections')}</div>
+              <div className="yansivra-empty-state">{t('profile.noConnections')}</div>
             ) : (
-              <div className="folio-profile-list">
+              <div className="yansivra-profile-list">
                 {connections.map((entry) => (
-                  <div key={entry.providerId} className="folio-profile-list-row">
+                  <div key={entry.providerId} className="yansivra-profile-list-row">
                     <div className="min-w-0"><strong>{entry.name}</strong><span>{entry.accountLabel ?? t(`connections.kind${entry.kind === 'broker-account' ? 'BrokerAccount' : 'FinancialData'}`)}</span></div>
                     <div className="flex items-center gap-2"><CheckStatus ok={entry.status === 'connected'} /><span>{entry.status.replaceAll('-', ' ')}</span></div>
                   </div>
@@ -109,18 +109,18 @@ export const ProfileSecurityView: React.FC = () => {
           </section>
         </div>
 
-        <aside className="folio-page-section h-fit">
-          <div className="folio-eyebrow"><ShieldCheck className="h-3.5 w-3.5" />{t('profile.securityEyebrow')}</div>
+        <aside className="yansivra-page-section h-fit">
+          <div className="yansivra-eyebrow"><ShieldCheck className="h-3.5 w-3.5" />{t('profile.securityEyebrow')}</div>
           <h2 className="mt-2">{t('profile.securityTitle')}</h2>
-          <div className="folio-health-list mt-4">
+          <div className="yansivra-health-list mt-4">
             {healthRows.map((row) => (
-              <div key={row.label} className="folio-health-row"><CheckStatus ok={row.ok} /><span>{row.label}</span><strong>{row.ok === null ? '—' : row.ok ? t('profile.ready') : t('profile.needsAttention')}</strong></div>
+              <div key={row.label} className="yansivra-health-row"><CheckStatus ok={row.ok} /><span>{row.label}</span><strong>{row.ok === null ? '—' : row.ok ? t('profile.ready') : t('profile.needsAttention')}</strong></div>
             ))}
           </div>
           <div className="mt-5 border-t border-border pt-4 text-[11px] leading-relaxed text-foreground/42">
             {t('profile.securityHint')}
           </div>
-          <button type="button" onClick={openConnections} className="folio-profile-link mt-4"><ExternalLink className="h-3.5 w-3.5" />{t('profile.openConnections')}</button>
+          <button type="button" onClick={openConnections} className="yansivra-profile-link mt-4"><ExternalLink className="h-3.5 w-3.5" />{t('profile.openConnections')}</button>
         </aside>
       </div>
     </main>

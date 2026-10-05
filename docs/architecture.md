@@ -1,8 +1,8 @@
-# Finance Agent - System Architecture
+# Yansivra - System Architecture
 
 ## Overview
 
-Folio is an AI-native finance workbench: a desktop application that combines a professional financial workspace (watchlist, security header, K-line charts, overview, financials, news) with a context-aware agent copilot. The agent layer is built on a persistent **Agent Kernel**: sessions, runs, and agent events are first-class entities owned by the main process, streamed to the UI over IPC, and persisted on disk so the app can be restarted without losing conversation state.
+Yansivra is an AI-native finance workbench: a desktop application that combines a professional financial workspace (watchlist, security header, K-line charts, overview, financials, news) with a context-aware agent copilot. The agent layer is built on a persistent **Agent Kernel**: sessions, runs, and agent events are first-class entities owned by the main process, streamed to the UI over IPC, and persisted on disk so the app can be restarted without losing conversation state.
 
 ---
 
@@ -144,22 +144,22 @@ persisted.
 |-----------|----------------|
 | `PiRpcClient` | JSONL/stdio transport: `prompt`, `promptStreaming` (live raw events), `switchSession`, `getState`, `getAvailableModels`, `setModel`, `setThinkingLevel`, `restart`, `abortCurrentPrompt`, health checks, timeouts, process restart |
 | `PiEventAdapter` | Pure Pi-event → AgentEvent mapping per run |
-| `PiRuntimeAdapter` | `AgentRuntime` implementation: Folio session ↔ Pi session file lifecycle, prompt construction (workspace context + progressive skill index), symbol memory, and the `LlmRuntimeApi` control plane |
+| `PiRuntimeAdapter` | `AgentRuntime` implementation: Yansivra session ↔ Pi session file lifecycle, prompt construction (workspace context + progressive skill index), symbol memory, and the `LlmRuntimeApi` control plane |
 
 ### Session isolation and recovery
 
-Folio Session ↔ Pi conversation is a stable 1:1 mapping:
+Yansivra Session ↔ Pi conversation is a stable 1:1 mapping:
 
 ```
-Folio Session A ──► <userData>/pi-sessions/<sessionA>.jsonl
-Folio Session B ──► <userData>/pi-sessions/<sessionB>.jsonl
+Yansivra Session A ──► <userData>/pi-sessions/<sessionA>.jsonl
+Yansivra Session B ──► <userData>/pi-sessions/<sessionB>.jsonl
 ```
 
 One Pi process is shared; the runtime switches conversations with the `switch_session` RPC command. The JSONL session file is Pi's own persistent conversation store, so:
 
-- Session isolation: each Folio session has its own Pi session file — no cross-session context pollution.
+- Session isolation: each Yansivra session has its own Pi session file — no cross-session context pollution.
 - Resume: `switch_session` reloads the file, restoring the full conversation.
-- Restart recovery: session files survive app restarts; `runtimeSessionId` is refreshed via `get_state` and stored on the Folio session.
+- Restart recovery: session files survive app restarts; `runtimeSessionId` is refreshed via `get_state` and stored on the Yansivra session.
 
 ### Event pipeline
 
@@ -230,7 +230,7 @@ All handlers wrap results in the `{ ok, data | error }` envelope (`toIpcResult`)
 - `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`.
 - IPC is whitelisted channel-by-channel in the preload (`index.ts` source, `index.cjs` runtime, built with `bun run build:preload`).
 - **CredentialStore**: API keys and custom provider configs are encrypted at rest with Electron `safeStorage` (`<userData>/credentials.json`). The renderer sends secrets in once and only ever receives metadata back. Secret material is redacted from errors, logs, and traces (`redactSecrets`).
-- Provider overrides flow main → Pi spawn env (`FINAGENT_PROVIDER_OVERRIDES`) → the finagent extension's `registerProvider` — Folio-owned config, never touching the user's global Pi config. Credential changes restart the Pi subprocess (sessions survive).
+- Provider overrides flow main → Pi spawn env (`FINAGENT_PROVIDER_OVERRIDES`) → the finagent extension's `registerProvider` — Yansivra-owned config, never touching the user's global Pi config. Credential changes restart the Pi subprocess (sessions survive).
 - LongBridge access stays behind `longbridge-tools` (parameterized execa array arguments, symbol validation).
 - Skill resources are read through path-safe loaders (`SkillHub.readSkillResource` / `read_skill_resource` tool): absolute paths, `..` traversal, and symlink escapes are rejected.
 - The renderer cannot reach `fs`, the database, the Pi process, or the LongBridge CLI directly.
@@ -239,7 +239,7 @@ All handlers wrap results in the `{ ok, data | error }` envelope (`toIpcResult`)
 ## 11. Component Map
 
 ```
-finagent/
+Yansivra/
 ├── packages/
 │   ├── core/                  # Types only: capability/research/thesis/alert-rule/
 │   │                          #   readiness/compare/portfolio-risk contracts +

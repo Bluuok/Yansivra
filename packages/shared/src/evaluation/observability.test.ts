@@ -19,7 +19,7 @@ import {
 } from './index.ts';
 
 async function withStore<T>(fn: (store: EvaluationStore) => Promise<T>): Promise<T> {
-  const dir = await mkdtemp(join(tmpdir(), 'folio-eval-obs-'));
+  const dir = await mkdtemp(join(tmpdir(), 'yansivra-eval-obs-'));
   try {
     return await fn(new EvaluationStore(new JsonFileStore(dir)));
   } finally {
@@ -64,8 +64,8 @@ describe('observability settle pipeline', () => {
       expect(run.result).toBeDefined();
       await store.addRun({ ...sampleRun(), toolCalls: [run] });
       const ref = await correlation.recordRun({
-        folioRunId: 'run-1',
-        folioSessionId: 'session-1',
+        yansivraRunId: 'run-1',
+        yansivraSessionId: 'session-1',
         startedAt: 1_000,
         completedAt: 1_500,
       });
@@ -110,7 +110,7 @@ describe('backend failure isolation (spec §87, §89)', () => {
   it('LangSmith offline/401 degrades to a status error, never a throw', async () => {
     const backend = new LangSmithEvaluationBackend({
       apiKey: 'lsv2_pt_badkey',
-      project: 'folio-agent',
+      project: 'yansivra-agent',
       fetchImpl: async () => {
         throw new Error('network unreachable');
       },
@@ -125,7 +125,7 @@ describe('backend failure isolation (spec §87, §89)', () => {
   it('bad credential returns 401 as a status error', async () => {
     const backend = new LangSmithEvaluationBackend({
       apiKey: 'lsv2_pt_invalid',
-      project: 'folio-agent',
+      project: 'yansivra-agent',
       fetchImpl: async (url, init) =>
         new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401,
@@ -141,11 +141,11 @@ describe('backend failure isolation (spec §87, §89)', () => {
     await withStore(async (store) => {
       const backend = new LangSmithEvaluationBackend({
         apiKey: 'lsv2_pt_x',
-        project: 'folio-agent',
+        project: 'yansivra-agent',
         fetchImpl: async () => new Response(JSON.stringify({ runs: [] }), { status: 200 }),
       });
       const correlation = new TraceCorrelationService({ backend, store });
-      const ref = await correlation.recordRun({ folioRunId: 'r2', threadId: 't', startedAt: 0, completedAt: 10 });
+      const ref = await correlation.recordRun({ yansivraRunId: 'r2', threadId: 't', startedAt: 0, completedAt: 10 });
       // Tracing is on (langsmith backend) but no trace matched the window:
       // the ref keeps the backend kind with no trace id, and never throws.
       expect(ref.backend).toBe('langsmith');

@@ -29,7 +29,7 @@ const MESSAGE: Message = {
   ],
   financialEvidence: [{
     schemaVersion: 'financial-evidence/v1',
-    normalizationVersion: 'folio-normalization/v1',
+    normalizationVersion: 'yansivra-normalization/v1',
     id: 'fe_abc123',
     sessionId: 's',
     runId: 'r',
@@ -101,7 +101,7 @@ describe('AnswerContent citations', () => {
 
   it('numbers a block evidence id and an inline marker in one space', async () => {
     const block = [
-      '```folio-block',
+      '```yansivra-block',
       JSON.stringify({
         version: 1,
         type: 'metric_grid',

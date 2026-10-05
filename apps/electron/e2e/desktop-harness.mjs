@@ -2,6 +2,7 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { isolatedEnv } from './runtime-support.mjs';
 
 const require = createRequire(import.meta.url);
 const { _electron } = require('playwright-core');
@@ -20,12 +21,7 @@ export function freshProfile(prefix = '桌面测试 ', directory = outputRoot) {
 export async function launchDesktop(profile, options = {}) {
   const packaged = options.executable ?? process.env.FINAGENT_TEST_PACKAGE;
   const env = {
-    ...process.env,
-    FINAGENT_USER_DATA_DIR: profile,
-    FINAGENT_AGENT_PROVIDER: 'local',
-    FINAGENT_FORCE_PROD_LOAD: '1',
-    FINAGENT_E2E: '1',
-    FINAGENT_E2E_HIDDEN: '1',
+    ...isolatedEnv(profile),
     FINAGENT_DEMO_DATA: '0',
   };
   delete env.ELECTRON_RUN_AS_NODE;
@@ -47,7 +43,10 @@ export async function launchDesktop(profile, options = {}) {
   await page.locator('[data-testid="finance-workspace"]').waitFor();
   // Persist the real main-process onboarding preference; never replace the IPC.
   await page.evaluate(async () => {
-    if (window.electronAPI?.onboarding) await window.electronAPI.onboarding.setCompleted(true);
+    if (window.electronAPI?.onboarding) {
+      const result = await window.electronAPI.onboarding.setCompleted({ completed: true });
+      if (!result.ok) throw new Error('Could not persist test onboarding through real IPC');
+    }
   });
   await page.reload();
   await page.locator('[data-testid="finance-workspace"]').waitFor();
@@ -62,20 +61,20 @@ export async function captureDesktop(application, name) {
   const png = await application.evaluate(async ({ BrowserWindow }) => {
     // Activate page painting for capture while keeping the native window hidden.
     const target = BrowserWindow.getAllWindows()[0];
-    globalThis.__folioCapture = (async () => {
+    globalThis.__yansivraCapture = (async () => {
       await target.capturePage(undefined, { stayHidden: false, stayAwake: true });
       await new Promise((resolve) => setTimeout(resolve, 100));
       return target.capturePage(undefined, { stayHidden: false, stayAwake: true });
     })();
-    try { return (await globalThis.__folioCapture).toPNG().toString('base64'); }
-    finally { delete globalThis.__folioCapture; }
+    try { return (await globalThis.__yansivraCapture).toPNG().toString('base64'); }
+    finally { delete globalThis.__yansivraCapture; }
   });
   let visible = false;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       visible = await application.evaluate(({ BrowserWindow }) => {
-        globalThis.__folioVis = BrowserWindow.getAllWindows()[0].isVisible();
-        return globalThis.__folioVis;
+        globalThis.__yansivraVis = BrowserWindow.getAllWindows()[0].isVisible();
+        return globalThis.__yansivraVis;
       });
       break;
     } catch (e) {

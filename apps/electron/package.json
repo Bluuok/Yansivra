@@ -2,7 +2,7 @@
   "name": "@finagent/electron",
   "version": "0.5.0-beta.1",
   "private": true,
-  "folio": {
+  "yansivra": {
     "channel": "beta"
   },
   "type": "module",
@@ -87,7 +87,7 @@
         "dir",
         "dmg"
       ],
-      "icon": "assets/icon.icns",
+      "icon": "assets/desk-icon.png",
       "identity": null
     }
   }

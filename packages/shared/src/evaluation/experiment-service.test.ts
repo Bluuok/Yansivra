@@ -1134,7 +1134,7 @@ describe('JudgeClient wiring', () => {
       model: 'deepseek-v4.1-flash',
       apiKey: 'sk-test',
       baseUrl: 'https://relay.invalid/v1',
-      headers: { 'x-opencode-session': 'folio-eval-judge' },
+      headers: { 'x-opencode-session': 'yansivra-eval-judge' },
       fetchImpl: (async (_url: string, init: RequestInit) => {
         captured = (init.headers ?? {}) as Record<string, string>;
         return new Response(JSON.stringify({ choices: [{ message: { content: '{"score": 0.5, "reason": "ok"}' } }] }), {
@@ -1145,7 +1145,7 @@ describe('JudgeClient wiring', () => {
     });
 
     await client.complete('sys', 'user');
-    expect(captured['x-opencode-session']).toBe('folio-eval-judge');
+    expect(captured['x-opencode-session']).toBe('yansivra-eval-judge');
     expect(captured.authorization).toBe('Bearer sk-test');
   });
 });

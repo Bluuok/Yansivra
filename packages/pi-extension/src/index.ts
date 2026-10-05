@@ -145,7 +145,7 @@ export function registerResearchSynthesisGuard(agent: AgentApi): void {
   agent.on?.('before_agent_start', (event) => {
     if (previousTools) agent.setActiveTools?.(previousTools);
     previousTools = undefined;
-    synthesis = event.prompt?.includes('User request: [FOLIO_CHECKPOINT_SYNTHESIS_V1]') === true;
+    synthesis = event.prompt?.includes('User request: [YANSIVRA_CHECKPOINT_SYNTHESIS_V1]') === true;
     if (synthesis) {
       previousTools = agent.getActiveTools?.();
       agent.setActiveTools?.([]);
@@ -169,7 +169,7 @@ interface ProviderOverride {
   models?: ProviderModelConfig[];
 }
 
-/** Parse Folio-owned provider overrides from FINAGENT_PROVIDER_OVERRIDES. */
+/** Parse Yansivra-owned provider overrides from FINAGENT_PROVIDER_OVERRIDES. */
 function readProviderOverrides(): ProviderOverride[] {
   const raw = process.env.FINAGENT_PROVIDER_OVERRIDES;
   if (!raw) return [];
@@ -206,7 +206,7 @@ export function registerProviderOverrides(agent: AgentApi) {
     if (entry.apiKey !== undefined) config.apiKey = entry.apiKey;
     if (entry.api !== undefined) config.api = entry.api;
     // Pi's extension API does not fill the defaults used by its models.json
-    // loader. Complete Folio's smaller custom-model schema before registering.
+    // loader. Complete Yansivra's smaller custom-model schema before registering.
     if (entry.models !== undefined) config.models = entry.models.map((model) => ({
       ...model,
       name: model.name ?? model.id,

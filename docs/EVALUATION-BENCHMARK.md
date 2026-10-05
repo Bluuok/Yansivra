@@ -1,8 +1,8 @@
-# Folio Agent Benchmark v1 — Dataset Reference (spec §117)
+# Yansivra Agent Benchmark v1 — Dataset Reference (spec §117)
 
-The `folio-agent-v1` dataset ships embedded with the app as
-`packages/shared/src/evaluation/datasets/folio-agent-v1.ts` and is registered
-in `packages/shared/src/evaluation/datasets/index.ts` (id `folio-agent-v1`,
+The `yansivra-agent-v1` dataset ships embedded with the app as
+`packages/shared/src/evaluation/datasets/yansivra-agent-v1.ts` and is registered
+in `packages/shared/src/evaluation/datasets/index.ts` (id `yansivra-agent-v1`,
 version `1.0.0`).
 
 ## Deep Research Gold Cases
@@ -103,8 +103,8 @@ padding toward a round number).
      judges know what is being protected.
 3. Set `difficulty: 'regression'` and `source: 'regression-bug'`.
 4. Add the case id to the regression table above.
-5. Bump the dataset `version` (spec §25) — `folio-agent-v1` becomes
-   `folio-agent-v1.1`; never silently mutate an existing case.
+5. Bump the dataset `version` (spec §25) — `yansivra-agent-v1` becomes
+   `yansivra-agent-v1.1`; never silently mutate an existing case.
 6. Run `bun test src/evaluation/datasets` in `packages/shared` — the integrity
    tests enforce unique ids, valid capability ids, and required/forbidden
    disjointness.

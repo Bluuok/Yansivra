@@ -1,4 +1,4 @@
-# Finance Agent - PRD 设计文档
+# Yansivra - PRD 设计文档
 
 > **版本历史**
 > - v0.1.0 (2026-05-05) 初始版本
@@ -7,13 +7,15 @@
 > - v0.4.0 (2026-05-05) 强化 Skill 可自定义性，前端实时编辑所有 Skills
 > - v0.5.0 (2026-05-05) 完善 Skill Hub 生态系统，支持 Tool/Prompt/Hybrid 三种类型
 
+> 本文保留早期产品设计。资料目录及当前 Windows 构建行为以 [Windows 运行说明](desktop-windows.md) 为准；下文家目录布局是设计示例。
+
 ---
 
 ## 1. 产品概述
 
 ### 1.1 产品定位
 
-**产品名称**：Finance Agent（代号 finagent）
+**产品名称**：Yansivra
 
 **定位**：个人投资助手 — 整合行情数据、组合管理、告警提醒、信息聚合于一体的 AI 驱动桌面应用
 
@@ -251,7 +253,7 @@ interface Skill {
 **实现方式**：
 - 内置 Skill Hub 应用市场
 - 支持从 URL/文件导入 Skill
-- Skill 存储在 `~/.finagent/skills/`
+- Skill 存储在 `~/.yansivra/skills/`
 
 **验收条件**：
 - 正常：可浏览可用 Skills 列表
@@ -350,7 +352,7 @@ interface Skill {
 ### 3.3 Skill 存储结构
 
 ```
-~/.finagent/
+~/.yansivra/
 ├── skills/                    # 用户安装的 Skills
 │   ├── get-quote/           # Skill 目录
 │   │   ├── SKILL.json       # Skill 定义
@@ -785,7 +787,7 @@ longbridge news SYMBOL --json
 ### 9.2 项目目录结构
 
 ```
-finagent/
+Yansivra/
 ├── apps/
 │   └── electron/                # Electron 主应用
 ├── packages/

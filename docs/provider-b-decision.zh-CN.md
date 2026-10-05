@@ -13,9 +13,9 @@
 
 **Polygon.io（现已更名为 "Massive"）——美股，`quote + kline + profile`。**
 
-在全部候选中，只有 Polygon 的许可结构提供了一条明确、可自助办理的商业路径：「Massive for Businesses」服务条款赋予客户将其数据提供给「Authorized Users（授权用户）」与 **「Edge Users（边缘用户）」**（即客户产品的终端用户）的权利——这正是 Folio 所需的桌面应用分发形态。其他所有候选的免费/自助套餐均为「仅限个人使用（personal use only）」，并明确禁止再分发（见 §3）。按照规格 §12 的规则——*"a provider whose terms forbid redistribution is disqualified no matter how good the API"*（“无论 API 多好，只要其条款禁止再分发即被淘汰”）——Polygon 是唯一幸存者。
+在全部候选中，只有 Polygon 的许可结构提供了一条明确、可自助办理的商业路径：「Massive for Businesses」服务条款赋予客户将其数据提供给「Authorized Users（授权用户）」与 **「Edge Users（边缘用户）」**（即客户产品的终端用户）的权利——这正是 Yansivra 所需的桌面应用分发形态。其他所有候选的免费/自助套餐均为「仅限个人使用（personal use only）」，并明确禁止再分发（见 §3）。按照规格 §12 的规则——*"a provider whose terms forbid redistribution is disqualified no matter how good the API"*（“无论 API 多好，只要其条款禁止再分发即被淘汰”）——Polygon 是唯一幸存者。
 
-唯一需要注意的硬性限制：Polygon 的**免费「Stocks Basic」套餐本身即标注为「个人用途（Individual use）」**，返回的是**日终（end-of-day）**数据（而非实时数据）。这对构建并冒烟测试适配器（5 次调用/分钟）是可以接受的，但商业版 Folio 发布需要 **Business 计划**（实时数据、`Edge Users` 权利）——或采用 BYOK 模式，由每个终端用户自己的许可来约束。这一点在 §4（风险）中已记录，并且必须在 Connections UI 中如实呈现，不能悄悄掩盖。
+唯一需要注意的硬性限制：Polygon 的**免费「Stocks Basic」套餐本身即标注为「个人用途（Individual use）」**，返回的是**日终（end-of-day）**数据（而非实时数据）。这对构建并冒烟测试适配器（5 次调用/分钟）是可以接受的，但商业版 Yansivra 发布需要 **Business 计划**（实时数据、`Edge Users` 权利）——或采用 BYOK 模式，由每个终端用户自己的许可来约束。这一点在 §4（风险）中已记录，并且必须在 Connections UI 中如实呈现，不能悄悄掩盖。
 
 ---
 
@@ -40,22 +40,22 @@
 
 ## 3. 许可分析（决定性标准）
 
-规格 §12 将许可/再分发设为**第一道**门槛。Folio 是一款在界面中展示行情数据的商业桌面应用；若某提供商在用户实际会持有的套餐条款中写明「仅限个人使用（personal use only）」或「不得再分发」，那么无论 API 质量如何，该提供商都会被淘汰。以下为逐字条款及出处：
+规格 §12 将许可/再分发设为**第一道**门槛。Yansivra 是一款在界面中展示行情数据的商业桌面应用；若某提供商在用户实际会持有的套餐条款中写明「仅限个人使用（personal use only）」或「不得再分发」，那么无论 API 质量如何，该提供商都会被淘汰。以下为逐字条款及出处：
 
 - **Finnhub** — *"You hereby agree to not redistribute or share access to data or derived results… without written approval. All plan listed on Finnhub website is strictly for personal use unless explicitly stated otherwise. Personal plan can't be used by any business even internally without a written approval."*（“您特此同意，未经书面批准，不得再分发或分享数据或衍生结果的访问权限……除非另有明确说明，所有在 Finnhub 网站上列出的套餐均严格仅供个人使用。个人套餐未经书面批准，任何企业即使内部使用也不得使用。”）→ **淘汰。**（[ToS](https://finnhub.io/terms-of-service)）
 - **Twelve Data** — 免费/Basic 为 *"internal non-display usage only"*（“仅供内部非展示用途”）；服务条款 §2.3 禁止 *"(l) Use Free Tier data for commercial purposes"*（“(l) 将免费套餐数据用于商业目的”）；*"Redistribution"*（有定义）需要 *"Redistribution Rights Add-On or separate written agreement"*（“再分发权利附加项或单独的书面协议”，Enterprise $1,099/月）；*"Business plans are required for any company… even if the data is only used internally."*（“任何公司都需要 Business 套餐……即使数据仅供内部使用。”）→ **免费套餐即被淘汰。**（[定价](https://twelvedata.com/pricing) · [条款](https://twelvedata.com/terms)）
 - **EODHD** — *"The packages on the pricing page are intended for personal use only as commercial use requires a more thorough approach to licensing and data use."*（“定价页面上的套餐仅供个人使用，因为商业用途需要对许可和数据使用采取更严谨的方式。”）商业用途需要销售报价（表单），因为 *"we are required to report all commercial users of exchange data to the relevant exchanges."*（“我们必须将交易所数据的全部商业用户上报给相关交易所。”）→ **淘汰**（尽管其 US/HK/CN/SG 覆盖最佳）。（[许可](https://eodhd.com/financial-apis/commercial-vs-personal-license-use)）
 - **Alpha Vantage** — *"subscribe to a premium membership plan for your personal use. For commercial use, please contact sales."*（“请订阅 premium 会员套餐以供您个人使用。如需商业用途，请联系销售。”）→ **淘汰。**（[文档](https://www.alphavantage.co/documentation/)）
 - **Tiingo** — 免费套餐仅供个人使用，且未记载自助式商业/再分发套餐（不同于 Polygon 明确的 Business +「Edge Users」路径）；仅支持美股。未能从可抓取的页面获取其服务条款的准确措辞——在采用任何 Tiingo 后备方案之前，请重新核实该条款。（[文档](https://www.tiingo.com/documentation)）
-- **Yahoo Finance** — 无官方 API；`yfinance` 是一个抓取器。Yahoo 的服务条款禁止自动化访问及其内容的再分发，因此适配器将建立在 Folio 无法满足的条款和根本不存在的 SLA 之上。→ **淘汰。**（[Yahoo ToS](https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html) · [yfinance](https://github.com/ranaroussi/yfinance)）
+- **Yahoo Finance** — 无官方 API；`yfinance` 是一个抓取器。Yahoo 的服务条款禁止自动化访问及其内容的再分发，因此适配器将建立在 Yansivra 无法满足的条款和根本不存在的 SLA 之上。→ **淘汰。**（[Yahoo ToS](https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html) · [yfinance](https://github.com/ranaroussi/yfinance)）
 
 **Polygon/Massive** 的结构截然不同，这正是它胜出的原因：
 
 - 条款中心分为 **「Massive for Individuals」**（对「Individual Use」产品的个人、个人化、非商业用途）和 **「Massive for Businesses」**（对「Business Use」产品的个人、商业或商用用途）。（[条款](https://massive.com/legal/terms)）
-- **Business 服务条款**的再分发条款允许将信息提供给 *"Customer, its Authorized Users, or its Edge Users"*（“客户、其授权用户或其边缘用户”）——其中「Edge Users」即客户产品的终端用户。这正是 Folio 的分发模式。（[businesses ToS](https://massive.com/legal/businesses-terms-of-service)）
+- **Business 服务条款**的再分发条款允许将信息提供给 *"Customer, its Authorized Users, or its Edge Users"*（“客户、其授权用户或其边缘用户”）——其中「Edge Users」即客户产品的终端用户。这正是 Yansivra 的分发模式。（[businesses ToS](https://massive.com/legal/businesses-terms-of-service)）
 - **Individuals 服务条款**明确写道：*"if you are using the Services for business or commercial purposes, you may not use any of the Services labeled for individual or personal use"*（“如果您将服务用于商业或商务目的，则不得使用任何标注为个人或个人用途的服务”）——因此**免费的「Stocks Basic」套餐并非商业许可。**（[individuals ToS](https://massive.com/legal/individuals-terms-of-service)）
 
-许可方面的最终结论：**在适配器/验证阶段使用免费的「个人用途（Individual use）」套餐（仅限开发）；任何商业发布都需要 Folio 采购 Polygon Business 计划（实时数据 + `Edge Users`）——与上述需销售接洽的「仅限个人使用」供应商不同，该计划的价格/条款是自助公开且文档化的。** 署名要求通过引用纳入 Polygon 的 Market Data 服务条款（两份 ToS 文档均引用了它）；在发布时另行确认之前，请将「Powered by Polygon.io」展示署名视为必需。
+许可方面的最终结论：**在适配器/验证阶段使用免费的「个人用途（Individual use）」套餐（仅限开发）；任何商业发布都需要 Yansivra 采购 Polygon Business 计划（实时数据 + `Edge Users`）——与上述需销售接洽的「仅限个人使用」供应商不同，该计划的价格/条款是自助公开且文档化的。** 署名要求通过引用纳入 Polygon 的 Market Data 服务条款（两份 ToS 文档均引用了它）；在发布时另行确认之前，请将「Powered by Polygon.io」展示署名视为必需。
 
 ---
 
@@ -128,7 +128,7 @@
 }
 ```
 
-- 分页：`next_url` 携带游标，跟随其翻页。在适配器中，将 `timespan` 映射到 Folio 的 K 线周期输入。
+- 分页：`next_url` 携带游标，跟随其翻页。在适配器中，将 `timespan` 映射到 Yansivra 的 K 线周期输入。
 
 ### 公司资料 — 响应结构（关键字段）
 
@@ -164,7 +164,7 @@
 
 ## 5. 风险
 
-1. **免费套餐不是商业许可。**Polygon 的「Stocks Basic」=「个人用途（Individual use）」。使用硬编码/公司密钥发布适配器，或让商业用户粘贴免费密钥，都违反 Individuals 服务条款。解决方案：（a）采用 BYOK，由每个用户自己的许可约束；（b）在商业分发之前，Folio 采购 **Business** 计划（实时数据 + `Edge Users`）。在 Connections UI 中呈现这一点，而不是写进日志行。
+1. **免费套餐不是商业许可。**Polygon 的「Stocks Basic」=「个人用途（Individual use）」。使用硬编码/公司密钥发布适配器，或让商业用户粘贴免费密钥，都违反 Individuals 服务条款。解决方案：（a）采用 BYOK，由每个用户自己的许可约束；（b）在商业分发之前，Yansivra 采购 **Business** 计划（实时数据 + `Edge Users`）。在 Connections UI 中呈现这一点，而不是写进日志行。
 2. **署名。**Polygon 的 Market Data 条款（通过引用纳入）要求展示署名（「Powered by Polygon.io」）。发布时确认所需的确切文字/位置；这是一项展示要求而非禁令，但必须遵守。
 3. **更名波动。**Polygon.io →「Massive」更改了规范主机（`api.massive.com`）和文档化的认证形式（`apiKey` 查询参数 vs. 旧版 Bearer 请求头）。在适配器中固定主机与认证形式，并在集成时用真实密钥重新验证二者（应用的开发实例正在运行；适配器自身的测试可以使用 `FINAGENT_FORCE_PROD_LOAD=1`）。
 4. **仅覆盖美股。**Polygon 没有 HK/CN/SG 股票。这没问题，因为 Longbridge（主提供商）拥有这些市场；路由器绝不能将 HK/CN/SG 标的路由到 Polygon（如实声明 `markets(): Market[] = [US]` 和 `capabilities()`，使 `coverage()` 正确渲染矩阵）。

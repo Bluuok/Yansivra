@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check, ChevronDown, Circle, ExternalLink, LoaderCircle, X } from 'lucide-react';
-import type { FolioTrace, TraceContextField, TraceStep } from '@finagent/core';
+import type { YansivraTrace, TraceContextField, TraceStep } from '@finagent/core';
 import {
   semanticCompletenessLabelKey,
   semanticContextSourceLabelKey,
@@ -64,7 +64,7 @@ const ContextSourceBadge: React.FC<{ source: TraceContextField['source'] }> = ({
  * failing Evaluation case. Not a primary navigation feature.
  */
 export const TraceInspector: React.FC<{
-  trace: FolioTrace | null;
+  trace: YansivraTrace | null;
   onClose: () => void;
   onOpenLangSmith?: (url: string) => void;
 }> = ({ trace, onClose, onOpenLangSmith }) => {
@@ -158,7 +158,7 @@ export const TraceInspector: React.FC<{
   );
 };
 
-const OverviewTab: React.FC<{ trace: FolioTrace }> = ({ trace }) => {
+const OverviewTab: React.FC<{ trace: YansivraTrace }> = ({ trace }) => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-3" data-testid="trace-overview">
@@ -262,7 +262,7 @@ const TimelineStep: React.FC<{ step: TraceStep }> = ({ step }) => {
   );
 };
 
-const TimelineTab: React.FC<{ trace: FolioTrace }> = ({ trace }) => {
+const TimelineTab: React.FC<{ trace: YansivraTrace }> = ({ trace }) => {
   const { t } = useTranslation();
   if (trace.steps.length === 0) {
     return <p className="text-[12px] text-foreground/46">{t('trace.notRecorded')}</p>;
@@ -276,7 +276,7 @@ const TimelineTab: React.FC<{ trace: FolioTrace }> = ({ trace }) => {
   );
 };
 
-const ContextTab: React.FC<{ trace: FolioTrace }> = ({ trace }) => {
+const ContextTab: React.FC<{ trace: YansivraTrace }> = ({ trace }) => {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-3" data-testid="trace-context">
@@ -300,7 +300,7 @@ const ContextTab: React.FC<{ trace: FolioTrace }> = ({ trace }) => {
   );
 };
 
-const DetailsTab: React.FC<{ trace: FolioTrace }> = ({ trace }) => {
+const DetailsTab: React.FC<{ trace: YansivraTrace }> = ({ trace }) => {
   const { t } = useTranslation();
   const budget = trace.budget;
   return (

@@ -23,7 +23,7 @@ function mockClient(
 
 const connectedSettings: EvaluationSettings = {
   tracingEnabled: false,
-  langsmithProject: 'folio-agent',
+  langsmithProject: 'yansivra-agent',
   langsmithEndpoint: '',
   langfuseTracingEnabled: true,
   langfuseHost: 'https://cloud.langfuse.com',

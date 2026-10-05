@@ -1,4 +1,4 @@
-# Finance Agent
+# Yansivra
 
 AI-powered personal investment assistant desktop application.
 
@@ -52,7 +52,7 @@ bun run typecheck     # Type check
 ## Project Structure
 
 ```
-finagent/
+Yansivra/
 ├── packages/
 │   ├── longbridge-tools/   # CLI wrapper (executor, validator)
 │   ├── pi-extension/        # Pi Agent tools (get_quote, get_portfolio)

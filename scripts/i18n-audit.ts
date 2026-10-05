@@ -27,7 +27,7 @@ const RESUMED_PATTERNS: Array<[RegExp, string]> = [
 ];
 
 const IDENTIFIER_RE =
-  /\b(AAPL|GOOGL|NVDA|MSFT|TSLA|AMD|META|AMZN|QQQ|SPY|USD|HKD|CNY|SGD|Longbridge|Folio|LangSmith|Pi|Agent|LLM|DeepSeek|Anthropic|OpenAI|Radix|Sonner)\b/;
+  /\b(AAPL|GOOGL|NVDA|MSFT|TSLA|AMD|META|AMZN|QQQ|SPY|USD|HKD|CNY|SGD|Longbridge|Yansivra|LangSmith|Pi|Agent|LLM|DeepSeek|Anthropic|OpenAI|Radix|Sonner)\b/;
 const DOTTED_KEY_RE = /^[a-z][a-zA-Z0-9]+\.[a-zA-Z0-9.]+(\.[a-zA-Z0-9]+)$/;
 const COLORISH_RE = /^(text|bg|border|className|data-|id=)/;
 

@@ -74,18 +74,18 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, onActio
   return (
     <div
       data-testid={`candidate-${candidate.symbol}`}
-      className="folio-pilot-row"
+      className="yansivra-pilot-row"
     >
       {/* Security */}
-      <div className="folio-pilot-identity">
-        <div className="folio-pilot-symbol-line">
-          <span className="folio-pilot-symbol">{candidate.symbol}</span>
-          <span className="folio-pilot-name">{candidate.name}</span>
+      <div className="yansivra-pilot-identity">
+        <div className="yansivra-pilot-symbol-line">
+          <span className="yansivra-pilot-symbol">{candidate.symbol}</span>
+          <span className="yansivra-pilot-name">{candidate.name}</span>
         </div>
-        {candidate.reasons[0] && <div className="folio-pilot-reason">{candidate.reasons[0]}</div>}
-        <div className="folio-pilot-secondary">
+        {candidate.reasons[0] && <div className="yansivra-pilot-reason">{candidate.reasons[0]}</div>}
+        <div className="yansivra-pilot-secondary">
           {candidate.reasons.slice(1, 3).map((reason) => (
-            <span key={reason} className="folio-pilot-chip">
+            <span key={reason} className="yansivra-pilot-chip">
               {reason}
             </span>
           ))}
@@ -121,7 +121,7 @@ export const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, onActio
       </div>
 
       {/* Action */}
-      <div className="folio-pilot-action">
+      <div className="yansivra-pilot-action">
         <Button
           variant="default"
           size="sm"

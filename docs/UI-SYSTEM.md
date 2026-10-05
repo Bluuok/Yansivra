@@ -1,6 +1,6 @@
-# Folio UI System
+# Yansivra UI System
 
-Folio is a quiet financial workspace: dense enough for live market work, but
+Yansivra is a quiet financial workspace: dense enough for live market work, but
 calm enough to keep the user's attention on a decision. This document is the
 small contract for new UI work in the renderer.
 

@@ -158,7 +158,7 @@ describe('dailyVolatility / appendBlocksToAnswer', () => {
   it('appends fences after the answer text with a blank line', () => {
     const blocks = buildQuoteAnswerBlocks(quote, klineSeries(), ['get_quote-1']);
     const answer = appendBlocksToAnswer('Summary text.', blocks);
-    expect(answer.startsWith('Summary text.\n\n```folio-block\n')).toBe(true);
+    expect(answer.startsWith('Summary text.\n\n```yansivra-block\n')).toBe(true);
     expect(answer.endsWith('```')).toBe(true);
   });
 

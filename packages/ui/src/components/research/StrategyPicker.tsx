@@ -79,8 +79,8 @@ export interface StrategyPickerProps {
 export const StrategyPicker: React.FC<StrategyPickerProps> = ({ value, onChange, recommendedId }) => {
   const { t } = useTranslation();
   return (
-    <div className="mb-3 folio-pilot-strategy-picker" data-testid="strategy-picker">
-      <div className="folio-pilot-eyebrow mb-1.5">
+    <div className="mb-3 yansivra-pilot-strategy-picker" data-testid="strategy-picker">
+      <div className="yansivra-pilot-eyebrow mb-1.5">
         {t('research.researchStrategy')}
       </div>
       <RadioGroup.Root

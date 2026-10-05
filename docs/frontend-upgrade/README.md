@@ -1,7 +1,7 @@
-# Folio Desk 前端升级：Skills 驱动的视觉与动效统一方案
+# Yansivra 前端升级：Skills 驱动的视觉与动效统一方案
 
-> 本文是 PR #2、#3 的替代方案与本次范围约定。已安装并核验两个开发Skill，完成检索、样稿、总览/研究/复盘升级和实际验收；[前后截图及录屏](gallery.md)、[验证记录与边界](visual-validation.md) 可直接复核。
-> 核查基线：`Bluuok/folio@8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f`。本次重新查询 main，仍是 2026-10-01 合并的桌面改版。保留「总览 / 研究 / 复盘 / 资产」四个入口与现有后端。[C1]
+> 本文是 PR #2、#3 的替代方案与本次范围约定。已安装并核验两个开发Skill，完成检索、样稿、总览/研究/复盘升级和实际验收；[当前截图与历史记录](gallery.md)、[验证记录与边界](visual-validation.md) 可直接复核。
+> 核查基线：`Bluuok/Yansivra@8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f`。本次重新查询 main，仍是 2026-10-01 合并的桌面改版。保留「总览 / 研究 / 复盘 / 资产」四个入口与现有后端。[C1]
 > 阅读顺序：本文 → [Skills 安装与执行手册](skills-workflow.md) → [前端规则模板](frontend-rules.template.md)。后续执行者只使用这一组文件。
 
 ## 1. 本次依据与纠正
@@ -10,13 +10,13 @@
 
 文章的「方法 5、Agent Skills」明确推荐 **两个** Skill：**Frontend-design** 和 **UI UX Pro Max**，不是五个。Context7、AGENTS.md、图片网站和组件库不是另外三个前端 Skill。此前建议“先安装文章中的五个 Skill”没有原文依据，本方案废止该说法。[A，方法5]
 
-来源分三类：文中的「原文方法」只转述文章；「代码现状」以基线源码为准；「Folio 决策」是针对当前桌面产品的设计取舍。原文没有规定两个 Skill 必须同时使用；本轮选择让二者分工，是实施决策，不冒充原作者要求。
+来源分三类：文中的「原文方法」只转述文章；「代码现状」以基线源码为准；「Yansivra 决策」是针对当前桌面产品的设计取舍。原文没有规定两个 Skill 必须同时使用；本轮选择让二者分工，是实施决策，不冒充原作者要求。
 
 **最终目标不是“把界面收敛得更素”，而是：主页面静态时就有完成度，关键交互有清楚而有质感的动态反馈。** 前端变化应明显，后端能力与真实研究闭环不重做。
 
 ## 2. 原文七个方法如何进入本项目
 
-| 原文方法 | 原文要点 | 本轮 Folio 决策与交付证据 |
+| 原文方法 | 原文要点 | 本轮 Yansivra 决策与交付证据 |
 | --- | --- | --- |
 | 1、让 AI 参考真实网站 | 读取网站、提供截图、截图转代码、参考模板或开源项目 | 设计执行时建立不超过三项的参考板，逐项记录来源、实际可读内容、借鉴的局部及不采用项。不能只抄整站配色或留下几个未读链接。已有代码和同尺寸桌面截图是首要约束。 |
 | 2、设计优先开发 | 先做纯静态 Demo，满意后再开发；文中列举 Stitch、Figma、Onlook | 先做三个核心页面的静态样稿，再连接现有状态与 IPC。OpenDesign 已可用时可辅助制作，但不替代两个 Skill，也不要求另外安装全部设计工具。 |
@@ -50,7 +50,7 @@
 
 ### G0：准备，不直接改业务页面
 
-读取仓库现有规则、package.json、本文及两个 Skill 的实际入口。确认它们是开发 Agent 的技能，不是 Folio 内置投资 Skill，不放入应用的 `skills/`，也不打进 Electron 资源。
+读取仓库现有规则、package.json、本文及两个 Skill 的实际入口。确认它们是开发 Agent 的技能，不是 Yansivra 内置投资 Skill，不放入应用的 `skills/`，也不打进 Electron 资源。
 
 记录可发现路径、来源/版本、调用方式与 Python 可用性。缺失就按执行手册补齐；已经存在则复用并核对，不重复安装多个同名副本。本次安装证据见 [skill-installation.md](skill-installation.md)，实际检索见 [skill-run-log.md](skill-run-log.md)。
 
@@ -61,7 +61,7 @@ UI UX Pro Max 用已检测到的 Electron + React 技术栈检索，不能默认
 本次已产出以下材料；原始检索、自评和实际验收分别保存，便于复核：
 
 ```text
-design-system/folio-desk/MASTER.md
+design-system/yansivra-desk/MASTER.md
   pages/overview.md
   pages/research.md
   pages/journal.md
@@ -139,7 +139,7 @@ ResearchReportView 的标的和摘要成为抬头主角，模型立场、置信�
 
 章节依据内容长短选择单列正文或适度对照；看多/看空可以并列，但不要把每一段都装进相同的圆角卡。章节编号只在确有阅读顺序时采用，不给所有块装饰性编号。正文建议宽 680–760px，以实际内容容器响应，而不是仅按整窗宽度。
 
-目录宽时可 sticky，窄时改成章节菜单；滚动容器是 `.folio-pilot-research-content`，不要误绑 window。锚点包含组件实例前缀、reportId 与安全编码后的 section key，避免正文和同一报告快照共存时重复 ID。
+目录宽时可 sticky，窄时改成章节菜单；滚动容器是 `.yansivra-pilot-research-content`，不要误绑 window。锚点包含组件实例前缀、reportId 与安全编码后的 section key，避免正文和同一报告快照共存时重复 ID。
 
 EvidenceInspector 做成资料侧栏：当前章节、claim、摘要、能力名称、执行状态、采集时间。现有证据是能力执行记录及摘要，不是财报 PDF 原文；不能画虚构页码、原文高亮或“已核实”印章。用 `runId + capabilityId` 关联执行；重复引用不等于独立多源证据。[C7]
 
@@ -164,7 +164,7 @@ EvidenceInspector 做成资料侧栏：当前章节、claim、摘要、能力名
 | 既有 ContentReveal / visibility hooks | 依据切换、复盘反馈和隐藏暂停优先复用 | 检查初次渲染 reduced-motion 与 Pane 的实际可见状态。 |
 | 既有 Radix / Lucide / 图表 | 保留并定制 | 不引入另一整套基础组件、Iconify 运行时或新的图表库，只为“显得用了文章工具”。 |
 
-Magic UI 当前文档列出 Animated Beam 的 repeat 默认是 Infinity，并提供路径与渐变颜色参数；实施时应核对锁定版本并改为有限次数，不默认沿用彩色循环。[D3] Aceternity Background Lines 的文档描述的是动画 SVG 路径；本次只确认候选机制，不声称已在 Folio 试用。[D4]
+Magic UI 当前文档列出 Animated Beam 的 repeat 默认是 Infinity，并提供路径与渐变颜色参数；实施时应核对锁定版本并改为有限次数，不默认沿用彩色循环。[D3] Aceternity Background Lines 的文档描述的是动画 SVG 路径；本次只确认候选机制，不声称已在 Yansivra 试用。[D4]
 
 组件 CLI 可能写入 aliases、全局样式与依赖。先在临时目录检查产物，再按现有 `packages/ui` 路径接入；不让 shadcn 初始化覆盖整个工程。读取实际 imports，最多新增一种兼容 React 18 的动画运行时，并记录 lockfile 与构建体积变化；若无收益则使用本地 SVG/CSS 版本并注明原因。
 
@@ -274,23 +274,23 @@ packages/i18n/src/locales/{zh-CN,en-US}/*
 
 ## 11. 核验范围与来源
 
-原规划阶段已完成：上传全文阅读；旧 #2/#3 文档与 PR 状态读取；main SHA 复核；两个官方 Skill 入口和组件文档核对。本次执行的安装、检索、样稿和实际测试另有可复核记录：[安装](skill-installation.md)、[检索](skill-run-log.md)、[规范](../../design-system/folio-desk/MASTER.md)、[验证](visual-validation.md)。文章外链效果图与视频仍未审阅；不将当前页面当作原文效果图的复刻。
+原规划阶段已完成：上传全文阅读；旧 #2/#3 文档与 PR 状态读取；main SHA 复核；两个官方 Skill 入口和组件文档核对。本次执行的安装、检索、样稿和实际测试另有可复核记录：[安装](skill-installation.md)、[检索](skill-run-log.md)、[规范](../../design-system/yansivra-desk/MASTER.md)、[验证](visual-validation.md)。文章外链效果图与视频仍未审阅；不将当前页面当作原文效果图的复刻。
 
 原文章及其图片不复制进仓库；以下仅保留出处和与实施有关的转述。旧 PR 用不可变提交链接保存来源，新执行者无需读取旧分支。
 
 [A]: https://ai.codefather.cn/library/2026205153777963010
-[C1]: https://github.com/Bluuok/folio/commit/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f
-[C2]: https://github.com/Bluuok/folio/blob/e7e8dd985475f22c1fb92b972a4e0c19f158bd14/docs/frontend-upgrade/01-editorial-visual-design.md
-[C3]: https://github.com/Bluuok/folio/blob/ab48d8f05225bfca1fe66d9aa070d8ea50c0e497/docs/frontend-upgrade/02-motion-interaction-plan.md
-[C4]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/apps/electron/src/renderer/styles/index.css
-[C5]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/today/TodayView.tsx
-[C6]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/research/ResearchReportView.tsx
-[C7]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/research/EvidenceInspector.tsx
-[C8]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/journal/JournalView.tsx
-[C9]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/journal/ReviewForm.tsx
-[C10]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/research/ResearchPanel.tsx
-[C11]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/layout/WorkbenchShell.tsx
-[C12]: https://github.com/Bluuok/folio/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/motion/AgentAmbientField.tsx
+[C1]: https://github.com/Bluuok/Yansivra/commit/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f
+[C2]: https://github.com/Bluuok/Yansivra/blob/e7e8dd985475f22c1fb92b972a4e0c19f158bd14/docs/frontend-upgrade/01-editorial-visual-design.md
+[C3]: https://github.com/Bluuok/Yansivra/blob/ab48d8f05225bfca1fe66d9aa070d8ea50c0e497/docs/frontend-upgrade/02-motion-interaction-plan.md
+[C4]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/apps/electron/src/renderer/styles/index.css
+[C5]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/today/TodayView.tsx
+[C6]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/research/ResearchReportView.tsx
+[C7]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/research/EvidenceInspector.tsx
+[C8]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/journal/JournalView.tsx
+[C9]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/journal/ReviewForm.tsx
+[C10]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/research/ResearchPanel.tsx
+[C11]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/layout/WorkbenchShell.tsx
+[C12]: https://github.com/Bluuok/Yansivra/blob/8a3bd8407ba02a6b8ba10e1374ca5c81f3673b8f/packages/ui/src/components/motion/AgentAmbientField.tsx
 [D1]: https://github.com/anthropics/skills/tree/main/skills/frontend-design
 [D2]: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 [D3]: https://magicui.design/docs/components/animated-beam

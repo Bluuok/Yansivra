@@ -1,6 +1,6 @@
 # LongBridge CLI API Reference
 
-Complete reference for all LongBridge CLI commands used by Finance Agent.
+Complete reference for all LongBridge CLI commands used by Yansivra.
 
 ---
 

@@ -135,7 +135,7 @@ export type { PiPromptStream, PiPromptResult, PiState, PiStreamEvent } from './a
 // Core error helpers used across services & the main process.
 export { createCodeError, isRuntimeInfraCode, toApiError } from './agent/errors.ts';
 
-// ── Folio V3 modules ───────────────────────────────────────────────────────
+// ── Yansivra V3 modules ───────────────────────────────────────────────────────
 export * from './capabilities/index.ts';
 export * from './research/index.ts';
 export * from './thesis/index.ts';

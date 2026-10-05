@@ -1,4 +1,4 @@
-// Folio V9 UX audit capture — exercises the app as a real first-time user and
+// Yansivra V9 UX audit capture — exercises the app as a real first-time user and
 // captures every major state for visual review. Hidden by default.
 import { execSync } from 'node:child_process';
 import { seedLocale } from './seed-locale.mjs';

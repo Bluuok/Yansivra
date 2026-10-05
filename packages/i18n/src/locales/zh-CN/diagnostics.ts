@@ -40,7 +40,7 @@ export const diagnostics = {
   no: '否',
   markets: '市场：{{list}}',
   capabilities: '能力：{{list}}',
-  summaryFolio: 'Yansivra {{version}}（{{os}}/{{arch}}）',
+  summaryYansivra: 'Yansivra {{version}}（{{os}}/{{arch}}）',
   summaryAgentRuntime: 'Agent 运行时：{{provider}}（{{state}}）',
   summaryLlm: 'LLM：{{provider}} / {{model}}',
   summaryBroker: '券商：{{status}}（{{count}} 个账户）',

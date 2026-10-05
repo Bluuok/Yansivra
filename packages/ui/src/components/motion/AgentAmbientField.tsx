@@ -19,13 +19,13 @@ interface AgentAmbientFieldProps {
 const DEFAULT_PARTICLE_COUNT = 28;
 
 const stateClass: Record<AgentMotionState, string> = {
-  idle: 'folio-motion-state--idle',
-  thinking: 'folio-motion-state--thinking',
-  tool: 'folio-motion-state--tool',
-  synthesizing: 'folio-motion-state--synthesizing',
-  complete: 'folio-motion-state--complete',
-  partial: 'folio-motion-state--partial',
-  error: 'folio-motion-state--error',
+  idle: 'yansivra-motion-state--idle',
+  thinking: 'yansivra-motion-state--thinking',
+  tool: 'yansivra-motion-state--tool',
+  synthesizing: 'yansivra-motion-state--synthesizing',
+  complete: 'yansivra-motion-state--complete',
+  partial: 'yansivra-motion-state--partial',
+  error: 'yansivra-motion-state--error',
 };
 
 type ParticleStyle = React.CSSProperties & {
@@ -76,11 +76,11 @@ export const AgentAmbientField: React.FC<AgentAmbientFieldProps> = ({
       data-motion-state={state}
       data-paused={paused || reducedMotion ? 'true' : 'false'}
       data-reduced-motion={reducedMotion ? 'true' : 'false'}
-      className={`folio-motion-ambient ${stateClass[state]} ${className}`.trim()}
+      className={`yansivra-motion-ambient ${stateClass[state]} ${className}`.trim()}
     >
-      {shouldRenderParticles && <span className="folio-motion-ambient__halo" />}
+      {shouldRenderParticles && <span className="yansivra-motion-ambient__halo" />}
       {shouldRenderParticles && particles.map((particle) => (
-        <span key={particle.id} className="folio-motion-ambient__particle" style={particle.style} />
+        <span key={particle.id} className="yansivra-motion-ambient__particle" style={particle.style} />
       ))}
     </div>
   );

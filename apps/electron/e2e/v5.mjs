@@ -4,8 +4,10 @@
 //
 //   FINAGENT_AGENT_PROVIDER=local node e2e/v5.mjs
 
-import { execSync, spawn } from 'node:child_process';
-import { existsSync, rmSync, mkdirSync } from 'node:fs';
+import { spawn } from 'node:child_process';
+import { buildForE2E, debugPort, electronBinary as installedElectron, hasCompletedAssistantAnswer, isolatedEnv, newProfile, stopOwnedProcess } from './runtime-support.mjs';
+import { existsSync } from 'node:fs';
+import { seedLocale } from './seed-locale.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -16,12 +18,9 @@ const { chromium } = require('playwright-core');
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(here, '..');
 const repoRoot = join(here, '../../..');
-const electronMain = join(appRoot, 'src/main/index.ts');
-const electronBinary = join(
-  repoRoot,
-  'node_modules/.bun/electron@39.8.9/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron'
-);
-const CDP_PORT = 9349;
+const electronMain = join(appRoot, 'src/main/index.js');
+const electronBinary = installedElectron(appRoot);
+const CDP_PORT = await debugPort();
 
 let failures = 0;
 function pass(name) {
@@ -62,17 +61,9 @@ async function main() {
     console.error(`Electron binary not found: ${electronBinary}`);
     process.exit(1);
   }
-  try {
-    execSync(`pkill -f 'remote-debugging-port=${CDP_PORT}' || true`, { stdio: 'ignore' });
-  } catch {
-    // Nothing to clean.
-  }
-  execSync('bun run build:preload', { cwd: appRoot, stdio: 'pipe' });
-  execSync('bunx vite build', { cwd: appRoot, stdio: 'pipe' });
-
-  const userDataDir = join(appRoot, 'e2e/.user-data-v5');
-  rmSync(userDataDir, { recursive: true, force: true });
-  mkdirSync(userDataDir, { recursive: true });
+  buildForE2E(appRoot);
+  const userDataDir = newProfile('Yansivra v5 ');
+  seedLocale(userDataDir, 'en-US');
 
   const electronProcess = spawn(
     electronBinary,
@@ -81,12 +72,7 @@ async function main() {
       cwd: repoRoot,
       stdio: 'ignore',
       env: {
-        ...process.env,
-        FINAGENT_AGENT_PROVIDER: 'local',
-        FINAGENT_FORCE_PROD_LOAD: '1',
-        FINAGENT_E2E: '1',
-        FINAGENT_E2E_HIDDEN: '1',
-        FINAGENT_USER_DATA_DIR: userDataDir,
+        ...isolatedEnv(userDataDir, { offline: false }),
       },
     }
   );
@@ -180,9 +166,9 @@ async function main() {
     fail('harness setup', error);
   } finally {
     if (process.env.FINAGENT_E2E_KEEP_OPEN === '1') {
-      console.log(`KEEP_OPEN CDP port ${CDP_PORT}`);
+      console.log(`KEEP_OPEN owned PID ${electronProcess.pid}, CDP ${CDP_PORT}`);
     } else {
-      electronProcess.kill();
+      await stopOwnedProcess(electronProcess);
     }
   }
 

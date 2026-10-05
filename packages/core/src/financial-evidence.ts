@@ -1,7 +1,7 @@
 /** Machine-readable lineage for structured financial facts used by Copilot. */
 
 export const FINANCIAL_EVIDENCE_SCHEMA_VERSION = 'financial-evidence/v1' as const;
-export const FINANCIAL_NORMALIZATION_VERSION = 'folio-normalization/v1' as const;
+export const FINANCIAL_NORMALIZATION_VERSION = 'yansivra-normalization/v1' as const;
 
 export type FinancialEvidenceKind = 'quote' | 'fundamental' | 'historical' | 'portfolio' | 'other';
 

@@ -169,6 +169,6 @@ describe('parseAnswerBlock', () => {
   });
 
   it('keeps the fence language constant for the renderer contract', () => {
-    expect(ANSWER_BLOCK_FENCE_LANG).toBe('folio-block');
+    expect(ANSWER_BLOCK_FENCE_LANG).toBe('yansivra-block');
   });
 });

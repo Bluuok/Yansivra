@@ -1,4 +1,4 @@
-// Folio V9 product-flow E2E — user-journey continuity gates (spec §118):
+// Yansivra V9 product-flow E2E — user-journey continuity gates (spec §118):
 //   1. Returning-user persistence (panel visibility, last section, pane sizes)
 //   2. Portfolio → Research context continuity
 //   3. Discover → Research continuity (origin back-chip + recommended strategy)
@@ -74,9 +74,9 @@ async function main() {
       await page.getByRole('button', { name: /Collapse agent panel/i }).first().click();
       await page.waitForTimeout(600);
       const collapsed = await page.locator('[data-testid="agent-panel"]').count() === 0 || !(await page.locator('[data-testid="agent-panel"]').first().isVisible().catch(() => false));
-      const preStored = await page.evaluate(() => localStorage.getItem('folio.prefs.navSection'));
+      const preStored = await page.evaluate(() => localStorage.getItem('yansivra.prefs.navSection'));
       console.log('PRE-RESTART localStorage navSection:', preStored);
-      const prePanel = await page.evaluate(() => localStorage.getItem('folio.prefs.agentPanelVisible'));
+      const prePanel = await page.evaluate(() => localStorage.getItem('yansivra.prefs.agentPanelVisible'));
       console.log('PRE-RESTART localStorage panel:', prePanel);
       // Restart with the same userData dir.
       // Close the window gracefully so Chromium flushes localStorage to disk,
@@ -93,7 +93,7 @@ async function main() {
       await page.waitForTimeout(1500);
       const sectionText = await page.locator('[data-testid="finance-workspace"]').textContent();
       const restoredSection = /Deep Research|Research/i.test(sectionText ?? '');
-      const stored = await page.evaluate(() => localStorage.getItem('folio.prefs.navSection'));
+      const stored = await page.evaluate(() => localStorage.getItem('yansivra.prefs.navSection'));
       const panelStill = await page.locator('[data-testid="agent-panel"]').count();
       const panelVisible = panelStill > 0 && await page.locator('[data-testid="agent-panel"]').first().isVisible().catch(() => false);
       if (!stored) throw new Error('navSection not persisted in localStorage');

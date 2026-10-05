@@ -19,6 +19,8 @@ permissions:
 
 jobs:
   eval-full:
+    # Disabled after takeover; confirm targets, costs and authorization before enabling.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:

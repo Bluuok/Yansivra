@@ -1,6 +1,6 @@
-// Convert Folio Agent / Deep Research snapshots into a Langfuse ingestion batch.
+// Convert Yansivra Agent / Deep Research snapshots into a Langfuse ingestion batch.
 //
-// One Folio run → one Langfuse trace with child spans for retrieval/tools and
+// One Yansivra run → one Langfuse trace with child spans for retrieval/tools and
 // a generation for synthesis. This is the unified tracing boundary: callers
 // never import Langfuse-specific event types.
 import type { PrivacyLevel, ResearchReport, ToolCallRecord } from '@finagent/core';
@@ -10,12 +10,12 @@ import {
   LANGFUSE_TRACE_NAME_RESEARCH,
   langfuseMetadataRecord,
   langfuseTags,
-  type FolioLangfuseMetadata,
+  type YansivraLangfuseMetadata,
 } from './metadata.ts';
 import { isoFromEpoch, newEventId, type LangfuseIngestionEvent } from './protocol.ts';
 
 export interface AgentRunTraceSnapshot {
-  folioRunId: string;
+  yansivraRunId: string;
   sessionId?: string;
   threadId?: string;
   startedAt: number;
@@ -27,7 +27,7 @@ export interface AgentRunTraceSnapshot {
   model?: string;
   provider?: string;
   usage?: { input?: number; output?: number; total?: number };
-  metadata: FolioLangfuseMetadata;
+  metadata: YansivraLangfuseMetadata;
 }
 
 export interface ResearchCapabilitySpan {
@@ -41,7 +41,7 @@ export interface ResearchCapabilitySpan {
 }
 
 export interface ResearchRunTraceSnapshot {
-  folioRunId: string;
+  yansivraRunId: string;
   startedAt: number;
   completedAt: number;
   symbol: string;
@@ -52,7 +52,7 @@ export interface ResearchRunTraceSnapshot {
   error?: string;
   model?: string;
   provider?: string;
-  metadata: FolioLangfuseMetadata;
+  metadata: YansivraLangfuseMetadata;
 }
 
 export interface BuiltTraceBatch {
@@ -65,7 +65,7 @@ export function buildAgentTraceBatch(
   privacyLevel: PrivacyLevel = 'standard'
 ): BuiltTraceBatch {
   const redactor = new EvaluationRedactor(privacyLevel);
-  const traceId = snapshot.folioRunId.startsWith('lf-') ? snapshot.folioRunId : snapshot.folioRunId;
+  const traceId = snapshot.yansivraRunId.startsWith('lf-') ? snapshot.yansivraRunId : snapshot.yansivraRunId;
   const events: LangfuseIngestionEvent[] = [];
   const started = isoFromEpoch(snapshot.startedAt);
   const ended = isoFromEpoch(snapshot.completedAt);
@@ -155,7 +155,7 @@ export function buildResearchTraceBatch(
   privacyLevel: PrivacyLevel = 'standard'
 ): BuiltTraceBatch {
   const redactor = new EvaluationRedactor(privacyLevel);
-  const traceId = snapshot.folioRunId;
+  const traceId = snapshot.yansivraRunId;
   const events: LangfuseIngestionEvent[] = [];
   const started = isoFromEpoch(snapshot.startedAt);
   const ended = isoFromEpoch(snapshot.completedAt);
@@ -229,7 +229,7 @@ export function buildResearchTraceBatch(
       name: 'research.synthesis',
       startTime: isoFromEpoch(synthStart),
       endTime: ended,
-      model: snapshot.model ?? 'folio-synthesizer',
+      model: snapshot.model ?? 'yansivra-synthesizer',
       input: payload(privacyLevel, {
         symbol: snapshot.symbol,
         capabilities: snapshot.capabilities.map((item) => item.capabilityId),
