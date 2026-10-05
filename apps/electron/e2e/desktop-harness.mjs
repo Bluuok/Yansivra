@@ -86,6 +86,7 @@ export async function captureDesktop(application, name) {
     }
   }
   if (visible) throw new Error('Screenshot capture unexpectedly showed the hidden test window');
+  mkdirSync(outputRoot, { recursive: true });
   writeFileSync(join(outputRoot, name), Buffer.from(png, 'base64'));
 }
 
