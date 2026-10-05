@@ -17,14 +17,14 @@ adapter that proves the router architecture (spec §12–13).
 Polygon is the **only** candidate whose license structure has an explicit, self-serve
 commercial path: the "Massive for Businesses" Terms of Service grants the customer the right to
 make data available to its "Authorized Users" and **"Edge Users"** (the end users of the
-customer's product) — i.e., it contemplates exactly the desktop-app distribution Folio needs.
+customer's product) — i.e., it contemplates exactly the desktop-app distribution Yansivra needs.
 Every other candidate's free/self-serve tier is "personal use only" and forbids redistribution
 outright (see §3). Under the spec §12 rule — *"a provider whose terms forbid redistribution is
 disqualified no matter how good the API"* — Polygon is the only survivor.
 
 The one hard caveat: Polygon's **free "Stocks Basic" tier is itself labeled "Individual use"** and
 returns **end-of-day** (not real-time) data. That is acceptable for building and smoke-testing the
-adapter (5 calls/min), but a commercial Folio ship requires a **Business plan** (real-time,
+adapter (5 calls/min), but a commercial Yansivra ship requires a **Business plan** (real-time,
 `Edge Users` right) — or a BYOK model where each end user's own license governs. This is
 documented in §4 (risks) and must be surfaced in the Connections UI, not silently papered over.
 
@@ -52,7 +52,7 @@ official vendor page where the claim is stated.
 
 ## 3. Licensing analysis (the deciding criterion)
 
-Spec §12 makes license/redistribution the **first** gate. Folio is a commercial desktop app that
+Spec §12 makes license/redistribution the **first** gate. Yansivra is a commercial desktop app that
 displays market data in a UI; a provider whose terms say "personal use only" or "no redistribution"
 on the tier our users would actually hold is disqualified regardless of API quality. Verbatim
 clauses, with sources:
@@ -78,7 +78,7 @@ clauses, with sources:
   retrievable from a scrapeable page — re-verify the clause before any Tiingo fallback.
   ([docs](https://www.tiingo.com/documentation))
 - **Yahoo Finance** — no official API; `yfinance` is a scraper. Yahoo's ToS bars automated access
-  and redistribution of its content, so an adapter would rest on terms Folio cannot satisfy and a
+  and redistribution of its content, so an adapter would rest on terms Yansivra cannot satisfy and a
   non-existent SLA. → **DISQUALIFIED.** ([Yahoo ToS](https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html) · [yfinance](https://github.com/ranaroussi/yfinance))
 
 **Polygon/Massive** is structured differently, and that is why it wins:
@@ -88,13 +88,13 @@ clauses, with sources:
   use of "Business Use" products). ([terms](https://massive.com/legal/terms))
 - The **Business ToS** redistribution clause permits making Information available to *"Customer, its
   Authorized Users, or its Edge Users"* — where "Edge Users" are the end users of the customer's
-  product. That is precisely Folio's distribution model. ([businesses ToS](https://massive.com/legal/businesses-terms-of-service))
+  product. That is precisely Yansivra's distribution model. ([businesses ToS](https://massive.com/legal/businesses-terms-of-service))
 - The **Individuals ToS** is unambiguous that *"if you are using the Services for business or
   commercial purposes, you may not use any of the Services labeled for individual or personal use"* —
   so the **free "Stocks Basic" tier is NOT a commercial license.** ([individuals ToS](https://massive.com/legal/individuals-terms-of-service))
 
 Net licensing conclusion for the decision: **for the adapter/proof stage use the free "Individual
-use" tier (dev only); for any commercial ship, Folio needs a Polygon Business plan (real-time +
+use" tier (dev only); for any commercial ship, Yansivra needs a Polygon Business plan (real-time +
 `Edge Users`) — and that plan's price/terms are self-serve and documented, unlike the sales-gated
 "personal use only" vendors above.** Attribution is incorporated by reference via Polygon's Market
 Data Terms of Service (referenced from both ToS documents); treat "Powered by Polygon.io" display
@@ -184,7 +184,7 @@ further research.
 }
 ```
 
-- Pagination: `next_url` carries a cursor; follow it to page. Map `timespan` to Folio's kline
+- Pagination: `next_url` carries a cursor; follow it to page. Map `timespan` to Yansivra's kline
   period input in the adapter.
 
 ### Profile — response shape (key fields)
@@ -229,7 +229,7 @@ further research.
 
 1. **Free tier is not a commercial license.** Polygon "Stocks Basic" = "Individual use". Shipping the
    adapter with a hardcoded/company key, or telling business users to paste a free key, breaches the
-   Individuals ToS. Resolution: (a) BYOK where each user's own license governs, and (b) Folio obtains
+   Individuals ToS. Resolution: (a) BYOK where each user's own license governs, and (b) Yansivra obtains
    a **Business** plan (real-time + `Edge Users`) before commercial distribution. Surface this in the
    Connections UI, not in a log line.
 2. **Attribution.** Polygon's Market Data Terms (incorporated by reference) require display

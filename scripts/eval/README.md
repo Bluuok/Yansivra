@@ -32,7 +32,7 @@ optional — it is only needed for ad-hoc Pi runs outside this repo.
 | `TRACE_TO_LANGSMITH` | `true`/`1`/`yes`/`on` enables tracing (OFF by default; the smoke script sets it from the key) |
 | `LANGSMITH_PI_API_KEY` | LangSmith API key (falls back to `LANGSMITH_API_KEY`) |
 | `LANGSMITH_PI_ENDPOINT` | custom/self-hosted API URL (default `https://api.smith.langchain.com`) |
-| `LANGSMITH_PI_PROJECT` | project name (default `pi-coding-agent`; the smoke script defaults to `folio-agent`) |
+| `LANGSMITH_PI_PROJECT` | project name (default `pi-coding-agent`; the smoke script defaults to `yansivra-agent`) |
 | `LANGSMITH_PI_METADATA` | JSON merged into root trace metadata |
 
 ### Local run
@@ -64,7 +64,7 @@ Flags:
 
 | Flag | Meaning |
 |---|---|
-| `--dataset <id>` | Embedded dataset id (default `folio-agent-v1`) |
+| `--dataset <id>` | Embedded dataset id (default `yansivra-agent-v1`) |
 | `--mode fixture\|live` | Runtime mode (default `fixture`) |
 | `--model <id>` | Agent model under test (e.g. `anthropic/claude-sonnet-4-5`); a `provider/model` value implies the provider |
 | `--provider <id>` | Agent provider override |

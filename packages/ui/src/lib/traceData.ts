@@ -11,7 +11,7 @@ import type {
   EvaluationCase,
   EvaluationResultRecord,
   EvaluationRun,
-  FolioTrace,
+  YansivraTrace,
   Message,
   Run,
   ToolCall,
@@ -30,8 +30,8 @@ export interface SessionTraceSource {
   traceRef?: TraceReference;
 }
 
-/** Build a FolioTrace for a session run from persisted run + transcript. */
-export function projectSessionTrace(source: SessionTraceSource): FolioTrace {
+/** Build a YansivraTrace for a session run from persisted run + transcript. */
+export function projectSessionTrace(source: SessionTraceSource): YansivraTrace {
   const liveContextText: Record<string, string> = {};
   if (source.liveContext) {
     const parts: string[] = [];
@@ -56,8 +56,8 @@ export interface EvaluationTraceSource {
   traceLink?: TraceReference;
 }
 
-/** Build a FolioTrace for an evaluation run (case input is authoritative). */
-export function projectEvaluationTrace(source: EvaluationTraceSource): FolioTrace {
+/** Build a YansivraTrace for an evaluation run (case input is authoritative). */
+export function projectEvaluationTrace(source: EvaluationTraceSource): YansivraTrace {
   return projectTrace({
     evaluationRun: source.evaluationRun,
     evaluationResult: source.evaluationResult,

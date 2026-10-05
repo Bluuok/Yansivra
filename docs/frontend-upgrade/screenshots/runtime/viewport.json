@@ -1006,7 +1006,7 @@
       ]
     },
     {
-      "selector": ".folio-pilot-confidence",
+      "selector": ".yansivra-pilot-confidence",
       "fonts": [
         {
           "familyName": "Consolas",

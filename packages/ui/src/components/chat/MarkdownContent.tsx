@@ -25,7 +25,7 @@ function safeUrl(value: string): string {
   }
 
   try {
-    const parsed = new URL(candidate, 'https://folio.invalid');
+    const parsed = new URL(candidate, 'https://yansivra.invalid');
     return SAFE_URL_PROTOCOLS.has(parsed.protocol) ? candidate : '';
   } catch {
     return '';

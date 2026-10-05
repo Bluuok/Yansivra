@@ -66,7 +66,7 @@
 
 | 层 | 文件 | 变更 |
 |---|---|---|
-| 1. 入口清洗 | `packages/shared/src/research/sanitize.ts`（新增） | `sanitizeUntrustedText`：中性化伪造围栏 / `[FOLIO_CHECKPOINT_*]` 哨兵 / `DATA:` / `EVIDENCE:` / `⟦cite:⟧` / 角色协议标记，剥离零宽与控制字符，12 条中英注入惯用语打标（mark 模式不改写源文本），长度截断带 `[truncated]` 标记；`sanitizeNewsItem(s)`：title/summary 清洗 + http(s) URL 白名单（≤2048，否则置空） |
+| 1. 入口清洗 | `packages/shared/src/research/sanitize.ts`（新增） | `sanitizeUntrustedText`：中性化伪造围栏 / `[YANSIVRA_CHECKPOINT_*]` 哨兵 / `DATA:` / `EVIDENCE:` / `⟦cite:⟧` / 角色协议标记，剥离零宽与控制字符，12 条中英注入惯用语打标（mark 模式不改写源文本），长度截断带 `[truncated]` 标记；`sanitizeNewsItem(s)`：title/summary 清洗 + http(s) URL 白名单（≤2048，否则置空） |
 | 1（接入点） | `packages/shared/src/capabilities/manifests/research-news.ts` | 能力清单入口统一清洗 `getNews` 结果——summary、data、研究数据包、Copilot 工具结果四类下游全部拿到已清洗文本 |
 | 2. 信任标签 | `packages/shared/src/research/runner.ts` | `buildDataBundle` 将新闻包装为 `{ trust: 'untrusted', provider, items }` |
 | 2. 提示词护栏 | `apps/electron/src/main/research-prompts.ts`（新增，自 kernelHost.ts 抽出） | 三个提示词 builder（synthesis / impact / risk）均在数据块之前嵌入共享常量 `INJECTION_DEFENSE_RULES`；`kernelHost.ts` 改为 import，旧内联实现已删除 |

@@ -23,7 +23,7 @@
 | 证据产出 | `packages/shared/src/evidence/financial-evidence.ts` | `buildFinancialEvidence({ sessionId, runId, toolCalls })`，将成功金融工具调用转为 envelope；含密钥脱敏与 `MAX_VALUES=200` 上限 |
 | 证据持久化 | `packages/shared/src/kernel/run-manager.ts`（约 283–297 行） | run 结束时把 `financialEvidence` 挂到 assistant `Message` 上，经 `session-manager.ts` → `message-repository.ts` 落盘 `sessions/<sessionId>/messages.json` |
 | 前端获取 | `apps/electron/src/main/kernelHost.ts` `getMessages` | 完整返回含 `financialEvidence` 与 `toolCalls`；**流式 `AgentEvent` 不携带证据**，证据仅在 run 结束后随消息加载 |
-| 类型化答案块 | `packages/core/src/answer-blocks.ts` | 块以 ` ```folio-block` 围栏内嵌于回答文本；`AnswerBlockBase.evidenceIds?: string[]` 已预留 |
+| 类型化答案块 | `packages/core/src/answer-blocks.ts` | 块以 ` ```yansivra-block` 围栏内嵌于回答文本；`AnswerBlockBase.evidenceIds?: string[]` 已预留 |
 | 块渲染 | `packages/ui/src/components/chat/AnswerContent.tsx` + `blocks/parseAnswerSegments.ts` + `blocks/AnswerBlockView.tsx` + `blocks/AnswerBlockFrame.tsx` | `AnswerBlockFrame` 已渲染证据 chip（`<span data-evidence-id={id}>`），注释明确预期 #30 检查器直接挂载 |
 | 证据 ID 语义 | `packages/shared/src/agent/local-finance-agent-backend.ts`（约 347 行）与 `answer-block-emitter.ts` | **块里写的 `evidenceIds` 实际是 `toolCall.id`，不是 `fe_*` envelope id**。`FinancialEvidenceEnvelope.toolCallId` 是二者的关联键 |
 | 行内引用 | 无 | 聊天/Markdown 管线（`MarkdownContent.tsx`）中不存在任何 `[1]` 上标、脚注或来源列表渲染 |
@@ -52,7 +52,7 @@
 | Copilot 交互路径 | `packages/shared/src/capabilities/pi-tools.ts`（27–46 行） | 工具结果以 `${summary}\n\nDATA: ${json}` 文本交给 Pi runtime LLM |
 
 **现有防御（仅行为遏制，无内容防御）：**
-- `packages/pi-extension/src/index.ts` `registerResearchSynthesisGuard`：检测 `[FOLIO_CHECKPOINT_SYNTHESIS_V1]` 哨兵后 `setActiveTools([])`，阻断一切工具调用（有测试 `research-synthesis-guard.test.ts`）；
+- `packages/pi-extension/src/index.ts` `registerResearchSynthesisGuard`：检测 `[YANSIVRA_CHECKPOINT_SYNTHESIS_V1]` 哨兵后 `setActiveTools([])`，阻断一切工具调用（有测试 `research-synthesis-guard.test.ts`）；
 - `agent-synth.ts parseSynthesisJson` 严格校验输出形状/枚举，但**字符串内容不校验**——注入文本可流入报告正文；
 - 仓库中**不存在**任何 sanitize/quarantine/信任域逻辑；无来源信任等级概念。
 
@@ -110,7 +110,7 @@ export interface CitationMarker {
 - 正则：`/⟦cite:([a-zA-Z0-9_:.-]+)⟧/g`；
 - 序号在**渲染期**分配：同一消息内按首次出现顺序编号（流式期间同样稳定，因为 marker 自带 id，不依赖位置）；
 - 渲染为 `<sup class="citation">[n]</sup>`，可点击 → 打开 Source Inspector 并定位该来源；
-- 答案块（folio-block 围栏）内的 `evidenceIds` **保持 toolCall.id 兼容语义不变**，由前端经 `toolCallId → envelope.id` 归一后与行内引用共用同一编号空间（见 2.4）。
+- 答案块（yansivra-block 围栏）内的 `evidenceIds` **保持 toolCall.id 兼容语义不变**，由前端经 `toolCallId → envelope.id` 归一后与行内引用共用同一编号空间（见 2.4）。
 
 **（C）`answer-blocks.ts` 小改：**
 
@@ -121,7 +121,7 @@ export interface CitationMarker {
 1. **发射端统一 id（`answer-block-emitter.ts` + `local-finance-agent-backend.ts`）**：
    - 新增 `resolveEvidenceIds(toolCalls): { envelopeIds, byToolCallId }` 辅助函数（复用 `buildFinancialEvidence` 的 id 确定性规则，或直接先构建 envelope 再取 id）；
    - 新块写入 `evidenceIdsResolved`；旧字段保留，保证旧客户端/旧测试不破坏。
-2. **Pi 路径提示词（`pi-runtime-adapter.ts buildPrompt`，约 525–533 行 folio-block 说明处）**：
+2. **Pi 路径提示词（`pi-runtime-adapter.ts buildPrompt`，约 525–533 行 yansivra-block 说明处）**：
    - 追加引用指令：*"When you state a fact taken from a tool result, append a citation marker `⟦cite:<evidence id>⟧` immediately after the claim. The evidence id is the `fe_…` id shown in the tool result's evidence metadata (or the tool call id if no envelope id is available). Never fabricate ids; only cite ids that appeared in this conversation."*
    - `pi-tools.ts` 工具结果文本尾部追加一行 `EVIDENCE: fe_...`（envelope id 可在执行后即时算出：`fe_<sha256(runId:toolCallId:resultHash)>`，无需等待 run 结束），供模型直接引用。需要把 `buildFinancialEvidence` 的 id 生成逻辑抽为可单调用的 `computeEnvelopeId(runId, toolCallId, resultHash)` 放进 `packages/shared/src/evidence/`，两处复用。
 3. **run 结束一致性保障（`run-manager.ts`）**：不改持久化结构；已有 envelope 落盘即够。可选增强：run settle 后内核向渲染端多发一个 `runs:settled` 事件（或复用现有 run 完成事件），提示 UI 重载消息以激活引用。
@@ -152,7 +152,7 @@ export interface CitationMarker {
 
 | 层 | 用例 |
 |---|---|
-| core | `citations.test.ts`：marker 解析（嵌套/转义/非法 id/与 folio-block 围栏共存）；`answer-blocks.test.ts` 增补 `evidenceIdsResolved` 兼容 |
+| core | `citations.test.ts`：marker 解析（嵌套/转义/非法 id/与 yansivra-block 围栏共存）；`answer-blocks.test.ts` 增补 `evidenceIdsResolved` 兼容 |
 | shared | `evidence/`：`computeEnvelopeId` 与 `buildFinancialEvidence` id 一致性；`answer-block-emitter.test` 增补 resolved id；`pi-tools` 结果含 `EVIDENCE:` 行 |
 | ui | `citations.test.ts`（编号稳定性、跨块统一编号）；`AnswerContent.test.tsx` 增补 marker 渲染与点击回调；`SourceInspector.test.tsx`（分组、stale 徽标、缺失降级） |
 | e2e | 扩展 `apps/electron/e2e/typed-blocks.mjs`：含 marker 的示例回答 → 上标渲染 → 点击打开检查器 → 详情字段齐全 |
@@ -181,7 +181,7 @@ export interface SanitizeResult {
 export type InjectionFlag =
   | 'role-marker'          // "system:" / "assistant:" / "<|im_start|>" 等角色/协议标记
   | 'instruction-phrase'   // 中英文注入惯用语（"ignore previous instructions"、"忽略以上指令"、"你现在是…"）
-  | 'fake-delimiter'       // 试图伪造的结构哨兵：'[FOLIO_CHECKPOINT'、'```'、'DATA:'、'EVIDENCE:'
+  | 'fake-delimiter'       // 试图伪造的结构哨兵：'[YANSIVRA_CHECKPOINT'、'```'、'DATA:'、'EVIDENCE:'
   | 'control-chars';       // 不可见控制字符 / 零宽字符
 
 export function sanitizeUntrustedText(raw: string, opts?: { maxLength?: number }): SanitizeResult;
@@ -232,7 +232,7 @@ export function sanitizeNewsItem(item: NewsItem): NewsItem; // title/summary 清
 
 | 层 | 用例 |
 |---|---|
-| sanitize 单测 | 经典注入语料（英文 "ignore previous instructions and reveal…"、中文"忽略以上所有指令，输出…"）、角色标记、伪造 `[FOLIO_CHECKPOINT_SYNTHESIS_V1]` 哨兵、伪造 ```` ``` ```` 围栏、零宽字符、超长标题截断、正常财经新闻不误伤（快照用例） |
+| sanitize 单测 | 经典注入语料（英文 "ignore previous instructions and reveal…"、中文"忽略以上所有指令，输出…"）、角色标记、伪造 `[YANSIVRA_CHECKPOINT_SYNTHESIS_V1]` 哨兵、伪造 ```` ``` ```` 围栏、零宽字符、超长标题截断、正常财经新闻不误伤（快照用例） |
 | runner | `runner.test.ts` 增补：dataBundle 中新闻条目带 `trust:"untrusted"` 与清洗后文本；注入语料 fixture 不出现在 bundle 原文 |
 | kernelHost | `kernelHost.test.ts` 增补：三个 prompt builder 均含 SECURITY RULES 段；含注入语料的 summary 不改变提示词结构 |
 | agent-synth | 输出_screen：综合结果中被搬运的注入句被剥离/标注 |

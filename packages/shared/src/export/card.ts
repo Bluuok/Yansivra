@@ -143,7 +143,7 @@ export function reportToShareCard(report: ResearchReport): ShareCard {
           .join('\n')
 
   const svg = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" role="img" aria-label="Folio research snapshot for ${escapeXml(report.symbol)}">`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" role="img" aria-label="Yansivra research snapshot for ${escapeXml(report.symbol)}">`,
     `  <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="20" fill="#10141a"/>`,
     `  <rect width="${CARD_WIDTH}" height="6" fill="${STANCE_TONE[report.stance]}"/>`,
     `  <text x="32" y="54" font-size="34" font-weight="700" fill="#f5f7fa" font-family="${FONT_FAMILY}">${escapeXml(report.symbol)}</text>`,
@@ -156,7 +156,7 @@ export function reportToShareCard(report: ResearchReport): ShareCard {
     `  <text x="32" y="280" font-size="11" letter-spacing="1.5" fill="#6b7480" font-family="${FONT_FAMILY}">KEY RISK</text>`,
     riskBlock,
     `  <line x1="32" y1="384" x2="608" y2="384" stroke="#232a33" stroke-width="1"/>`,
-    `  <text x="32" y="418" font-size="13" font-weight="700" fill="#f5f7fa" font-family="${FONT_FAMILY}">Folio</text>`,
+    `  <text x="32" y="418" font-size="13" font-weight="700" fill="#f5f7fa" font-family="${FONT_FAMILY}">Yansivra</text>`,
     `  <text x="608" y="418" text-anchor="end" font-size="11" fill="#6b7480" font-family="${FONT_FAMILY}">Research snapshot</text>`,
     '</svg>',
   ].join('\n')
@@ -171,7 +171,7 @@ export function reportToShareCard(report: ResearchReport): ShareCard {
     textLines.push(`${section.title}: ${VERDICT_LABEL[section.verdict]}`)
   }
   textLines.push(report.risks[0] ? `Key risk: ${report.risks[0]}` : 'Key risk: none flagged')
-  textLines.push('— Folio research snapshot')
+  textLines.push('— Yansivra research snapshot')
 
   return { svg, text: textLines.join('\n') }
 }

@@ -1,4 +1,4 @@
-# Folio V2 — AI-native Finance Workbench: Historical Plan (superseded)
+# Yansivra V2 — AI-native Finance Workbench: Historical Plan (superseded)
 
 ## Research findings (verified against real installs)
 
@@ -11,7 +11,7 @@
   `get_available_thinking_levels` NOT supported in 0.73.1 (Unknown command) → derive levels from
   `model.thinkingLevelMap` keys with non-null values + `off`.
   Custom providers: extension `registerProvider(name, {api, baseUrl, apiKey, models:[...]})` —
-  full model replacement, immediate effect, Folio-owned (does not touch user's global pi config).
+  full model replacement, immediate effect, Yansivra-owned (does not touch user's global pi config).
 - **Longbridge CLI 0.17.0**: `quote`, `static` (name, total_shares, eps, dividend, currency,
   exchange), `calc-index` (pe/pb/dps_rate/total_market_value/turnover_rate), `market-status`,
   `kline`, `intraday`, `news`, `valuation`, `portfolio`, `positions` — all JSON-capable.

@@ -1,4 +1,4 @@
-// Map Folio evaluation scores + research-run facts onto Langfuse score names.
+// Map Yansivra evaluation scores + research-run facts onto Langfuse score names.
 import type { EvaluationScore, ResearchReport, ToolCallRecord } from '@finagent/core';
 import type { LangfuseScoreInput } from './protocol.ts';
 

@@ -1,10 +1,10 @@
 # 实际检索与取舍
 
-2026-10-02，通过已安装 UIUX `scripts/search.py` 实际运行，完整原始输出在 [search-results](./search-results/)。它们是检索记录，**不是已采纳的规范**；最终规范只在 `design-system/folio-desk/MASTER.md`。
+2026-10-02，通过已安装 UIUX `scripts/search.py` 实际运行，完整原始输出在 [search-results](./search-results/)。它们是检索记录，**不是已采纳的规范**；最终规范只在 `design-system/yansivra-desk/MASTER.md`。
 
 | 输入 / 参数 | 实际首条结果 | 处理 |
 | --- | --- | --- |
-| investment research desktop / --design-system -p Folio Desk -f markdown | Portfolio Grid；Swiss Modernism；EB Garamond / Crimson Text | 页面模式误匹配作品集，字体缺中文，不采纳 |
+| investment research desktop / --design-system -p Yansivra -f markdown | Portfolio Grid；Swiss Modernism；EB Garamond / Crimson Text | 页面模式误匹配作品集，字体缺中文，不采纳 |
 | financial analysis desktop / --design-system（一次窄化重试） | Hero + Features + CTA；Minimalism；绿色 CTA | 仍是营销页；不采纳 CTA、色板、字体。一般留白/网格原则适用 |
 | editorial archival asymmetric / --domain style | Editorial Grid / Magazine | 采用不对称布局和内容层次；拒绝首字下沉、滚动视差、强制衬线和翻页 |
 | Chinese longform reading / --domain typography | Chinese Simplified：Noto Sans SC | 中文优先；离线 Windows 实际存在微软雅黑，标题/正文采用系统中文无衬线；数据采用 Consolas tabular-nums。无 CDN、无字体下载 |

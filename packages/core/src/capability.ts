@@ -4,7 +4,7 @@ import type { ProviderFailoverStep } from './provider.ts';
 
 /**
  * Finance Capability domain — the single source of truth for every piece of
- * financial functionality Folio can execute.
+ * financial functionality Yansivra can execute.
  *
  * A capability is a named, schema-validated, read-only (this round) operation
  * over a finance data provider. The registry drives three consumers:
@@ -115,7 +115,7 @@ export interface CapabilityRegistry {
 }
 
 /**
- * Capability ids targeted by Folio V3. Implementations register under these
+ * Capability ids targeted by Yansivra V3. Implementations register under these
  * ids; skills reference them from their capability requirement maps. Ids not
  * yet implemented simply report as missing in skill readiness.
  */

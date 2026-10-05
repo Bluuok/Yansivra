@@ -2,7 +2,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /**
- * Resolves Folio's runtime resource paths in both dev and packaged modes.
+ * Resolves Yansivra's runtime resource paths in both dev and packaged modes.
  *
  * - Dev: everything resolves under the repository root, discovered from the
  *   location of this module (`import.meta.url`) — never from `process.cwd()` —
@@ -32,7 +32,7 @@ function repoRootFromHere(): string {
   return resolve(here, ...new Array<string>(REPO_ROOT_OFFSET).fill('..'));
 }
 
-/** True when running inside a packaged Folio app (not the dev source tree). */
+/** True when running inside a packaged Yansivra app (not the dev source tree). */
 export function isPackaged(): boolean {
   const resourcesPath = readResourcesPath();
   return (

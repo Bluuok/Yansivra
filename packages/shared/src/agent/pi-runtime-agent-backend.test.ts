@@ -457,7 +457,7 @@ describe('PiRpcClient', () => {
 });
 
 describe('PiRuntimeAdapter', () => {
-  it('maps a Pi run into the Folio AgentEvent sequence', async () => {
+  it('maps a Pi run into the Yansivra AgentEvent sequence', async () => {
     const client = new PiRpcClient({
       spawnProcess: createSpawn(() =>
         new FakePiProcess((line, proc) => {
@@ -671,7 +671,7 @@ describe('PiRuntimeAdapter', () => {
     const client = new PiRpcClient({
       spawnProcess: createSpawn(() => new FakePiProcess(() => undefined)),
     });
-    const sessionDir = await mkdtemp(join(tmpdir(), 'folio-pi-dispose-'));
+    const sessionDir = await mkdtemp(join(tmpdir(), 'yansivra-pi-dispose-'));
     const adapter = new PiRuntimeAdapter({ rpcClient: client, sessionDir });
     const sessionPath = join(sessionDir, 's1.jsonl');
     try {

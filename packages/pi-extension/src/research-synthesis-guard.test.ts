@@ -10,7 +10,7 @@ it('blocks every synthesis tool and restores the copilot tool set afterwards', (
     getActiveTools: () => tools,
     setActiveTools: (next) => { tools = next; },
   });
-  handlers.get('before_agent_start')!({ prompt: 'Context\nUser request: [FOLIO_CHECKPOINT_SYNTHESIS_V1]\nFacts' });
+  handlers.get('before_agent_start')!({ prompt: 'Context\nUser request: [YANSIVRA_CHECKPOINT_SYNTHESIS_V1]\nFacts' });
   expect(tools).toEqual([]);
   expect(handlers.get('tool_call')!({})).toMatchObject({ block: true });
   handlers.get('agent_end')!({});

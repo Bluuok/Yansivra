@@ -1,5 +1,5 @@
 // TraceProjection — pure, source-neutral projection of authoritative persisted
-// sources into a FolioTrace (V9.1 spec §2–4, §7, §9–11, §16).
+// sources into a YansivraTrace (V9.1 spec §2–4, §7, §9–11, §16).
 //
 // Rules enforced here:
 //   - NEVER reconstruct historical context from current app state. Context
@@ -24,7 +24,7 @@ import type {
 import type { TraceReference } from './evaluation.ts';
 import type { SupportedLocale } from './locale.ts';
 import type {
-  FolioTrace,
+  YansivraTrace,
   TraceCompleteness,
   TraceContextField,
   TraceElementSource,
@@ -138,11 +138,11 @@ function contextFromCase(caseDef: EvaluationCase): TraceContextField[] {
 }
 
 /**
- * Project authoritative sources into a FolioTrace. Pure and read-only; the
+ * Project authoritative sources into a YansivraTrace. Pure and read-only; the
  * caller decides which sources exist (from persisted stores / IPC), never
  * current renderer atoms for historical runs.
  */
-export function projectTrace(input: TraceProjectionInput): FolioTrace {
+export function projectTrace(input: TraceProjectionInput): YansivraTrace {
   const {
     run,
     messages = [],
@@ -251,7 +251,7 @@ export function projectTrace(input: TraceProjectionInput): FolioTrace {
   }
 
   // ── Evaluation findings (judgment, kept separate) ───────────────────────
-  let evaluation: FolioTrace['evaluation'];
+  let evaluation: YansivraTrace['evaluation'];
   if (evaluationRun || evaluationResult) {
     const expected = evaluationCase?.expected.requiredCapabilities ?? evaluationCase?.expected.optionalCapabilities;
     const actual = tools.map((tool) => tool.toolName);

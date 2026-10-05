@@ -6,7 +6,7 @@
 // + optional LLM-judge evaluation, and durable persistence via EvaluationStore.
 //
 // Per spec §42-45 the experiment record carries full metadata (gitSha,
-// folio/runtime/Pi versions, provider configuration) so historical experiments
+// yansivra/runtime/Pi versions, provider configuration) so historical experiments
 // stay comparable. Per spec §79 cost guardrails (maxCases, timeoutMs) are
 // enforced here. Failure modes are recorded by the evaluators: the run starts
 // with outcome-derived modes (timeout/runtime_error), then the
@@ -204,8 +204,8 @@ export function currentGitSha(): string | undefined {
   }
 }
 
-/** Folio version from the repo root package.json; undefined when unreadable. */
-export function currentFolioVersion(): string | undefined {
+/** Yansivra version from the repo root package.json; undefined when unreadable. */
+export function currentYansivraVersion(): string | undefined {
   try {
     const raw = readFileSync(join(process.cwd(), 'package.json'), 'utf8');
     const parsed = JSON.parse(raw) as { version?: unknown };
@@ -218,7 +218,7 @@ export function currentFolioVersion(): string | undefined {
 function buildMetadata(config: ExperimentConfig, startedAt: number): ExperimentMetadata {
   return {
     gitSha: currentGitSha(),
-    folioVersion: currentFolioVersion(),
+    yansivraVersion: currentYansivraVersion(),
     runtimeVersion: process.version,
     piVersion: process.env.FINAGENT_PI_VERSION ?? undefined,
     providerConfiguration: {
@@ -774,7 +774,7 @@ export class ExperimentService {
   /** Persist the trace link for a finished run; never throws. */
   private async traceRun(
     run: EvaluationRun,
-    folioSessionId: string,
+    yansivraSessionId: string,
     locale?: SupportedLocale,
     extras?: {
       prompt?: string;
@@ -795,8 +795,8 @@ export class ExperimentService {
     try {
       if (this.backend instanceof LangfuseEvaluationBackend) {
         return await this.backend.exportAgentRun({
-          folioRunId: run.id,
-          sessionId: folioSessionId,
+          yansivraRunId: run.id,
+          sessionId: yansivraSessionId,
           startedAt: run.startedAt,
           completedAt: run.completedAt ?? this.now(),
           input: extras?.prompt,
@@ -806,8 +806,8 @@ export class ExperimentService {
           model: extras?.model,
           provider: extras?.provider,
           metadata: {
-            folioRunId: run.id,
-            folioSessionId,
+            yansivraRunId: run.id,
+            yansivraSessionId,
             runKind: 'evaluation',
             goldCaseId: extras?.goldCaseId ?? run.caseId,
             datasetId: extras?.datasetId ?? run.datasetId,
@@ -816,7 +816,7 @@ export class ExperimentService {
             provider: extras?.provider,
             requestedModel: extras?.requestedModel,
             requestedProvider: extras?.requestedProvider,
-            folioVersion: currentFolioVersion(),
+            yansivraVersion: currentYansivraVersion(),
             locale,
           },
         });
@@ -828,8 +828,8 @@ export class ExperimentService {
         threadId = state.sessionId;
       }
       return await this.correlation.recordRun({
-        folioRunId: run.id,
-        folioSessionId,
+        yansivraRunId: run.id,
+        yansivraSessionId,
         threadId,
         startedAt: run.startedAt,
         completedAt: run.completedAt,

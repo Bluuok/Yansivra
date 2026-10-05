@@ -8,6 +8,8 @@ import { loadFinagentEnv } from './loadEnv.ts';
 import { getRuntimeRoot } from '@finagent/shared/resources';
 import { JsonFileStore } from '@finagent/shared';
 import { JournalRepository, JournalService } from '@finagent/shared/journal';
+import { LEGACY_PROFILE_NAME } from '../../../../packages/core/src/branding-migration.ts';
+import { upgradeProfile } from './branding-migration.ts';
 let mainWindow: BrowserWindow | null = null;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(__dirname, '../..');
@@ -19,8 +21,9 @@ const runtimeRoot = getRuntimeRoot();
 if (process.env.FINAGENT_USER_DATA_DIR) {
   app.setPath('userData', process.env.FINAGENT_USER_DATA_DIR);
 } else if (app.isPackaged) {
-  // Product branding must not silently create a different legacy data profile.
-  app.setPath('userData', join(app.getPath('appData'), 'Folio'));
+  const target = join(app.getPath('appData'), 'Yansivra');
+  upgradeProfile(join(app.getPath('appData'), LEGACY_PROFILE_NAME), target);
+  app.setPath('userData', target);
 }
 
 loadFinagentEnv({
@@ -191,7 +194,7 @@ ipcMain.handle('longbridge:getStatus', async () =>
   toIpcResult(() => agentKernelHost.getLongBridgeStatus())
 );
 
-// Folio V3: capabilities, skill readiness, research, thesis, compare, alerts, risk
+// Yansivra V3: capabilities, skill readiness, research, thesis, compare, alerts, risk
 ipcMain.handle('capabilities:list', async () =>
   toIpcResult(() => agentKernelHost.listCapabilities())
 );

@@ -1,6 +1,6 @@
 // Provider-neutral evaluation backend (spec §15-16, §87, §89).
 //
-// Folio core only depends on `EvaluationBackend`. LangSmith is the first
+// Yansivra core only depends on `EvaluationBackend`. LangSmith is the first
 // implementation; local and disabled backends cover offline/dev modes.
 // Every backend MUST be failure-isolated: observability must never break the
 // agent (spec §87), so backend methods return statuses/lists instead of
@@ -12,7 +12,7 @@ export type EvaluationBackendKind = 'langsmith' | 'langfuse' | 'local' | 'none';
 export interface TraceQuery {
   /** Pi session id = LangSmith thread_id when known. */
   threadId?: string;
-  /** Folio session id (local backends). */
+  /** Yansivra session id (local backends). */
   sessionId?: string;
   /** Only traces that started at/after this epoch-ms timestamp. */
   startedAfter?: number;
@@ -209,7 +209,7 @@ export class LangSmithEvaluationBackend implements EvaluationBackend {
     await this.requestJson<unknown>(`/runs/${traceId}/feedback`, {
       score: feedback.score,
       comment: feedback.comment,
-      metadata: feedback.runId ? { folioRunId: feedback.runId } : undefined,
+      metadata: feedback.runId ? { yansivraRunId: feedback.runId } : undefined,
     });
   }
 

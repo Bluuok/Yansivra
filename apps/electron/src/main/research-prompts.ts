@@ -13,7 +13,7 @@ import { INJECTION_DEFENSE_RULES, type PortfolioRiskSynthesisInput } from '@fina
 
 export function buildSynthesisPrompt(input: ResearchSynthesisInput): string {
   return [
-    '[FOLIO_CHECKPOINT_SYNTHESIS_V1]',
+    '[YANSIVRA_CHECKPOINT_SYNTHESIS_V1]',
     'Use only the saved facts below. Tool calls are disabled for this synthesis.',
     INJECTION_DEFENSE_RULES,
     '',

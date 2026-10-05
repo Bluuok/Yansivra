@@ -8,6 +8,8 @@ import type {
   AgentRunInput,
   AgentRuntime,
   ApiResult,
+  Message,
+  Run,
   RuntimeSession,
   ToolDefinition,
 } from '@finagent/core';
@@ -780,3 +782,96 @@ async function waitFor(predicate: () => Promise<boolean>, timeoutMs = 2000) {
     await new Promise((resolve) => setTimeout(resolve, 5));
   }
 }
+
+
+describe('RunManager durable terminal state', () => {
+  it('reports a deadline reached on the completion event as cancelled', async () => {
+    const { sessions, runs } = makeKernel(async function* (input) {
+      clock += 1000;
+      yield event(input.sessionId, input.runId, 'run_completed', { answer: 'Late answer', toolCalls: [] });
+    }, { budgets: { defaults: { wallClockMs: 1000 } } });
+    const events: AgentEvent[] = [];
+    runs.subscribe(event => events.push(event));
+    const session = await sessions.createSession('Completion deadline');
+    const run = await runs.startRun(session.id, 'hello');
+    await waitFor(async () => !runs.isRunning());
+    expect((await sessions.getRun(session.id, run.id))?.status).toBe('cancelled');
+    expect(events.filter(event => event.type === 'run_completed')).toHaveLength(0);
+    expect(events.at(-1)?.type).toBe('run_failed');
+  });
+
+  it('does not publish completed until the assistant message is actually persisted', async () => {
+    const { sessions, runs, store } = makeKernel(completedScript('Durable answer'));
+    const write = store.write.bind(store);
+    let release!: () => void;
+    let entered!: () => void;
+    const gate = new Promise<void>(resolve => { release = resolve; });
+    const waiting = new Promise<void>(resolve => { entered = resolve; });
+    store.write = async (file, data) => {
+      if (file.endsWith('/messages.json') && (data as { messages?: Message[] }).messages?.some(message => message.role === 'assistant')) {
+        entered();
+        await gate;
+      }
+      await write(file, data);
+    };
+    const types: string[] = [];
+    runs.subscribe(event => types.push(event.type));
+    const session = await sessions.createSession('Durable completion');
+    await runs.startRun(session.id, 'hello');
+    try {
+      await waiting;
+      expect(types).not.toContain('run_completed');
+      expect((await sessions.listMessages(session.id)).map(message => message.role)).toEqual(['user']);
+    } finally { release(); }
+    await waitFor(async () => !runs.isRunning());
+    expect(types.at(-1)).toBe('run_completed');
+    expect((await sessions.listMessages(session.id)).at(-1)?.content).toBe('Durable answer');
+  });
+
+  it('reports a failed completion checkpoint instead of publishing success', async () => {
+    const { sessions, runs, store } = makeKernel(completedScript('Unsaved answer'));
+    const write = store.write.bind(store);
+    store.write = async (file, data) => {
+      if (file.endsWith('/runs.json') && (data as { runs?: Run[] }).runs?.some(run => run.status === 'completed')) {
+        throw Object.assign(new Error('completion write denied'), { code: 'STORAGE_WRITE_FAILED' });
+      }
+      await write(file, data);
+    };
+    const events: AgentEvent[] = [];
+    runs.subscribe(event => events.push(event));
+    const session = await sessions.createSession('Failed checkpoint');
+    const run = await runs.startRun(session.id, 'hello');
+    await waitFor(async () => !runs.isRunning());
+    expect(events.filter(event => event.type === 'run_completed')).toHaveLength(0);
+    expect(events.filter(event => event.type === 'run_failed')).toHaveLength(1);
+    expect((await sessions.getRun(session.id, run.id))?.status).toBe('failed');
+    const failure = events.at(-1);
+    expect(failure?.type).toBe('run_failed');
+    if (failure?.type !== 'run_failed') throw new Error('Expected terminal run_failed');
+    expect(failure.payload).toMatchObject({ error: { code: 'STORAGE_WRITE_FAILED' } });
+  });
+
+  it('releases the runtime after an unrecoverable write error without replacing the old file', async () => {
+    const { sessions, runs, store } = makeKernel(completedScript('Retry answer'));
+    const write = store.write.bind(store);
+    let rejectTerminal = true;
+    store.write = async (file, data) => {
+      if (rejectTerminal && file.endsWith('/runs.json') && (data as { runs?: Run[] }).runs?.some(run => run.status !== 'running')) {
+        throw Object.assign(new Error('checkpoint read-only'), { code: 'STORAGE_WRITE_FAILED' });
+      }
+      await write(file, data);
+    };
+    const events: AgentEvent[] = [];
+    runs.subscribe(event => events.push(event));
+    const session = await sessions.createSession('Recoverable runtime slot');
+    const first = await runs.startRun(session.id, 'hello');
+    await waitFor(async () => !runs.isRunning());
+    expect((await sessions.getRun(session.id, first.id))?.status).toBe('running');
+    expect(events.at(-1)?.type).toBe('run_failed');
+    expect(events.filter(event => event.type === 'run_completed')).toHaveLength(0);
+    rejectTerminal = false;
+    const retry = await runs.startRun(session.id, 'retry');
+    await waitFor(async () => !runs.isRunning());
+    expect((await sessions.getRun(session.id, retry.id))?.status).toBe('completed');
+  });
+});

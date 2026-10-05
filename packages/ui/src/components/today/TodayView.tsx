@@ -347,56 +347,56 @@ export const TodayView: React.FC = () => {
   })()
 
   return (
-    <div className="folio-today-view desk-overview h-full overflow-y-auto bg-background px-6 py-6" data-testid="today-view">
-      <div className="folio-today-content mx-auto max-w-6xl">
-        <header className="folio-today-heading mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="yansivra-today-view desk-overview h-full overflow-y-auto bg-background px-6 py-6" data-testid="today-view">
+      <div className="yansivra-today-content mx-auto max-w-6xl">
+        <header className="yansivra-today-heading mb-6 flex flex-wrap items-end justify-between gap-4">
           <div><div className="mb-2 text-xs text-text-muted tnum">{new Date().toLocaleDateString()}</div><h1 className="font-display-lg text-foreground">{t('today.greeting')}</h1>
           <p>{t('today.heroSubtitle')}</p></div>
           <button type="button" onClick={handleResearchStock} className="mac-primary-button flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium"><Search className="h-4 w-4" />{t('navigation.startResearch')}</button>
         </header>
-        <div className="folio-today-bento grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <section className="folio-stitch-card lg:col-span-2" data-testid="today-continue-research">
-            <div className="folio-stitch-card-heading"><h2>{t('today.recentResearch')}</h2><button type="button" onClick={handleResearchStock} className="folio-stitch-text-button">{t('navigation.research')}</button></div>
+        <div className="yansivra-today-bento grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <section className="yansivra-stitch-card lg:col-span-2" data-testid="today-continue-research">
+            <div className="yansivra-stitch-card-heading"><h2>{t('today.recentResearch')}</h2><button type="button" onClick={handleResearchStock} className="yansivra-stitch-text-button">{t('navigation.research')}</button></div>
             {researchContent}
           </section>
-          <section className="folio-stitch-card" data-testid="today-pending-reviews">
-            <div className="folio-stitch-card-heading"><h2>{t('journal.pending')}</h2><button type="button" onClick={() => { setReviewTab('journal'); setNavSection('thesis') }} className="folio-stitch-text-button">{t('navigation.review')} →</button></div>
+          <section className="yansivra-stitch-card" data-testid="today-pending-reviews">
+            <div className="yansivra-stitch-card-heading"><h2>{t('journal.pending')}</h2><button type="button" onClick={() => { setReviewTab('journal'); setNavSection('thesis') }} className="yansivra-stitch-text-button">{t('navigation.review')} →</button></div>
             {journalError ? <JournalError error={journalError} /> : pending === null ? <SectionState kind="loading" /> : pending.length === 0 ? <div><p className="text-sm">{t('journal.noPending')}</p><p className="mt-2 text-xs leading-5 text-text-muted">{t('journal.noPendingHint')}</p></div> : <ul className="divide-y divide-border">{pending.map((entry) => <li key={entry.id}><button type="button" data-testid="pending-review" className="w-full py-3 text-left" onClick={() => { setJudgment(entry.id); setReviewTab('journal'); setNavSection('thesis') }}><strong className="text-sm">{entry.symbol}</strong><p className="mt-1 line-clamp-2 text-xs text-text-muted">{entry.rationale}</p><p className="mt-2 text-xs text-accent">{t('journal.reviewDate')} {entry.reviewAt !== undefined ? new Date(entry.reviewAt).toLocaleDateString() : '—'}</p></button></li>)}</ul>}
           </section>
-          <section className="folio-stitch-card" data-testid="today-portfolio-glance">
-            <div className="folio-stitch-card-heading">
+          <section className="yansivra-stitch-card" data-testid="today-portfolio-glance">
+            <div className="yansivra-stitch-card-heading">
               <h2>{t('today.portfolio')}</h2>
               <span className="flex items-center gap-2">
                 {(portfolioCache.isDemo || quotesAreDemo) && <DemoBadge />}
-                <span className="folio-card-menu" aria-hidden="true">•••</span>
+                <span className="yansivra-card-menu" aria-hidden="true">•••</span>
               </span>
             </div>
             {portfolioContent}
-            <div className="folio-today-mover-columns mt-5 grid grid-cols-2 gap-4 border-t border-border pt-4">
-              <div><h3>{t('today.topGainers')}</h3>{movers.length > 0 ? movers.filter((item) => (item.changePercent ?? 0) >= 0).slice(0, 2).map((item) => <div className="folio-today-mini-row" key={item.symbol}><span>{item.symbol}</span><strong className="text-positive">{formatPercent(item.changePercent)}</strong></div>) : <div className="folio-today-muted">{DASH}</div>}</div>
-              <div className="border-l border-border pl-4"><h3>{t('today.topLosers')}</h3>{movers.length > 0 ? movers.filter((item) => (item.changePercent ?? 0) < 0).slice(0, 2).map((item) => <div className="folio-today-mini-row" key={item.symbol}><span>{item.symbol}</span><strong className="text-negative">{formatPercent(item.changePercent)}</strong></div>) : <div className="folio-today-muted">{DASH}</div>}</div>
+            <div className="yansivra-today-mover-columns mt-5 grid grid-cols-2 gap-4 border-t border-border pt-4">
+              <div><h3>{t('today.topGainers')}</h3>{movers.length > 0 ? movers.filter((item) => (item.changePercent ?? 0) >= 0).slice(0, 2).map((item) => <div className="yansivra-today-mini-row" key={item.symbol}><span>{item.symbol}</span><strong className="text-positive">{formatPercent(item.changePercent)}</strong></div>) : <div className="yansivra-today-muted">{DASH}</div>}</div>
+              <div className="border-l border-border pl-4"><h3>{t('today.topLosers')}</h3>{movers.length > 0 ? movers.filter((item) => (item.changePercent ?? 0) < 0).slice(0, 2).map((item) => <div className="yansivra-today-mini-row" key={item.symbol}><span>{item.symbol}</span><strong className="text-negative">{formatPercent(item.changePercent)}</strong></div>) : <div className="yansivra-today-muted">{DASH}</div>}</div>
             </div>
           </section>
 
-          <section className="folio-stitch-card" data-testid="today-upcoming-events">
-            <div className="folio-stitch-card-heading"><h2>{t('today.upcomingEvents')}</h2><span className="flex items-center gap-2">{eventsAreDemo && <DemoBadge />}<CalendarDays className="h-4 w-4 text-foreground/48" /></span></div>
+          <section className="yansivra-stitch-card" data-testid="today-upcoming-events">
+            <div className="yansivra-stitch-card-heading"><h2>{t('today.upcomingEvents')}</h2><span className="flex items-center gap-2">{eventsAreDemo && <DemoBadge />}<CalendarDays className="h-4 w-4 text-foreground/48" /></span></div>
             {upcomingContent}
-            <button type="button" onClick={() => setNavSection('events')} className="folio-stitch-secondary-button mt-5 w-full">{t('events.title')}</button>
+            <button type="button" onClick={() => setNavSection('events')} className="yansivra-stitch-secondary-button mt-5 w-full">{t('events.title')}</button>
           </section>
 
-          <section className="folio-stitch-card" data-testid="today-watchlist-activity">
-            <div className="folio-stitch-card-heading"><h2>{t('today.watchlistMovers')}</h2><span className="flex items-center gap-2">{quotesAreDemo && <DemoBadge />}<button type="button" onClick={() => setNavSection('watchlist')} className="folio-stitch-text-button">{t('navigation.watchlist')}</button></span></div>
+          <section className="yansivra-stitch-card" data-testid="today-watchlist-activity">
+            <div className="yansivra-stitch-card-heading"><h2>{t('today.watchlistMovers')}</h2><span className="flex items-center gap-2">{quotesAreDemo && <DemoBadge />}<button type="button" onClick={() => setNavSection('watchlist')} className="yansivra-stitch-text-button">{t('navigation.watchlist')}</button></span></div>
             {moversContent}
           </section>
         </div>
 
-        <div className="folio-today-actions mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <div className="yansivra-today-actions mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
           <QuickAction icon={Search} label={t('today.quickActionDeepResearch')} hint={t('today.quickActionDeepResearchHint')} onClick={handleResearchStock} tone="blue" />
           <QuickAction icon={BriefcaseBusiness} label={t('today.quickActionReviewPortfolio')} hint={t('today.quickActionReviewPortfolioHint')} onClick={handleAnalyzePortfolio} tone="blue" />
           <QuickAction icon={GitCompareArrows} label={t('today.quickActionCompareStocks')} hint={t('today.quickActionCompareStocksHint')} onClick={handleCompare} tone="violet" />
         </div>
 
-        <div className="folio-today-secondary mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="yansivra-today-secondary mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
           <DailyBriefSection onManage={() => setAutomationOpen(true)} />
           <MarketPulse />
           <TodaySection title={t('today.thesesNeedingReview')}><div data-testid="today-thesis-review">{thesesContent}</div></TodaySection>
@@ -418,7 +418,7 @@ const QuickAction: React.FC<{
   tone: 'blue' | 'violet'
   onClick: () => void
 }> = ({ icon: Icon, label, hint, tone, onClick }) => (
-  <button type="button" onClick={onClick} className={`folio-quick-action group flex items-center gap-3 rounded-[9px] border border-border px-3 py-2.5 text-left transition-smooth hover:border-[var(--mac-blue)]/35 hover:bg-[var(--mac-blue-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 ${tone === 'blue' ? 'bg-accent/5' : 'bg-surface'}`}>
+  <button type="button" onClick={onClick} className={`yansivra-quick-action group flex items-center gap-3 rounded-[9px] border border-border px-3 py-2.5 text-left transition-smooth hover:border-[var(--mac-blue)]/35 hover:bg-[var(--mac-blue-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/25 ${tone === 'blue' ? 'bg-accent/5' : 'bg-surface'}`}>
     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent"><Icon className="h-4 w-4" strokeWidth={1.8} /></span>
     <span className="min-w-0 flex-1"><span className="block text-[12px] font-semibold text-foreground">{label}</span><span className="mt-0.5 block truncate text-[11px] text-foreground/44">{hint}</span></span>
   </button>

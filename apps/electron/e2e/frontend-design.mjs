@@ -20,7 +20,7 @@ writeFileSync(join(profile, 'store/research/runs.json'), JSON.stringify({ runs: 
   reportId: report.id, plannedCapabilities: ['market.quote', 'company.valuation', 'research.news'],
   completedCapabilities: ['company.valuation'], failedCapabilities: ['research.news'],
 }] }));
-const result = { fixture: true, sourceCommit: process.env.FOLIO_TEST_COMMIT ?? null, rows: [], screenshots: [], keyboard: {}, fonts: [] };
+const result = { fixture: true, sourceCommit: process.env.YANSIVRA_TEST_COMMIT ?? null, rows: [], screenshots: [], keyboard: {}, fonts: [] };
 let desktop;
 try {
   // Screencast keeps Chromium painting while the native window stays hidden.
@@ -53,8 +53,8 @@ try {
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         hidden = !(await application.evaluate(({ BrowserWindow }) => {
-          globalThis.__folioWinVis = BrowserWindow.getAllWindows()[0].isVisible();
-          return globalThis.__folioWinVis;
+          globalThis.__yansivraWinVis = BrowserWindow.getAllWindows()[0].isVisible();
+          return globalThis.__yansivraWinVis;
         }));
         break;
       } catch (e) {
@@ -84,11 +84,11 @@ try {
   await page.locator('[data-testid="today-view"]').waitFor();
   result.keyboard.backToOverview = true;
   await openReport();
-  const content = page.locator('.folio-pilot-research-content');
+  const content = page.locator('.yansivra-pilot-research-content');
   await content.evaluate(node => { node.scrollTop = 0; });
   const link = page.locator('.desk-report-toc a').first();
   await link.focus(); await page.keyboard.press('Enter');
-  assert.equal(await page.evaluate(() => document.activeElement?.matches('.folio-pilot-report-section')), true);
+  assert.equal(await page.evaluate(() => document.activeElement?.matches('.yansivra-pilot-report-section')), true);
   assert.ok(await content.evaluate(node => node.scrollTop) > 0);
   result.keyboard.tocContainer = true;
   await content.evaluate(node => { node.scrollTop = 0; });
@@ -115,7 +115,7 @@ try {
           await page.waitForTimeout(650);
           const metrics = await page.evaluate(() => {
             const doc = document.documentElement;
-            const node = document.querySelector('[data-testid="today-view"], .folio-pilot-research-content, [data-testid="journal-view"]');
+            const node = document.querySelector('[data-testid="today-view"], .yansivra-pilot-research-content, [data-testid="journal-view"]');
             const running = document.getAnimations().filter(a => a.playState === 'running');
             return { innerWidth, innerHeight, clientWidth: doc.clientWidth, scrollWidth: doc.scrollWidth, dpr:devicePixelRatio,
               contentWidth: node?.clientWidth, contentScrollWidth: node?.scrollWidth,
@@ -138,7 +138,7 @@ try {
   for (const theme of ['light','dark']) {
     await page.evaluate(dark => document.documentElement.classList.toggle('dark',dark),theme==='dark');
     await page.locator('[data-testid="research-report-heading"]').evaluate(node => {
-      const scroller=node.closest('.folio-pilot-research-content');
+      const scroller=node.closest('.yansivra-pilot-research-content');
       scroller.scrollTop+=node.getBoundingClientRect().top-scroller.getBoundingClientRect().top-24;
     });
     await page.waitForTimeout(650);await capture(`report-reading-${theme}`);
@@ -152,7 +152,7 @@ try {
   }
   await cdp.send('DOM.enable'); await cdp.send('CSS.enable');
   const dom = await cdp.send('DOM.getDocument');
-  for (const selector of ['.desk-report-confidence-note','.folio-pilot-confidence']) {
+  for (const selector of ['.desk-report-confidence-note','.yansivra-pilot-confidence']) {
     const node = await cdp.send('DOM.querySelector', { nodeId:dom.root.nodeId, selector });
     assert.ok(node.nodeId,`font target exists ${selector}`);
     const fonts = await cdp.send('CSS.getPlatformFontsForNode', { nodeId:node.nodeId });

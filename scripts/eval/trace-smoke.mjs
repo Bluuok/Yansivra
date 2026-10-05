@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Folio trace smoke (V7 §103-104).
+// Yansivra trace smoke (V7 §103-104).
 //
 //   bun run scripts/eval/trace-smoke.mjs
 //
@@ -66,8 +66,8 @@ async function main() {
     env: {
       TRACE_TO_LANGSMITH: langsmithApiKey ? 'true' : 'false',
       ...(langsmithApiKey ? { LANGSMITH_PI_API_KEY: langsmithApiKey } : {}),
-      LANGSMITH_PI_PROJECT: process.env.LANGSMITH_PI_PROJECT ?? 'folio-agent',
-      LANGSMITH_PI_METADATA: '{"app":"folio","purpose":"trace-smoke"}',
+      LANGSMITH_PI_PROJECT: process.env.LANGSMITH_PI_PROJECT ?? 'yansivra-agent',
+      LANGSMITH_PI_METADATA: '{"app":"yansivra","purpose":"trace-smoke"}',
     },
     onLog: (log) => {
       if (log.level === 'error') errorLogs.push(log);

@@ -21,7 +21,7 @@ try {
   await page.locator('[data-testid="record-judgment"]').waitFor();
   await page.locator('[data-testid="inspect-evidence"]').first().click();
   await page.locator('[data-testid="evidence-inspector"]').waitFor();
-  await page.locator('.folio-pilot-research-content').evaluate((node) => { node.scrollTop = 130; });
+  await page.locator('.yansivra-pilot-research-content').evaluate((node) => { node.scrollTop = 130; });
   await captureDesktop(application, 'desktop-research.png');
   await page.locator('[data-testid="evidence-inspector"]').getByRole('button', { name: '关闭检视栏', exact: true }).click();
   await page.locator('[data-testid="sidebar"]').getByRole('button', { name: '复盘', exact: true }).click();

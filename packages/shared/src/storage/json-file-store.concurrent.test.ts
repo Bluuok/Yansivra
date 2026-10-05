@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { JsonFileStore } from './json-file-store.ts';
 
 async function withStore(work: (store: JsonFileStore, root: string) => Promise<void>): Promise<void> {
-  const root = await mkdtemp(join(tmpdir(), 'folio-json-file-store-'));
+  const root = await mkdtemp(join(tmpdir(), 'yansivra-json-file-store-'));
   try {
     await work(new JsonFileStore(root), root);
   } finally {

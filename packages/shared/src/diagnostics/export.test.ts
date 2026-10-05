@@ -29,10 +29,10 @@ function makeBundle(): DiagnosticsBundle {
       backend: 'none',
       tracingEnabled: false,
       privacyLevel: 'standard',
-      project: 'folio-agent',
+      project: 'yansivra-agent',
       connected: null,
       traceStatus: 'disabled',
-      datasets: ['folio-agent-v1'],
+      datasets: ['yansivra-agent-v1'],
     },
     pi: {
       status: 'idle',
@@ -66,7 +66,7 @@ describe('support bundle export', () => {
   });
 
   it('writes valid redacted JSON to a temp path', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'folio-diag-'));
+    const dir = await mkdtemp(join(tmpdir(), 'yansivra-diag-'));
     const filePath = join(dir, 'bundle.json');
     try {
       await writeSupportBundle(makeBundle(), filePath);

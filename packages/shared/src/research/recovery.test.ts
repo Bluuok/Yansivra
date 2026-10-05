@@ -13,7 +13,7 @@ import { fakeCap } from './test-helpers.ts';
 import type { ResearchRunResult } from './runner.ts';
 
 let dir: string;
-beforeEach(async () => { dir = await mkdtemp(join(tmpdir(), 'folio-recovery-')); });
+beforeEach(async () => { dir = await mkdtemp(join(tmpdir(), 'yansivra-recovery-')); });
 afterEach(async () => { await rm(dir, { recursive: true, force: true }); });
 const local = new LocalResearchSynthesizer();
 const unavailable: ResearchSynthesizer = { async synthesize() { throw new Error('provider disconnected'); } };

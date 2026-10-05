@@ -1,4 +1,4 @@
-# Folio Evaluation — Agent Engineering Evaluation & LangSmith Observability (V7)
+# Yansivra Evaluation — Agent Engineering Evaluation & LangSmith Observability (V7)
 
 V7 adds the first complete **agent engineering evaluation system** on top of the
 existing Research → Outcome → Calibration loop. It answers: what failed, why,
@@ -18,13 +18,13 @@ Engineering metrics and investment outcomes can later be studied together
 ## 1. Architecture
 
 ```
-                          Folio Agent Kernel
+                          Yansivra Agent Kernel
                                 │
                                 ▼
                            Pi Runtime
              ┌──────────────────┴──────────────────┐
              ▼                                     ▼
-      Folio AgentEvent                     LangSmith Trace
+      Yansivra AgentEvent                     LangSmith Trace
              │                                     │
              │                                     ▼
              │                                 Dataset
@@ -67,14 +67,14 @@ Layers (spec §3):
   | `LANGSMITH_PI_METADATA` | JSON merged into root trace metadata |
   | `LANGSMITH_PI_RUNS_ENDPOINTS` | replica destinations |
 
-- Folio injects these into the Pi spawn env (main process only; API key comes
+- Yansivra injects these into the Pi spawn env (main process only; API key comes
   from `safeStorage`, never from renderer/env files). Tracing is **OFF by
   default**; enabling it restarts the Pi process (same as credential changes).
 - Each trace root gets `metadata.thread_id` = Pi session id. Because the Pi
-  process is persistent, **per-run** metadata (folioRunId, symbol, strategy)
+  process is persistent, **per-run** metadata (yansivraRunId, symbol, strategy)
   cannot ride env vars — `TraceCorrelationService` reconstructs the mapping by
   querying LangSmith for traces in the run's window scoped to the thread id,
-  and persists `folioRunId ↔ traceId` in the evaluation store (spec §52–55).
+  and persists `yansivraRunId ↔ traceId` in the evaluation store (spec §52–55).
 
 ## 3. Evaluation domain (packages/core/src/evaluation.ts)
 
@@ -126,11 +126,11 @@ history stays comparable — spec §81).
 
 ## 7. Datasets & benchmark (spec §22–26)
 
-- `folio-agent-benchmark-v1`: 50–100 hand-authored high-quality cases
+- `yansivra-agent-benchmark-v1`: 50–100 hand-authored high-quality cases
   (quality > quantity), categories: market, research, tool selection,
   tool arguments, grounded research, strategy/skill, provider failure,
   portfolio, compare, long-tail, adversarial.
-- Versioned: `folio-agent-v1` ≠ `folio-agent-v1.1`; changing a case requires a
+- Versioned: `yansivra-agent-v1` ≠ `yansivra-agent-v1.1`; changing a case requires a
   version bump so historical experiments stay comparable.
 - Difficulty tags: golden, difficult, long_tail, tool_failure, regression,
   adversarial. Fixed real bugs become regression cases (highest gate weight).
@@ -141,7 +141,7 @@ history stays comparable — spec §81).
 `bun run eval:smoke` (10–20 high-value regression/golden cases, PR gate) and
 `bun run eval:full` (entire benchmark). Modes: `fixture` (deterministic,
 CI-safe) and `live` (real providers). Every experiment records metadata:
-gitSha, folio/runtime/Pi versions, model, provider, thinking level, strategy,
+gitSha, yansivra/runtime/Pi versions, model, provider, thinking level, strategy,
 skill versions, capability registry version, provider config, timestamps.
 Cost control: maxCases, sampling, concurrency, timeout (spec §79).
 
@@ -201,13 +201,13 @@ pi install npm:@langchain/langsmith-pi-extension
 # Configure via electron Settings → Evaluation, or env for the CLI:
 export LANGSMITH_PI_API_KEY=lsv2_…   # stored in safeStorage when set via UI
 export TRACE_TO_LANGSMITH=true
-export LANGSMITH_PI_PROJECT=folio-agent
+export LANGSMITH_PI_PROJECT=yansivra-agent
 ```
 
 ## 16. Langfuse setup (Agent / Deep Research traces)
 
-Langfuse is a **second, Folio-owned** observability backend. It does not replace
-LangSmith's Pi extension. Folio exports the full run tree (input, retrieval/tool
+Langfuse is a **second, Yansivra-owned** observability backend. It does not replace
+LangSmith's Pi extension. Yansivra exports the full run tree (input, retrieval/tool
 spans, synthesis, final report) and writes evaluation scores onto the same trace.
 
 Enable from **Settings → Evaluation**, or via env for the CLI:

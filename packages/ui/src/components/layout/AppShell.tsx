@@ -95,7 +95,7 @@ const MarketConnectionBanner: React.FC = () => {
   }
 
   return (
-    <div data-testid="market-connection-notice" className="folio-banner flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
+    <div data-testid="market-connection-notice" className="yansivra-banner flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
       <span className="text-text-muted">{t('navigation.dataConnectionNotice')}</span>
       <button type="button" onClick={() => { setSettingsTab('connections'); setSection('settings'); }} className="shrink-0 font-medium text-accent">{t('navigation.openConnections')} →</button>
     </div>

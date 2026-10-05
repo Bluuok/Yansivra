@@ -19,7 +19,7 @@ import type { RunawayPolicy } from './runaway-detector.ts';
 export type AgentProvider = 'local' | 'pi-runtime';
 
 export interface AgentKernelOptions {
-  /** Directory for Folio session/message/run persistence. */
+  /** Directory for Yansivra session/message/run persistence. */
   storageDir: string;
   /** Directory for per-session runtime conversation files (Pi JSONL). */
   piSessionDir: string;

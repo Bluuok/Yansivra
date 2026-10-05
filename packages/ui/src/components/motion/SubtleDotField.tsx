@@ -40,9 +40,9 @@ export const SubtleDotField: React.FC<SubtleDotFieldProps> = ({ className = '', 
       data-testid="subtle-dot-field"
       data-paused={paused || reducedMotion ? 'true' : 'false'}
       data-reduced-motion={reducedMotion ? 'true' : 'false'}
-      className={`folio-motion-dot-field ${className}`.trim()}
+      className={`yansivra-motion-dot-field ${className}`.trim()}
     >
-      {dots.map((dot) => <span key={dot.id} className="folio-motion-dot-field__dot" style={dot.style} />)}
+      {dots.map((dot) => <span key={dot.id} className="yansivra-motion-dot-field__dot" style={dot.style} />)}
     </div>
   );
 };

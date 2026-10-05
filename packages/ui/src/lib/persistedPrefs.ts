@@ -6,9 +6,10 @@
  * sandboxed or test environments.
  */
 
+import './branding-migration.ts';
 import { atom, type PrimitiveAtom, type SetStateAction } from 'jotai';
 
-const PREFS_PREFIX = 'folio.prefs.';
+const PREFS_PREFIX = 'yansivra.prefs.';
 
 export interface StorageLike {
   getItem(key: string): string | null;

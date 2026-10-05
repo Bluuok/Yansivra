@@ -5,15 +5,15 @@ import { reportFixture } from './test-helpers.ts'
 const FORBIDDEN = ['portfolio', 'account', 'position', 'holding', 'balance']
 
 describe('reportToShareCard', () => {
-  it('renders symbol, stance, confidence, strategy and Folio footer', () => {
+  it('renders symbol, stance, confidence, strategy and Yansivra footer', () => {
     const { svg, text } = reportToShareCard(reportFixture())
     expect(svg).toContain('AAPL.US')
     expect(svg).toContain('BULLISH')
     expect(svg).toContain('82% confidence')
     expect(svg).toContain('Growth')
-    expect(svg).toContain('Folio')
+    expect(svg).toContain('Yansivra')
     expect(text).toContain('AAPL.US — BULLISH · 82% confidence')
-    expect(text).toContain('— Folio research snapshot')
+    expect(text).toContain('— Yansivra research snapshot')
   })
 
   it('shows the top-3 preferred section verdicts (growth/valuation/risk first)', () => {
@@ -46,7 +46,7 @@ describe('reportToShareCard', () => {
     expect(svg.startsWith('<svg xmlns="http://www.w3.org/2000/svg"')).toBe(true)
     expect(svg.trimEnd().endsWith('</svg>')).toBe(true)
     expect(svg).toContain('viewBox="0 0 640 460"')
-    expect(svg).toContain('aria-label="Folio research snapshot for AAPL.US"')
+    expect(svg).toContain('aria-label="Yansivra research snapshot for AAPL.US"')
   })
 
   it('escapes XML-sensitive characters', () => {

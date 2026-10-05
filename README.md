@@ -2,7 +2,7 @@
 
 <p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Yansivra" width="88" /></p>
 
-[English](README.en.md) · 简体中文 · [验证记录](docs/yansivra-validation.md)
+[English](README.en.md) · 简体中文 · [验证记录](docs/branding-validation.md)
 
 **本地优先的 AI 投资研究与复盘桌面工作台。** 将证券行情、深度研究、证据来源、组合风险与个人判断放在同一条工作流中：研究一个标的，核对结论依据，留下当时的理由，再用后续复盘检查关键假设。
 
@@ -41,16 +41,17 @@ dist/electron/win-unpacked/Yansivra.exe
 
 解压整个 ZIP 后运行 `Yansivra.exe`，保留同目录资源文件。此分支提供源码与本地打包命令，没有自动上传 GitHub Release。
 
-数据目录保留旧版 Yansivra 路径，应用 ID 仍为 `com.finagent.app`；不自动迁移数据。内部 `@finagent/*` 包名和 `FINAGENT_*` 配置保持兼容。未签名构建跳过可执行文件签名与元数据编辑，系统文件属性和 Explorer 图标可能仍显示 Electron；应用窗口使用新的产品图标。详见 [Windows 构建与运行边界](docs/desktop-windows.md)。
+默认已打包数据目录为 `%APPDATA%\Yansivra`。首次升级会复制旧资料并更新历史记录中的品牌标识，保留原目录备份；已有新目录不会被覆盖或合并。主题、导航及引导偏好在首次打开界面时升级。应用 ID、内部 `@finagent/*` 包名和 `FINAGENT_*` 配置保持兼容。未签名构建跳过可执行文件签名与元数据编辑，系统文件属性和 Explorer 图标可能仍显示 Electron；应用窗口使用产品图标。详见 [Windows 构建与运行边界](docs/desktop-windows.md)。
 
 ## 开发与验证
 
-需要 Bun、Node.js 和工作区依赖。Windows 安装依赖需要可创建符号链接的环境。
+需要 Bun、Node.js 和工作区依赖。Windows 安装依赖需要可创建符号链接的环境。`bun run dev` 会编译 main/preload、启动 Vite 和真实 Electron；`bun run vite:dev` 可单独预览 renderer。关闭 Electron 会结束本次 Vite 服务。
 
 ```powershell
 git clone https://github.com/Bluuok/Yansivra.git
 cd Yansivra
-bun install
+bun install --frozen-lockfile
+# 仅在没有 .env 时，以 .env.example 创建本地配置；保留已有设置。
 bun run dev
 ```
 
@@ -85,3 +86,13 @@ Longbridge / Massive 数据连接和 Pi / 模型配置可在设置中管理。�
 - [Windows 运行说明](docs/desktop-windows.md)
 - [既有系统架构](docs/architecture.zh-CN.md)
 - [贡献约定](CONTRIBUTING.md)
+
+## 本地配置与自动化
+
+`.env.example` 提供本地 Agent 和带明确标识的离线示例数据选项。已有进程变量优先；不要覆盖现有 `.env`。`FINAGENT_USER_DATA_DIR` 与 `FINAGENT_ENV_FILE` 在读取 env 文件之前消费，需要在启动进程环境设置。Release、每日 live 评测和自动 Issue 评论/分配目前在 job 级禁用；构建、类型、单测和 fixture 检查保留。重新启用前需确认发布目标、费用、权限与动作授权。
+
+`bun run release:package` 在 Windows 生成 ZIP，在 macOS 生成 DMG，并在 `dist/release/` 写入 SHA256SUMS.txt；只准备本地产物。`release:check` 保留依赖真实金融数据的旧完整 E2E，遇到失败即停止，不能把离线 smoke 等同于全发布门禁。
+
+## 来源与许可
+
+项目源自 [helsome/folio](https://github.com/helsome/folio)。目前尚未取得明确的项目级许可证/分发条款，第三方组件声明继续保留；不据此声称已获得公开分发或重新许可权。

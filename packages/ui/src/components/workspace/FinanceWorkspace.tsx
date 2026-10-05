@@ -78,7 +78,7 @@ export const FinanceWorkspace: React.FC = () => {
   }
 
   return (
-    <div className="folio-finance-workspace h-full" data-testid="finance-workspace">
+    <div className="yansivra-finance-workspace h-full" data-testid="finance-workspace">
       {content}
     </div>
   );
@@ -106,7 +106,7 @@ const SecurityWorkspace: React.FC = () => {
   }
 
   return (
-    <div className="folio-security-workspace flex h-full flex-col bg-[#f7f8fa]">
+    <div className="yansivra-security-workspace flex h-full flex-col bg-[#f7f8fa]">
       <SecurityHeader />
       <div className="border-b border-[var(--mac-border)] bg-white px-4">
         <Tabs value={activeView} onValueChange={(value) => setActiveView(value as WorkspaceView)}>

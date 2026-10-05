@@ -1,7 +1,7 @@
 /**
  * Canonical instrument identity and deterministic symbol resolution.
  *
- * Provider symbols are aliases of a Folio-owned identity. They must not be
+ * Provider symbols are aliases of a Yansivra-owned identity. They must not be
  * used as the identity itself because providers disagree on symbol formats.
  */
 
@@ -31,14 +31,14 @@ export interface InstrumentExternalId {
 }
 
 export interface InstrumentProviderAlias {
-  /** Stable Folio provider id, for example `longbridge` or `massive`. */
+  /** Stable Yansivra provider id, for example `longbridge` or `massive`. */
   providerId: string;
   /** Exact symbol expected by that provider. */
   symbol: string;
 }
 
 export interface CanonicalInstrument {
-  /** Folio-owned stable id. Provider symbols must never be stored here. */
+  /** Yansivra-owned stable id. Provider symbols must never be stored here. */
   instrumentId: string;
   /** Canonical exchange-local symbol, without a provider-specific suffix. */
   symbol: string;

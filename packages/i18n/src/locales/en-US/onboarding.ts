@@ -8,7 +8,7 @@ export const onboarding = {
   skip: 'Skip for now',
   back: 'Back',
   continue: 'Continue',
-  startFolio: 'Start Yansivra',
+  startYansivra: 'Start Yansivra',
   language: 'Language',
   welcome: {
     title: 'Welcome to Yansivra',

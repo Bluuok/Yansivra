@@ -41,7 +41,7 @@ describe('persistedPrefs (V9 remember-the-user)', () => {
   });
 
   it('handles invalid stored JSON without throwing', () => {
-    window.localStorage.setItem('folio.prefs.navSection', '{not json');
+    window.localStorage.setItem('yansivra.prefs.navSection', '{not json');
     const atom = persistedAtom<string>('navSection', 'today');
     expect(() => createStore().get(atom)).not.toThrow();
     expect(createStore().get(atom)).toBe('today');

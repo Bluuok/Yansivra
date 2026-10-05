@@ -1,5 +1,7 @@
 # 视觉与行为验证记录
 
+品牌清理说明：旧阶段截图与录屏已移除，下文保留历史执行记录及视口数值。当前产品截图见根目录 README，不将历史验证当作本次重新运行的结果。
+
 ## G1 静态门槛
 
 2026-10-02：三页开发样稿已渲染并由主代理查看总览日间、研究夜间reduced、复盘日间截图。12张截图覆盖三页×浅/深×normal/reduced；实际CSS视口与overflow结果在 screenshots/static/viewport.json。图片像素尺寸受本机deviceScaleFactor影响，不当作OS DPI测试。首次预览导入Electron路径错误，导致窗口未创建；只停止本次专属测试进程，修正为内置require('electron')后正常渲染。
@@ -115,7 +117,7 @@ CLI本轮曾返回ERROR500元数据并交付非空报告；主代理依据实际
 
 未覆盖：本轮未再调用在线DeepSeek或账户行情；未改变Windows系统125%/150%显示设置（这里只测应用native zoom）；没有设备输入到首帧、帧率或GPU能耗测量；真实最小化取消由document.hidden单测覆盖，未把组件fixture当作全套OS窗口事件验收。7个依赖真实CLI/account fixture的测试和1个符号链接测试仍跳过。没有“生产验收100%/零告警”结论：构建存在既有chunk大小及package description/author提示，AGY传输曾有ERROR500元数据。
 
-交付包位于本机`dist/electron-frontend-skills`，新入口`output/启动 Folio 新界面.cmd`只沿用旧入口的Longbridge PATH、pi-runtime及`output/Folio`用户目录，没有写入/覆盖密钥与模型设置。需先退出旧Folio窗口，再用新入口，以免同一资料目录的single-instance锁将启动转回旧窗口。
+交付包位于本机`dist/electron-frontend-skills`，新入口`output/启动 Yansivra 新界面.cmd`只沿用旧入口的Longbridge PATH、pi-runtime及`output/Yansivra`用户目录，没有写入/覆盖密钥与模型设置。需先退出旧Yansivra窗口，再用新入口，以免同一资料目录的single-instance锁将启动转回旧窗口。
 
 ### 最后加载态复核
 

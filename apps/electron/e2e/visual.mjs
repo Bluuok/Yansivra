@@ -1,4 +1,4 @@
-// Folio UI visual QA. Captures the main workbench states at the target sizes
+// Yansivra UI visual QA. Captures the main workbench states at the target sizes
 // from the V6 brief so screenshots can be inspected alongside E2E assertions.
 
 import { execSync, spawn } from 'node:child_process';

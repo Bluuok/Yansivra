@@ -77,7 +77,7 @@ composite score, no green light on an unmeasurable suite.
 
 Baseline JSON (dataset version, metrics, per-metric `maxDelta` thresholds) is
 seeded from committed files in `scripts/eval/ci-baselines/`
-(see `scripts/eval/ci-baselines/README.md` for the format). `folio-agent-v1`
+(see `scripts/eval/ci-baselines/README.md` for the format). `yansivra-agent-v1`
 is currently a placeholder with empty metrics; the lead seeds real values
 from the first smoke baseline run.
 

@@ -1,6 +1,6 @@
 // V9.1 Trace domain — source-neutral projection types (spec §2–4, §16).
 //
-// A FolioTrace is a READ-ONLY projection over authoritative persisted sources
+// A YansivraTrace is a READ-ONLY projection over authoritative persisted sources
 // (Run, Message, ToolCallRecord, AgentTraceEvent, EvaluationRun, EvaluationCase
 // input, TraceReference). It is never persisted, never fabricated, and never
 // reconstructs historical context from current renderer atoms. Sources are
@@ -87,7 +87,7 @@ export interface TraceTokenBudget {
   cacheWrite?: number;
 }
 
-export interface FolioTrace {
+export interface YansivraTrace {
   runId: string;
   sessionId?: string;
   status: 'completed' | 'failed' | 'cancelled' | 'running';

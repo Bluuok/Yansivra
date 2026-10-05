@@ -28,16 +28,16 @@ export type NavSection =
   | 'alerts'
   | 'skills'
   | 'settings'
-  // Folio V3 sections — wired by the Lead at integration; reserved here so
+  // Yansivra V3 sections — wired by the Lead at integration; reserved here so
   // feature agents never race on this union.
   | 'research'
   | 'thesis'
   | 'compare'
-  // Folio V4 "Today" dashboard (spec §31–32) — mounted by the Lead.
+  // Yansivra V4 "Today" dashboard (spec §31–32) — mounted by the Lead.
   | 'today'
-  // Folio V5 "Discover" (spec §4–5) — mounted by the Lead.
+  // Yansivra V5 "Discover" (spec §4–5) — mounted by the Lead.
   | 'discover'
-  // Folio V7 Evaluation Center (spec §61–68) — mounted by the Evaluation UI agent.
+  // Yansivra V7 Evaluation Center (spec §61–68) — mounted by the Evaluation UI agent.
   | 'evaluation'
   // Stitch portfolio surfaces: upcoming events and local profile/security.
   | 'events'
@@ -55,7 +55,7 @@ export type SettingsTab =
   | 'skills'
   | 'diagnostics'
   | 'performance'
-  // Folio V7 agent evaluation settings (spec §61–63).
+  // Yansivra V7 agent evaluation settings (spec §61–63).
   | 'evaluation';
 
 /** Which Settings tab is selected (drives SettingsView and the ErrorBoundary fallback). */

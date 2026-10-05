@@ -1,6 +1,6 @@
 # LongBridge Skill Setup Guide
 
-This document guides you through installing and configuring the LongBridge integration for Finance Agent.
+This document guides you through installing and configuring the LongBridge integration for Yansivra.
 
 ---
 
@@ -72,15 +72,15 @@ Claude: [Uses LongBridge skill to fetch quote]
 
 ---
 
-## 3. Finance Agent Integration
+## 3. Yansivra Integration
 
-Finance Agent uses LongBridge CLI through the `longbridge-tools` package. The Electron main process calls it through `MarketDataService` in `@finagent/shared`, so Watchlist and Chat share caching, request coalescing, and normalized errors.
+Yansivra uses LongBridge CLI through the `longbridge-tools` package. The Electron main process calls it through `MarketDataService` in `@finagent/shared`, so Watchlist and Chat share caching, request coalescing, and normalized errors.
 
 ### Architecture
 
 ```
 ┌─────────────────────────────────────┐
-│      Local Finance Agent Backend    │
+│      Local Yansivra Backend    │
 │  packages/shared/src/agent/         │
 │                                     │
 │  - IntentRouter                     │

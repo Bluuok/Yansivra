@@ -6,7 +6,7 @@ import type { FinancialEvidenceEnvelope } from '@finagent/core';
 function envelope(overrides: Partial<FinancialEvidenceEnvelope> = {}): FinancialEvidenceEnvelope {
   return {
     schemaVersion: 'financial-evidence/v1',
-    normalizationVersion: 'folio-normalization/v1',
+    normalizationVersion: 'yansivra-normalization/v1',
     id: 'fe_abc123',
     sessionId: 's',
     runId: 'r',

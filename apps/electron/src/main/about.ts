@@ -10,17 +10,17 @@ export interface AboutInfo {
 }
 
 /**
- * Release channel for this build. `folio.channel` in apps/electron/package.json
+ * Release channel for this build. `yansivra.channel` in apps/electron/package.json
  * is the declared source of truth (`internal` | `beta` | `stable`); it is baked
  * into the packed app via extraMetadata and read here at runtime. `FINAGENT_CHANNEL`
  * overrides it (CI emits `internal` for unsigned builds).
  */
 const DEFAULT_CHANNEL = 'beta';
 
-function readFolioField(field: string): string | undefined {
+function readYansivraField(field: string): string | undefined {
   try {
     const pkg = JSON.parse(readFileSync(join(app.getAppPath(), 'package.json'), 'utf8'));
-    const value = pkg?.folio?.[field];
+    const value = pkg?.yansivra?.[field];
     if (typeof value === 'string' && value.length > 0) return value;
   } catch {
     // Dev entry may point at src/main; fall through to env/default.
@@ -29,13 +29,13 @@ function readFolioField(field: string): string | undefined {
 }
 
 function readChannel(): string {
-  return process.env.FINAGENT_CHANNEL ?? readFolioField('channel') ?? DEFAULT_CHANNEL;
+  return process.env.FINAGENT_CHANNEL ?? readYansivraField('channel') ?? DEFAULT_CHANNEL;
 }
 
 function readBuildSha(): string {
-  // CI bakes the exact git SHA via extraMetadata (`folio.buildSha`); a local or
+  // CI bakes the exact git SHA via extraMetadata (`yansivra.buildSha`); a local or
   // dev build reports `dev`.
-  return process.env.FINAGENT_BUILD_SHA ?? readFolioField('buildSha') ?? 'dev';
+  return process.env.FINAGENT_BUILD_SHA ?? readYansivraField('buildSha') ?? 'dev';
 }
 
 /**

@@ -32,7 +32,7 @@ export const NextAction: React.FC<NextActionProps> = ({
   return (
     <div
       data-testid={testId ?? 'next-action'}
-      className="folio-pilot-next-action"
+      className="yansivra-pilot-next-action"
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[10px] font-semibold uppercase tracking-[.14em] text-accent">

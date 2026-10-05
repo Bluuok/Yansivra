@@ -1,4 +1,4 @@
-# Folio Interaction Audit & Button-Contract Sweep
+# Yansivra Interaction Audit & Button-Contract Sweep
 
 Last sweep: **2026-08-14** — `apps/electron/e2e/interactions.mjs`, 31 controls
 probed (29 pass, 1 known-broken, 1 skipped).
@@ -48,7 +48,7 @@ Status legend:
 | Close (traffic light) | `window.close()` IPC | — | 🟡 inspection (not asserted; kills the app) |
 | Minimize | `window.minimize()` IPC | — | 🟡 inspection |
 | Maximize / Restore | `window.maximize()`/`unmaximize()` + toggle | — | 🟡 inspection |
-| About (ⓘ) | opens "About Folio" dialog | `TitleBar > About (opens dialog)` | ✅ sweep (dialog) |
+| About (ⓘ) | opens "About Yansivra" dialog | `TitleBar > About (opens dialog)` | ✅ sweep (dialog) |
 | About dialog × | closes dialog | `TitleBar > About (close dialog)` | ❌ broken (Finding 2) |
 
 ### Sidebar

@@ -40,7 +40,7 @@ export const ResearchReportView: React.FC<{
   const goTo = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     event.preventDefault();
     const target = document.getElementById(id);
-    const container = reportRoot.current?.closest<HTMLElement>('.folio-pilot-research-content, .desk-journal');
+    const container = reportRoot.current?.closest<HTMLElement>('.yansivra-pilot-research-content, .desk-journal');
     if (target && container) container.scrollTo({ top: container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top - 24, behavior: 'auto' });
     else target?.scrollIntoView({ block: 'start', behavior: 'auto' });
     target?.focus({ preventScroll: true });
@@ -82,15 +82,15 @@ export const ResearchReportView: React.FC<{
   }, [report.symbol, report.id, setDiffState, snapshotMode]);
 
   return (
-    <div ref={reportRoot} className="desk-reading folio-pilot-report" data-testid="research-report">
+    <div ref={reportRoot} className="desk-reading yansivra-pilot-report" data-testid="research-report">
       <nav className="desk-report-toc" aria-label={t('research.flow.contents')}>
         <details open><summary>{t('research.flow.contents')}</summary><div>{report.sections.map((section, index) => <a key={sectionIds[index]} href={`#${sectionIds[index]}`} onClick={(event) => goTo(event, sectionIds[index])}>{section.title}</a>)}<a href={`#${anchor('evidence')}`} onClick={(event) => goTo(event, anchor('evidence'))}>{t('research.evidence')}</a></div></details>
       </nav>
       <div className="desk-report-body">
-      <div className="folio-pilot-verdict">
-        <div className="folio-pilot-verdict-top">
+      <div className="yansivra-pilot-verdict">
+        <div className="yansivra-pilot-verdict-top">
           <div>
-            <div className="folio-pilot-verdict-label">
+            <div className="yansivra-pilot-verdict-label">
               {t('research.reportFor', { symbol: report.symbol })}
             </div>
             <h3 id={headingId} data-testid="research-report-heading" tabIndex={-1} className={`mt-1 text-[17px] font-bold ${STANCE_TONE[report.stance]}`}>
@@ -99,10 +99,10 @@ export const ResearchReportView: React.FC<{
           </div>
           <div className="flex items-start gap-3">
             <div className="text-right">
-              <div className="folio-pilot-verdict-label">
+              <div className="yansivra-pilot-verdict-label">
                 {t('research.confidence')}
               </div>
-              <div className="folio-pilot-confidence">
+              <div className="yansivra-pilot-confidence">
                 {confidence}%
               </div>
             </div>
@@ -110,8 +110,8 @@ export const ResearchReportView: React.FC<{
             {!snapshotMode && <button type="button" data-testid="record-judgment" className="desk-primary" onClick={() => setJudgmentReport(report)}>{t('journal.record')}</button>}
           </div>
         </div>
-        <MarkdownContent content={report.summary} className="folio-pilot-summary" />
-        <div className="folio-pilot-report-meta">
+        <MarkdownContent content={report.summary} className="yansivra-pilot-summary" />
+        <div className="yansivra-pilot-report-meta">
           {t(`research.runStatus.${report.runStatus}`)}{' '}
           · {t('research.capabilityCalls', { count: report.capabilityRuns.length })} ·{' '}
           {new Date(report.generatedAt).toLocaleString()}
@@ -127,7 +127,7 @@ export const ResearchReportView: React.FC<{
         />
       )}
 
-      <div id={anchor('signals')} className="folio-pilot-report-sections">
+      <div id={anchor('signals')} className="yansivra-pilot-report-sections">
         {report.sections.map((section, index) => (
           <SectionCard key={sectionIds[index]} id={sectionIds[index]} section={section} onInspect={(trigger) => inspect(section, trigger)} />
         ))}
@@ -138,11 +138,11 @@ export const ResearchReportView: React.FC<{
       <CaseColumn title={t('research.catalysts')} points={report.catalysts} />
       <CaseColumn title={t('research.risks')} points={report.risks} />
 
-      <section id={anchor('evidence')} tabIndex={-1} className="folio-pilot-evidence">
-        <h4 className="folio-pilot-evidence-heading">
+      <section id={anchor('evidence')} tabIndex={-1} className="yansivra-pilot-evidence">
+        <h4 className="yansivra-pilot-evidence-heading">
           {t('research.evidence')}
         </h4>
-        <p className="folio-pilot-evidence-note">
+        <p className="yansivra-pilot-evidence-note">
           {t('research.evidenceNote')}
         </p>
         <div className="mt-3 flex flex-col gap-2">
@@ -159,14 +159,14 @@ export const ResearchReportView: React.FC<{
 const SectionCard: React.FC<{ id: string; section: ResearchSection; onInspect: (trigger: HTMLElement) => void }> = ({ id, section, onInspect }) => {
   const { t } = useTranslation();
   return (
-    <article id={id} tabIndex={-1} className="folio-pilot-report-section">
+    <article id={id} tabIndex={-1} className="yansivra-pilot-report-section">
       <div className="flex items-center justify-between">
         <h4 className="desk-report-section-heading">{section.title}</h4>
         <span className={`text-[11px] font-semibold ${VERDICT_TONE[section.verdict]}`}>
           {t(`research.verdict.${section.verdict}`)}
         </span>
       </div>
-      <MarkdownContent content={section.summary} className="folio-pilot-report-section-summary" />
+      <MarkdownContent content={section.summary} className="yansivra-pilot-report-section-summary" />
       {section.evidence.length > 0 && (
         <div className="mt-1.5 text-[10.5px] text-text-muted">
           {t('research.flow.references', { count: section.evidence.length })}
@@ -180,7 +180,7 @@ const SectionCard: React.FC<{ id: string; section: ResearchSection; onInspect: (
 const CaseColumn: React.FC<{ title: string; points: string[] }> = ({ title, points }) => {
   if (points.length === 0) return null;
   return (
-    <section className="folio-pilot-case">
+    <section className="yansivra-pilot-case">
       <h4>
         {title}
       </h4>

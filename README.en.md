@@ -2,7 +2,7 @@
 
 <p align="center"><img src="packages/ui/src/assets/desk-logo.svg" alt="Yansivra" width="88" /></p>
 
-English · [简体中文](README.md) · [Validation record](docs/yansivra-validation.md)
+English · [简体中文](README.md) · [Validation record](docs/branding-validation.md)
 
 **A local-first desktop workspace for AI investment research and personal review.** Follow a security from market context through research and supporting evidence, record your own reasoning, then revisit its assumptions with later observations.
 
@@ -41,7 +41,7 @@ dist/electron/win-unpacked/Yansivra.exe
 
 Extract the entire ZIP and run `Yansivra.exe`, keeping its adjacent resource files. This branch contains source and build commands; it does not automatically publish a GitHub Release.
 
-The legacy Yansivra data directory, `com.finagent.app`, internal package names and environment variables remain compatible. No automatic migration is performed. This unsigned build skips executable metadata editing, so Explorer properties and the executable icon can still identify Electron. The application window uses the new icon. See [Windows notes](docs/desktop-windows.md).
+The packaged app uses `%APPDATA%\Yansivra`. On first upgrade it copies the previous profile and updates branded history identifiers, keeping the original as a backup; an existing destination is never overwritten or merged. Theme, navigation and onboarding preferences are upgraded when the UI first opens. The application ID, internal package names and environment variables remain compatible. This unsigned build skips executable metadata editing, so Explorer properties and the executable icon can still identify Electron. The application window uses the product icon. See [Windows notes](docs/desktop-windows.md).
 
 ## Development
 
@@ -50,7 +50,8 @@ Install Bun, Node.js and workspace dependencies. Windows dependency installation
 ```powershell
 git clone https://github.com/Bluuok/Yansivra.git
 cd Yansivra
-bun install
+bun install --frozen-lockfile
+# Create .env from .env.example only if no local .env already exists.
 bun run dev
 ```
 
@@ -81,3 +82,13 @@ Existing Longbridge / Massive data providers and Pi / model configuration remain
 Archived judgments and manual reviews require neither market nor model calls. The current release does not add PDF page navigation, scheduled reassessment, full-text search or trading. Evidence shows only fields retained by the report.
 
 [Scope](docs/desktop-redevelopment.md) · [Validation](docs/desktop-validation.md) · [Windows](docs/desktop-windows.md) · [Architecture](docs/architecture.md) · [Contributing](CONTRIBUTING.md)
+
+## Local development and automation
+
+`bun run dev` builds main/preload and starts both Vite and Electron; closing Electron stops the owned dev server. `bun run vite:dev` previews only the renderer. `.env.example` provides a local Agent and explicitly labeled offline demo data. Keep existing local configuration; process variables take precedence. Set `FINAGENT_USER_DATA_DIR` and `FINAGENT_ENV_FILE` in the startup process environment because they are consumed before env files load.
+
+Release, live nightly evaluation and automated Issue comments/assignments are disabled at the job level. Confirm targets, costs, permissions and action authorization before enabling them. Build/typecheck/unit/fixture checks remain available. `release:package` prepares Windows ZIP or macOS DMG plus SHA256SUMS.txt locally. The full `release:check` includes data-dependent E2E and stops on the first failure; offline smoke alone does not establish release readiness.
+
+## Source and licensing
+
+Derived from [helsome/folio](https://github.com/helsome/folio). Project-level license/distribution terms remain unconfirmed. Third-party notices are retained and do not establish permission to distribute or relicense this application.

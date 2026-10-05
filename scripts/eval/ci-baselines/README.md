@@ -12,7 +12,7 @@ One JSON file per dataset version, named `<datasetVersion>.json`:
 
 ```json
 {
-  "datasetVersion": "folio-agent-v1",
+  "datasetVersion": "yansivra-agent-v1",
   "gitSha": "abc123…",
   "createdAt": "2026-08-18T03:17:00Z",
   "metrics": {
@@ -44,7 +44,7 @@ sample counts; sub-threshold deltas are never treated as meaningful.
 
 ## Current baselines
 
-- `folio-agent-v1.json` — **placeholder**. `metrics` and `thresholds` are
+- `yansivra-agent-v1.json` — **placeholder**. `metrics` and `thresholds` are
   intentionally empty; the lead seeds real values from the first smoke
   baseline run. Do not fabricate numbers.
 
@@ -59,4 +59,4 @@ sample counts; sub-threshold deltas are never treated as meaningful.
    enough to catch real regressions and loose enough to absorb evaluator
    noise on the dataset sample size.
 4. Commit with a message describing why the expectation changed (e.g.
-   `chore(eval): refresh folio-agent-v1 baseline after dataset v1.1`).
+   `chore(eval): refresh yansivra-agent-v1 baseline after dataset v1.1`).

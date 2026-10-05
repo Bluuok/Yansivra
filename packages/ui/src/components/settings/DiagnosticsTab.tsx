@@ -236,7 +236,7 @@ const ErrorRow: React.FC<{ entry: DiagnosticsErrorEntry; t: (key: string) => str
 /** Human-readable one-line-ish summary used by the copy button. */
 function buildSummary(bundle: DiagnosticsBundle, t: (key: string, opts?: Record<string, unknown>) => string): string {
   const lines = [
-    t('diagnostics.summaryFolio', {
+    t('diagnostics.summaryYansivra', {
       version: bundle.app.version,
       os: bundle.app.platform.os,
       arch: bundle.app.platform.arch,

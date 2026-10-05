@@ -16,7 +16,7 @@ export interface AdaptedRunOutcome {
 }
 
 /**
- * Converts raw Pi JSONL events into Folio AgentEvents for one run.
+ * Converts raw Pi JSONL events into Yansivra AgentEvents for one run.
  *
  * Pure mapping layer: the UI never sees Pi event shapes. The adapter is
  * stateful per run (tracks the streaming answer and live tool calls) and is
@@ -37,7 +37,7 @@ export class PiEventAdapter {
     this.now = options.now ?? Date.now;
   }
 
-  /** Feed one raw Pi event; returns the Folio events it maps to. */
+  /** Feed one raw Pi event; returns the Yansivra events it maps to. */
   consume(event: Record<string, unknown>): AgentEvent[] {
     const type = String(event.type ?? 'unknown');
 

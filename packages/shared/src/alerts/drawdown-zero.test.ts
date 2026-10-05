@@ -53,7 +53,7 @@ test('initial zero does not establish a zero peak or block a later positive peak
 });
 
 test('zero assets notify and persist a full drawdown after restarting the engine', async () => {
-  const dir = await mkdtemp(join(tmpdir(), 'folio-drawdown-zero-'));
+  const dir = await mkdtemp(join(tmpdir(), 'yansivra-drawdown-zero-'));
   try {
     const store = new JsonFileStore(dir);
     const repository = new AlertRuleRepository(store);

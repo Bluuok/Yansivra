@@ -1,10 +1,10 @@
 > 本文是 [architecture.md](architecture.md) 的中文翻译；如有出入，以英文原文为准。
 
-# Finance Agent - 系统架构
+# Yansivra - 系统架构
 
 ## 概览
 
-Folio 是一个 AI 原生的财经工作台：一款桌面应用，将专业的金融工作空间（自选清单、证券头部信息、K 线图、概览、财务报表、新闻）与上下文感知的 Agent 副驾驶（agent copilot）结合在一起。Agent 层构建在持久的 **Agent 内核（Agent Kernel）** 之上：会话（session）、运行（run）和 Agent 事件都是主进程（main process）拥有的一等实体，通过 IPC 流式传输到 UI，并持久化到磁盘，因此应用可以重启而不丢失对话状态。
+Yansivra 是一个 AI 原生的财经工作台：一款桌面应用，将专业的金融工作空间（自选清单、证券头部信息、K 线图、概览、财务报表、新闻）与上下文感知的 Agent 副驾驶（agent copilot）结合在一起。Agent 层构建在持久的 **Agent 内核（Agent Kernel）** 之上：会话（session）、运行（run）和 Agent 事件都是主进程（main process）拥有的一等实体，通过 IPC 流式传输到 UI，并持久化到磁盘，因此应用可以重启而不丢失对话状态。
 
 ---
 
@@ -143,22 +143,22 @@ interface AgentRuntime {
 |-----------|----------------|
 | `PiRpcClient` | JSONL/stdio 传输：`prompt`、`promptStreaming`（实时原始事件）、`switchSession`、`getState`、`getAvailableModels`、`setModel`、`setThinkingLevel`、`restart`、`abortCurrentPrompt`、健康检查、超时、进程重启 |
 | `PiEventAdapter` | 每次运行的纯 Pi 事件 → AgentEvent 映射 |
-| `PiRuntimeAdapter` | `AgentRuntime` 实现：Folio 会话 ↔ Pi 会话文件生命周期、prompt 构造（工作空间上下文 + 渐进式技能索引）、标的记忆，以及 `LlmRuntimeApi` 控制面 |
+| `PiRuntimeAdapter` | `AgentRuntime` 实现：Yansivra 会话 ↔ Pi 会话文件生命周期、prompt 构造（工作空间上下文 + 渐进式技能索引）、标的记忆，以及 `LlmRuntimeApi` 控制面 |
 
 ### 会话隔离与恢复
 
-Folio 会话与 Pi 对话是稳定的 1:1 映射：
+Yansivra 会话与 Pi 对话是稳定的 1:1 映射：
 
 ```
-Folio Session A ──► <userData>/pi-sessions/<sessionA>.jsonl
-Folio Session B ──► <userData>/pi-sessions/<sessionB>.jsonl
+Yansivra Session A ──► <userData>/pi-sessions/<sessionA>.jsonl
+Yansivra Session B ──► <userData>/pi-sessions/<sessionB>.jsonl
 ```
 
 所有会话共享一个 Pi 进程；runtime 通过 `switch_session` RPC 命令切换对话。JSONL 会话文件是 Pi 自己的持久化对话存储，因此：
 
-- 会话隔离：每个 Folio 会话都有自己的 Pi 会话文件——不会发生跨会话上下文污染。
+- 会话隔离：每个 Yansivra 会话都有自己的 Pi 会话文件——不会发生跨会话上下文污染。
 - 恢复：`switch_session` 重新加载文件，恢复完整对话。
-- 重启恢复：会话文件在应用重启后依然存在；`runtimeSessionId` 通过 `get_state` 刷新，并存储在 Folio 会话上。
+- 重启恢复：会话文件在应用重启后依然存在；`runtimeSessionId` 通过 `get_state` 刷新，并存储在 Yansivra 会话上。
 
 ### 事件流水线
 
@@ -229,7 +229,7 @@ RunManager                              broadcast → IPC → UI; persistence
 - `contextIsolation: true`、`nodeIntegration: false`、`sandbox: true`。
 - IPC 在 preload 中逐通道白名单化（源码 `index.ts`、运行时 `index.cjs`，通过 `bun run build:preload` 构建）。
 - **CredentialStore**：API 密钥和自定义提供商配置在静态存储时用 Electron `safeStorage` 加密（`<userData>/credentials.json`）。渲染进程只能一次性发送机密信息，之后只收到元数据。机密内容会从错误、日志和追踪中脱敏（`redactSecrets`）。
-- 提供商覆盖项按“主进程 → Pi 的 spawn 环境（`FINAGENT_PROVIDER_OVERRIDES`）→ finagent 扩展的 `registerProvider`”流动——这是 Folio 自有的配置，绝不触碰用户的全局 Pi 配置。凭据变更会重启 Pi 子进程（会话不受影响）。
+- 提供商覆盖项按“主进程 → Pi 的 spawn 环境（`FINAGENT_PROVIDER_OVERRIDES`）→ finagent 扩展的 `registerProvider`”流动——这是 Yansivra 自有的配置，绝不触碰用户的全局 Pi 配置。凭据变更会重启 Pi 子进程（会话不受影响）。
 - LongBridge 访问保持在 `longbridge-tools` 之后（参数化的 execa 数组参数、标的校验）。
 - 技能资源通过路径安全的加载器读取（`SkillHub.readSkillResource` / `read_skill_resource` 工具）：绝对路径、`..` 穿越和符号链接逃逸都会被拒绝。
 - 渲染进程无法直接触达 `fs`、数据库、Pi 进程或 LongBridge CLI。
@@ -238,7 +238,7 @@ RunManager                              broadcast → IPC → UI; persistence
 ## 11. 组件地图
 
 ```
-finagent/
+Yansivra/
 ├── packages/
 │   ├── core/                  # Types only: capability/research/thesis/alert-rule/
 │   │                          #   readiness/compare/portfolio-risk contracts +

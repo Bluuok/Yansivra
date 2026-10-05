@@ -3,7 +3,7 @@ import type { EvaluationSettings, PrivacyLevel } from '@finagent/core';
 
 export const DEFAULT_EVALUATION_SETTINGS: EvaluationSettings = {
   tracingEnabled: false,
-  langsmithProject: 'folio-agent',
+  langsmithProject: 'yansivra-agent',
   langsmithEndpoint: '',
   langfuseTracingEnabled: false,
   langfuseHost: '',

@@ -178,7 +178,7 @@ export const DiscoverView: React.FC = () => {
       type="button"
       onClick={handleBack}
       data-testid="discover-back"
-      className="folio-pilot-toolbar-button shrink-0"
+      className="yansivra-pilot-toolbar-button shrink-0"
     >
       ← {t('discover.back')}
     </button>
@@ -203,9 +203,9 @@ export const DiscoverView: React.FC = () => {
   const resultList = (
     <>
       {results && results.length > 0 && (
-        <div className="folio-pilot-table">
+        <div className="yansivra-pilot-table">
           <div
-            className="folio-pilot-table-header"
+            className="yansivra-pilot-table-header"
             data-testid="discover-results-header"
           >
             <span>{t('discover.security')}</span>
@@ -230,14 +230,14 @@ export const DiscoverView: React.FC = () => {
 
   // ── Render by mode ────────────────────────────────────────────────────────
   return (
-    <div ref={scrollRef} className="folio-discover-view folio-pilot-shell h-full overflow-y-auto p-4" data-testid="discover-view">
+    <div ref={scrollRef} className="yansivra-discover-view yansivra-pilot-shell h-full overflow-y-auto p-4" data-testid="discover-view">
       {mode === 'browse' && (
         <>
-          <div className="folio-pilot-page-header mb-4">
+          <div className="yansivra-pilot-page-header mb-4">
             <div>
-              <div className="folio-pilot-eyebrow">{t('discover.title')}</div>
-              <h1 className="folio-pilot-title">{t('discover.title')}</h1>
-              <p className="folio-pilot-subtitle">{t('discover.subtitle', { scope })}</p>
+              <div className="yansivra-pilot-eyebrow">{t('discover.title')}</div>
+              <h1 className="yansivra-pilot-title">{t('discover.title')}</h1>
+              <p className="yansivra-pilot-subtitle">{t('discover.subtitle', { scope })}</p>
             </div>
           </div>
 
@@ -245,7 +245,7 @@ export const DiscoverView: React.FC = () => {
             <div
               role="alert"
               data-testid="discover-error"
-              className="folio-pilot-status mb-3 border-destructive/30 bg-destructive/6 text-destructive"
+              className="yansivra-pilot-status mb-3 border-destructive/30 bg-destructive/6 text-destructive"
             >
               {error}
             </div>
@@ -280,7 +280,7 @@ export const DiscoverView: React.FC = () => {
             {runsLoading ? (
               <div className="py-4 text-center text-[12.5px] text-foreground/40">{t('common.loading')}</div>
             ) : runs.length === 0 ? (
-              <div className="folio-pilot-status py-4 text-center">
+              <div className="yansivra-pilot-status py-4 text-center">
                 {t('discover.noRuns')}
               </div>
             ) : (
@@ -292,13 +292,13 @@ export const DiscoverView: React.FC = () => {
 
       {mode === 'running' && (
         <div data-testid="discover-running" className="flex flex-col gap-4">
-          <div className="folio-pilot-toolbar justify-between">
+          <div className="yansivra-pilot-toolbar justify-between">
             {backButton}
             <div className="min-w-0 text-right">
               {rerunButton}
             </div>
           </div>
-          <div className="folio-pilot-status relative overflow-hidden">
+          <div className="yansivra-pilot-status relative overflow-hidden">
             <SubtleDotField />
             <div className="flex items-center gap-3">
               <span
@@ -324,16 +324,16 @@ export const DiscoverView: React.FC = () => {
       {mode === 'results' && (
         <ContentReveal testId="discover-results-reveal">
           <div data-testid="discover-results" aria-label={t('discover.resultsAria')} className="flex flex-col gap-4">
-          <div className="folio-pilot-toolbar justify-between">
+          <div className="yansivra-pilot-toolbar justify-between">
             {backButton}
-            <div className="folio-pilot-toolbar">
+            <div className="yansivra-pilot-toolbar">
               <button
                 type="button"
                 onClick={() => setHistoryOpen((value) => !value)}
                 aria-haspopup="true"
                 aria-expanded={historyOpen}
                 data-testid="discover-history-toggle"
-                className="folio-pilot-toolbar-button shrink-0"
+                className="yansivra-pilot-toolbar-button shrink-0"
               >
                 {t('discover.previousRuns')}
               </button>
@@ -351,11 +351,11 @@ export const DiscoverView: React.FC = () => {
             </div>
           )}
 
-          <div className="folio-pilot-page-header">
+          <div className="yansivra-pilot-page-header">
             <div>
-              <div className="folio-pilot-eyebrow">{t('discover.resultsAria')}</div>
-              <h1 className="folio-pilot-title">{runTitle}</h1>
-              <p className="folio-pilot-subtitle">
+              <div className="yansivra-pilot-eyebrow">{t('discover.resultsAria')}</div>
+              <h1 className="yansivra-pilot-title">{runTitle}</h1>
+              <p className="yansivra-pilot-subtitle">
                 {t('discover.candidates', { count: results?.length ?? 0 })} · {scope}
               </p>
             </div>
@@ -365,7 +365,7 @@ export const DiscoverView: React.FC = () => {
             <div
               role="alert"
               data-testid="discover-error"
-              className="folio-pilot-status border-destructive/30 bg-destructive/6 text-destructive"
+              className="yansivra-pilot-status border-destructive/30 bg-destructive/6 text-destructive"
             >
               {error}
             </div>
@@ -376,7 +376,7 @@ export const DiscoverView: React.FC = () => {
             <div
               role="status"
               data-testid="discover-provider-warning"
-              className="folio-pilot-status folio-pilot-status--warning"
+              className="yansivra-pilot-status yansivra-pilot-status--warning"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="text-[12.5px] font-medium text-foreground">{t('discover.providerWarning')}</div>
@@ -384,7 +384,7 @@ export const DiscoverView: React.FC = () => {
                   type="button"
                   onClick={goToConnections}
                   data-testid="discover-goto-connections"
-                  className="folio-pilot-toolbar-button shrink-0 text-accent"
+                  className="yansivra-pilot-toolbar-button shrink-0 text-accent"
                 >
                   {t('discover.goToConnections')}
                 </button>
@@ -407,7 +407,7 @@ export const DiscoverView: React.FC = () => {
           {hasFailures && results && results.length > 0 && (
             <div
               data-testid="discover-failures"
-              className="folio-pilot-status folio-pilot-status--partial py-1.5"
+              className="yansivra-pilot-status yansivra-pilot-status--partial py-1.5"
             >
               {t('discover.partialData')}
             </div>
@@ -416,7 +416,7 @@ export const DiscoverView: React.FC = () => {
           {results && results.length === 0 ? (
             <div
               data-testid="discover-empty"
-              className="folio-pilot-status py-6 text-center"
+              className="yansivra-pilot-status py-6 text-center"
             >
               <div className="text-[13px] font-medium text-foreground">{t('discover.noCandidates')}</div>
               <ul className="mx-auto mt-2 inline-block list-disc space-y-0.5 pl-5 text-left text-[12px] text-foreground/54">

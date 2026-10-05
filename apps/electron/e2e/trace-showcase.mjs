@@ -1,4 +1,4 @@
-// Folio Trace Showcase — automated multi-agent Trace visual QA (V9.1 showcase).
+// Yansivra Trace Showcase — automated multi-agent Trace visual QA (V9.1 showcase).
 //
 //   node e2e/trace-showcase.mjs            # real agent runs + seeded eval failure
 //   TRACE_SHOWCASE_FIXTURE=1 node e2e/trace-showcase.mjs   # fast deterministic (same path)
@@ -171,7 +171,7 @@ function seedEvalStore() {
     status: 'completed',
     mode: 'fixture',
     config: { mode: 'fixture', model: 'fixture/local' },
-    metadata: { timestamp: now, folioVersion: '0.4.0-beta.1' },
+    metadata: { timestamp: now, yansivraVersion: '0.4.0-beta.1' },
     startedAt: now - 60_000,
     completedAt: now,
     runIds: [runId],
@@ -242,7 +242,7 @@ function seedEvalStore() {
   const shape = {
     settings: {
       tracingEnabled: false,
-      langsmithProject: 'folio-agent',
+      langsmithProject: 'yansivra-agent',
       langsmithEndpoint: '',
       privacyLevel: 'standard',
       onlineEvaluationEnabled: false,
@@ -634,7 +634,7 @@ async function main() {
     // ── Dark-mode representative capture (spec §36) ────────────────────────
     try {
       await switchLocale('en-US');
-      await page.evaluate(() => localStorage.setItem('folio.theme', 'dark'));
+      await page.evaluate(() => localStorage.setItem('yansivra.theme', 'dark'));
       await page.reload();
       await page.locator('[data-testid="finance-workspace"]').waitFor({ timeout: 30_000 });
       const darkSession = await newSession('TRACE · Dark');
@@ -675,7 +675,7 @@ async function main() {
 
 function writeSummary(results, seeded) {
   const lines = [];
-  lines.push('# Folio Trace Showcase — Visual Gallery');
+  lines.push('# Yansivra Trace Showcase — Visual Gallery');
   lines.push('');
   lines.push(`Generated: ${new Date().toISOString()}`);
   lines.push('');
@@ -786,7 +786,7 @@ function writeSummary(results, seeded) {
     })
     .join('');
   const html = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"/><title>Folio Trace Showcase</title>
+<html lang="en"><head><meta charset="utf-8"/><title>Yansivra Trace Showcase</title>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#0f1115;color:#e6e6e6;margin:0;padding:24px;}
 h1{font-size:22px;}h2{font-size:17px;margin-top:0;}h4{margin:0 0 6px;color:#9aa3b2;font-weight:500;font-size:12px;}
@@ -796,7 +796,7 @@ h1{font-size:22px;}h2{font-size:17px;margin-top:0;}h4{margin:0 0 6px;color:#9aa3
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:16px;}
 .shot img{width:100%;border-radius:8px;border:1px solid #262b36;background:#0b0d12;}
 </style></head><body>
-<h1>Folio Trace Showcase — Visual Gallery</h1>
+<h1>Yansivra Trace Showcase — Visual Gallery</h1>
 <p>Each scenario runs in an isolated session; screenshots show the Trace Inspector (Overview / Timeline / Context / Details).</p>
 ${cards}
 </body></html>`;

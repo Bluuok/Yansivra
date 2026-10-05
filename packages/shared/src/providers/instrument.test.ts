@@ -47,7 +47,7 @@ describe('InstrumentCatalogStore', () => {
   });
 
   it('seeds, persists, and reloads the provider alias catalog', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'folio-instruments-'));
+    const dir = await mkdtemp(join(tmpdir(), 'yansivra-instruments-'));
     dirs.push(dir);
     const store = new InstrumentCatalogStore(new JsonFileStore(dir), () => 1_700_000_000_000);
     const first = await store.load();

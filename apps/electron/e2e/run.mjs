@@ -1,4 +1,4 @@
-// Folio E2E golden-path smoke — plain Node runner (playwright-core's CDP
+// Yansivra E2E golden-path smoke — plain Node runner (playwright-core's CDP
 // WebSocket handshake is unreliable under Bun; Node drives it reliably).
 //
 //   FINAGENT_AGENT_PROVIDER=local bun run test:e2e
@@ -9,7 +9,8 @@
 //   C. rapid symbol switching settles on the last symbol
 //   D. agent run streams an answer using the workspace symbol
 
-import { execSync, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
+import { buildForE2E, debugPort, electronBinary as installedElectron, hasCompletedAssistantAnswer, isolatedEnv, newProfile, stopOwnedProcess, waitForValue } from './runtime-support.mjs';
 import { seedLocale } from './seed-locale.mjs';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -22,28 +23,16 @@ const { chromium } = require('playwright-core');
 const here = dirname(fileURLToPath(import.meta.url));
 const appRoot = join(here, '..');
 const repoRoot = join(here, '../../..');
-const electronMain = join(appRoot, 'src/main/index.ts');
-const electronBinary = join(
-  repoRoot,
-  'node_modules/.bun/electron@39.8.9/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron'
-);
+const electronMain = join(appRoot, 'src/main/index.js');
+const electronBinary = installedElectron(appRoot);
 
-const CDP_PORT = 9333;
+const CDP_PORT = await debugPort();
 const CDP_URL = `http://127.0.0.1:${CDP_PORT}`;
 
 // FINAGENT_E2E_KEEP_OPEN=1 — debugging only, NEVER in automated runs: leave
 // the app running when the harness finishes and print where it is, instead of
-// killing it. Automated runs/CI rely on the harness cleaning up its port.
+// killing it. Automated runs/CI close only their owned child process.
 const KEEP_OPEN = process.env.FINAGENT_E2E_KEEP_OPEN === '1';
-function shutdown(appProcess) {
-  if (KEEP_OPEN) {
-    console.log(
-      `KEEP_OPEN CDP port ${CDP_PORT} — app left running; clean up yourself: pkill -f 'remote-debugging-port=${CDP_PORT}'`
-    );
-    return
-  }
-  appProcess.kill()
-}
 
 let failures = 0;
 
@@ -86,20 +75,8 @@ async function main() {
     console.error(`Electron binary not found: ${electronBinary}`);
     process.exit(1);
   }
-  // Stale instances from interrupted runs hold the CDP port and would be the
-  // ones we connect to — kill them first, then spawn fresh.
-  try {
-    execSync(`pkill -f 'remote-debugging-port=${CDP_PORT}' || true`, { stdio: 'ignore' });
-  } catch {
-    // Nothing to clean.
-  }
-  execSync('bun run build:preload', { cwd: appRoot, stdio: 'pipe' });
-  execSync('bunx vite build', { cwd: appRoot, stdio: 'pipe' });
-
-  // Deterministic golden path: always start from a fresh userData dir.
-  const userDataDir = join(appRoot, 'e2e/.user-data');
-  execSync(`rm -rf "${userDataDir}"`);
-  execSync(`mkdir -p "${userDataDir}"`);
+  buildForE2E(appRoot);
+  const userDataDir = newProfile('Yansivra golden path ');
   seedLocale(userDataDir, 'en-US');
   const electronProcess = spawn(
     electronBinary,
@@ -108,12 +85,7 @@ async function main() {
       cwd: repoRoot,
       stdio: 'ignore',
       env: {
-        ...process.env,
-        FINAGENT_AGENT_PROVIDER: 'local',
-        FINAGENT_FORCE_PROD_LOAD: '1',
-        FINAGENT_E2E: '1',
-        FINAGENT_E2E_HIDDEN: '1',
-        FINAGENT_USER_DATA_DIR: join(appRoot, 'e2e/.user-data'),
+        ...isolatedEnv(userDataDir, { offline: false, visible: process.argv.includes('--visible') }),
       },
     }
   );
@@ -236,27 +208,39 @@ async function main() {
       await page.locator('[data-testid="watchlist-row-NVDA.US"]').first().click();
       const input = page.locator('[data-testid="agent-input"]');
       await input.waitFor({ timeout: 15_000 });
+      const before = await page.evaluate(async () => {
+        const snapshot = await window.electronAPI.kernel.hydrate();
+        if (!snapshot.ok) throw new Error('Session hydrate failed');
+        const ids = [];
+        for (const session of snapshot.data.sessions) {
+          const runs = await window.electronAPI.kernel.listRuns(session.id);
+          if (!runs.ok) throw new Error('Run inventory failed');
+          ids.push(...runs.data.map(run => run.id));
+        }
+        return ids;
+      });
       await input.fill('最近走势怎么样？');
       await input.press('Enter');
-      // Streaming evidence: the live answer block appears while the run is active.
-      const runPanel = page.locator('[data-testid="run-panel"]');
-      await runPanel.waitFor({ timeout: 15_000 });
-      // The local runtime settles fast; the answer then lives in the message
-      // list. Wait for the assistant answer anywhere in the agent panel.
-      try {
-        await page.waitForFunction(
-          () => {
-            const panel = document.querySelector('[data-testid="agent-panel"]');
-            const text = panel?.textContent ?? '';
-            return /NVDA|K-Line|走势/i.test(text);
-          },
-          { timeout: 30_000 }
-        );
-      } catch (error) {
-        console.log('PANEL TEXT DUMP:', (await page.locator('[data-testid="agent-panel"]').first().textContent())?.slice(0, 600));
-        throw error;
+      const evidence = await waitForValue(() => page.evaluate(async previousIds => {
+        const snapshot = await window.electronAPI.kernel.hydrate();
+        if (!snapshot.ok) return false;
+        for (const session of snapshot.data.sessions) {
+          const runs = await window.electronAPI.kernel.listRuns(session.id);
+          if (!runs.ok) continue;
+          const run = runs.data.find(run => !previousIds.includes(run.id) && run.input === '最近走势怎么样？' && run.status !== 'running');
+          if (!run) continue;
+          const messages = await window.electronAPI.kernel.getMessages(session.id);
+          if (!messages.ok) return false;
+          if (run.status === 'completed' && !messages.data.some(message => message.role === 'assistant' && message.content?.trim() === run.answer?.trim())) return false;
+          return { run, messages: messages.data };
+        }
+        return false;
+      }, before), { label: 'submitted run and persisted assistant answer' });
+      if (!hasCompletedAssistantAnswer(evidence.run, evidence.messages)) {
+        throw new Error(`Agent has no completed persisted assistant answer (status ${evidence.run.status})`);
       }
-      pass('D: agent run streams an answer for the workspace symbol');
+      await page.locator('[data-testid="agent-panel"] .mac-message-assistant').first().waitFor();
+      pass('D: submitted run completes with a persisted assistant answer for the workspace symbol');
     } catch (error) {
       fail('D: agent run streams an answer for the workspace symbol', error);
     }
@@ -356,7 +340,8 @@ async function main() {
     fail('harness setup', error);
   } finally {
     await browser?.close().catch(() => undefined);
-    shutdown(electronProcess)
+    if (KEEP_OPEN) console.log(`KEEP_OPEN owned PID ${electronProcess.pid}, CDP ${CDP_PORT}`);
+    else await stopOwnedProcess(electronProcess);
   }
 
   if (failures > 0) {

@@ -5,7 +5,7 @@ import { Dialog } from '../primitives/Dialog';
 import { AboutView } from '../about/AboutView';
 import { useFinagentClient } from '../../client';
 
-const folioLogoUrl = new URL('../../assets/desk-logo.svg', import.meta.url).href;
+const yansivraLogoUrl = new URL('../../assets/desk-logo.svg', import.meta.url).href;
 
 export const TitleBar: React.FC = () => {
   const { t } = useTranslation();
@@ -25,7 +25,7 @@ export const TitleBar: React.FC = () => {
       >
         <div className="flex items-center gap-2">
           <img
-            src={folioLogoUrl}
+            src={yansivraLogoUrl}
             alt=""
             className="h-[18px] w-[18px] rounded-[5px] shadow-sm"
             draggable={false}

@@ -10,8 +10,8 @@ import { seedReports } from './journal-ipc.mjs';
 // This exercises a real write failure without replacing the IPC or repository.
 async function lockJournal(file) {
   const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
-    "$handle = [IO.File]::Open($env:FOLIO_TEST_LOCK_FILE, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read); [Console]::WriteLine('LOCKED'); [Console]::ReadLine() | Out-Null; $handle.Dispose()"],
-    { windowsHide: true, env: { ...process.env, FOLIO_TEST_LOCK_FILE: file }, stdio: ['pipe', 'pipe', 'pipe'] });
+    "$handle = [IO.File]::Open($env:YANSIVRA_TEST_LOCK_FILE, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read); [Console]::WriteLine('LOCKED'); [Console]::ReadLine() | Out-Null; $handle.Dispose()"],
+    { windowsHide: true, env: { ...process.env, YANSIVRA_TEST_LOCK_FILE: file }, stdio: ['pipe', 'pipe', 'pipe'] });
   await new Promise((resolve, reject) => {
     child.stdout.once('data', (data) => String(data).includes('LOCKED') ? resolve() : reject(new Error(String(data))));
     child.once('error', reject); child.once('exit', (code) => { if (code) reject(new Error(`Lock helper exited ${code}`)); });

@@ -34,7 +34,7 @@ describe('research prompt builders guard rails', () => {
 
   it('synthesis prompt keeps the tool-Disable sentinel and JSON-only contract', () => {
     const prompt = buildSynthesisPrompt(synthesisInput);
-    expect(prompt).toContain('[FOLIO_CHECKPOINT_SYNTHESIS_V1]');
+    expect(prompt).toContain('[YANSIVRA_CHECKPOINT_SYNTHESIS_V1]');
     expect(prompt).toContain('Tool calls are disabled');
   });
 

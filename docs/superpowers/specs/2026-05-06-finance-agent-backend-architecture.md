@@ -1,8 +1,8 @@
-# Finance Agent Backend Architecture Spec
+# Yansivra Backend Architecture Spec
 
 ## Summary
 
-Finance Agent now uses a replaceable backend boundary instead of embedding chat intent, tool execution, and LongBridge calls directly in Electron main. The MVP backend is `LocalFinanceAgentBackend`; it is deterministic, session-aware, and uses `MarketDataService` for shared market data access. A future `PiRuntimeAgentBackend` can be added behind the same `AgentBackend` interface without changing renderer IPC.
+Yansivra now uses a replaceable backend boundary instead of embedding chat intent, tool execution, and LongBridge calls directly in Electron main. The MVP backend is `LocalFinanceAgentBackend`; it is deterministic, session-aware, and uses `MarketDataService` for shared market data access. A future `PiRuntimeAgentBackend` can be added behind the same `AgentBackend` interface without changing renderer IPC.
 
 ## Current Architecture
 

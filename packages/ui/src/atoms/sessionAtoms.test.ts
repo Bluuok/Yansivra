@@ -118,7 +118,7 @@ describe('session atoms', () => {
 
   it('hides internal research sessions while preserving user sessions', async () => {
     const store = createStore();
-    savedSessions = [makeSession('Research'), makeSession('__folio_internal_research__'), makeSession('Session A')];
+    savedSessions = [makeSession('Research'), makeSession('__yansivra_internal_research__'), makeSession('Session A')];
 
     await store.set(hydrateSessionsAtom, makeClient());
 

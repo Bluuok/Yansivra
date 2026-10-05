@@ -288,4 +288,4 @@ export interface FinancialProviderRouter {
 }
 
 /** The global router instance id — never re-create per request. */
-export const PROVIDER_ROUTER_SYMBOL = Symbol.for('folio.financialProviderRouter');
+export const PROVIDER_ROUTER_SYMBOL = Symbol.for('yansivra.financialProviderRouter');

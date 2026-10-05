@@ -2,7 +2,7 @@ import { ANSWER_BLOCK_FENCE_LANG } from '@finagent/core';
 
 /**
  * One segment of a Copilot answer: either Markdown text or a typed
- * `folio-block` fence body. Untyped fences stay in text segments so ordinary
+ * `yansivra-block` fence body. Untyped fences stay in text segments so ordinary
  * code blocks keep rendering through Markdown.
  */
 export type AnswerSegment =
@@ -21,10 +21,10 @@ const fenceLine = (line: string): string => (line.endsWith('\r') ? line.slice(0,
  * Split an answer string into text and typed-block segments.
  *
  * Every fence is opaque until a bare closing fence with the same marker and
- * at least the opening length arrives. This keeps `folio-block` examples
+ * at least the opening length arrives. This keeps `yansivra-block` examples
  * inside ordinary Markdown code fences as literal text.
  *
- * An unclosed `folio-block` fence produces a `closed: false` block segment for
+ * An unclosed `yansivra-block` fence produces a `closed: false` block segment for
  * streaming; unclosed ordinary fences remain verbatim Markdown.
  */
 export function parseAnswerSegments(content: string): AnswerSegment[] {

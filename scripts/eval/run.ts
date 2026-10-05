@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Folio eval CLI (spec §70-71, §79).
+// Yansivra eval CLI (spec §70-71, §79).
 //
 //   bun run eval:smoke  [flags]   # regression+golden subset (~15 cases), CI gate
 //   bun run eval:full   [flags]   # entire benchmark dataset
@@ -96,7 +96,7 @@ const USAGE = `Usage:
   bun run eval:full  [flags]   # entire benchmark dataset
 
 Flags:
-  --dataset <id>          Embedded dataset id (default: folio-agent-v1)
+  --dataset <id>          Embedded dataset id (default: yansivra-agent-v1)
   --mode fixture|live     Runtime mode (default: fixture)
   --model <id>            Agent model under test (e.g. anthropic/claude-sonnet-4-5;
                           a provider prefix is split off and applied via setModel)
@@ -129,7 +129,7 @@ ANTHROPIC_API_KEY or FINAGENT_PROVIDER_OVERRIDES (live agent), FINAGENT_PI_VERSI
 function parseFlags(argv: string[]): CliOptions {
   const options: CliOptions = {
     smoke: false,
-    dataset: 'folio-agent-v1',
+    dataset: 'yansivra-agent-v1',
     mode: 'fixture',
     storeDir: join(homedir(), '.finagent', 'eval'),
     preflightOnly: false,
@@ -835,7 +835,7 @@ async function main(): Promise<number> {
         : resolveBackend(
             {
               tracingEnabled,
-              langsmithProject: process.env.LANGSMITH_PI_PROJECT ?? 'folio-agent',
+              langsmithProject: process.env.LANGSMITH_PI_PROJECT ?? 'yansivra-agent',
               langsmithEndpoint: process.env.LANGSMITH_PI_ENDPOINT,
             },
             process.env.LANGSMITH_PI_API_KEY ?? process.env.LANGSMITH_API_KEY,
@@ -845,7 +845,7 @@ async function main(): Promise<number> {
   }
 
   // Kernel: fixture uses the deterministic local runtime; live uses Pi.
-  const runtimeDir = await mkdtemp(join(tmpdir(), 'folio-eval-'));
+  const runtimeDir = await mkdtemp(join(tmpdir(), 'yansivra-eval-'));
   let kernel: AgentKernel | undefined;
   try {
     if (options.mode === 'fixture') {
@@ -1067,7 +1067,7 @@ async function loadCommittedBaseline(id: string): Promise<EvaluationBaseline | u
     return {
       id,
       name: id,
-      datasetId: typeof parsed.datasetId === 'string' ? parsed.datasetId : 'folio-agent-v1',
+      datasetId: typeof parsed.datasetId === 'string' ? parsed.datasetId : 'yansivra-agent-v1',
       datasetVersion: typeof parsed.datasetVersion === 'string' ? parsed.datasetVersion : '1.0.0',
       experimentId: id,
       gitSha: typeof parsed.gitSha === 'string' ? parsed.gitSha : '',

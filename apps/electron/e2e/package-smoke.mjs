@@ -1,223 +1,55 @@
-// Folio packaged-app smoke test — launches the electron-builder output from
-// OUTSIDE the source repo and asserts the packaged app is self-contained:
-// window renders, skills load from process.resourcesPath, agent tools are
-// present, and a local agent run completes.
-//
-//   bun run test:package-smoke
-//
-// Prerequisite: `bun run package` must have produced dist/electron/mac*/Folio.app.
-
-import { execSync, spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readdirSync, statSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+// Packaged resources and local Agent completion, launched outside the source repo.
+import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createRequire } from 'node:module';
+import { hasCompletedAssistantAnswer, isolatedEnv, newProfile, packagedBinary, waitForValue } from './runtime-support.mjs';
 
-const require = createRequire(import.meta.url);
-const { chromium } = require('playwright-core');
-
-const here = dirname(fileURLToPath(import.meta.url));
-const appRoot = join(here, '..');
-const repoRoot = join(here, '../../..');
-const distDir = join(repoRoot, 'dist', 'electron');
-
-const CDP_PORT = 9334;
-const CDP_URL = `http://127.0.0.1:${CDP_PORT}`;
-
-// FINAGENT_E2E_KEEP_OPEN=1 — debugging only, NEVER in automated runs: leave
-// the app running when the harness finishes and print where it is, instead of
-// killing it. Automated runs/CI rely on the harness cleaning up its port.
-const KEEP_OPEN = process.env.FINAGENT_E2E_KEEP_OPEN === '1';
-function shutdown(appProcess) {
-  if (KEEP_OPEN) {
-    console.log(
-      `KEEP_OPEN CDP port ${CDP_PORT} — app left running; clean up yourself: pkill -f 'remote-debugging-port=${CDP_PORT}'`
-    );
-    return
+const { _electron } = createRequire(import.meta.url)('playwright-core');
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../../..');
+const profile = newProfile('Yansivra package smoke ');
+const app = await _electron.launch({ executablePath: packagedBinary(repoRoot), args: [], cwd: profile,
+  env: isolatedEnv(profile), timeout: 45_000 });
+try {
+  const page = await app.firstWindow();
+  await page.waitForLoadState('domcontentloaded');
+  await page.locator('[data-testid="finance-workspace"]').waitFor({ timeout: 30_000 });
+  const runtime = await app.evaluate(({ app }) => ({ packaged: app.isPackaged, resources: process.resourcesPath, profile: app.getPath('userData') }));
+  assert.equal(runtime.packaged, true);
+  assert.equal(runtime.profile, profile);
+  assert.ok(!runtime.resources.startsWith(join(repoRoot, 'apps')), 'packaged resources do not resolve from source');
+  assert.ok(existsSync(join(runtime.resources, 'skills')));
+  for (const file of ['finagent/index.js', 'langsmith/index.js']) assert.ok(existsSync(join(runtime.resources, 'extensions', file)));
+  assert.equal(await page.evaluate(() => Boolean(window.electronAPI)), true);
+  console.log('PASS A: packaged renderer/preload/main and extension resources');
+  const skills = await page.evaluate(() => window.electronAPI.skills.list());
+  assert.equal(skills.ok, true);
+  assert.ok(Array.isArray(skills.data) && skills.data.length >= 10);
+  console.log(`PASS B: ${skills.data.length} packaged skills`);
+  const tools = await page.evaluate(() => window.electronAPI.agent.getTools());
+  assert.equal(tools.ok, true);
+  const definitions = Array.isArray(tools.data) ? tools.data : tools.data?.data;
+  assert.ok(Array.isArray(definitions));
+  for (const name of ['get_quote', 'get_portfolio', 'get_market_depth', 'get_financials', 'get_calendar_events']) {
+    assert.ok(definitions.some(tool => tool.name === name), `finance tool missing: ${name}`);
   }
-  appProcess.kill()
-}
-
-let failures = 0;
-
-function pass(name) {
-  console.log(`PASS  ${name}`);
-}
-
-function fail(name, error) {
-  failures += 1;
-  console.error(`FAIL  ${name}`);
-  console.error(String(error?.stack ?? error).slice(0, 2000));
-}
-
-function findAppBinary() {
-  if (!existsSync(distDir)) {
-    throw new Error(`No dist output at ${distDir}. Run \`bun run package\` first.`);
-  }
-  for (const entry of readdirSync(distDir)) {
-    if (!entry.startsWith('mac')) continue;
-    const candidate = join(distDir, entry, 'Folio.app', 'Contents', 'MacOS', 'Folio');
-    if (existsSync(candidate) && statSync(candidate).isFile()) {
-      return candidate;
-    }
-  }
-  throw new Error(`No Folio.app binary found under ${distDir}/mac*.`);
-}
-
-async function waitForPage(context, timeoutMs) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    const pages = context.pages();
-    if (pages.length > 0) return pages[pages.length - 1];
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error('No renderer page appeared in time');
-}
-
-async function waitForCdp(timeoutMs) {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(`${CDP_URL}/json/version`);
-      if (response.ok) return;
-    } catch {
-      // Not up yet.
-    }
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error('Packaged app CDP endpoint did not come up in time.');
-}
-
-function evaluateIpC(page, expr) {
-  return page.evaluate(`(async () => (${expr}))()`);
-}
-
-async function main() {
-  const appBinary = findAppBinary();
-  console.log(`Launching ${appBinary}`);
-  // Stale instances from interrupted runs hold the CDP port — kill first.
-  try {
-    execSync("pkill -f 'remote-debugging-port=9334' || true", { stdio: 'ignore' });
-  } catch {
-    // Nothing to clean.
-  }
-  const userDataDir = mkdtempSync(join(tmpdir(), 'folio-smoke-'));
-
-  const appProcess = spawn(appBinary, [`--remote-debugging-port=${CDP_PORT}`, '--no-sandbox'], {
-    cwd: tmpdir(),
-    stdio: 'ignore',
-    env: {
-      ...process.env,
-      FINAGENT_AGENT_PROVIDER: 'local',
-      FINAGENT_E2E: '1',
-      FINAGENT_E2E_HIDDEN: '1',
-      FINAGENT_USER_DATA_DIR: userDataDir,
-    },
-  });
-
-  let browser;
-  try {
-    await waitForCdp(60_000);
-    browser = await chromium.connectOverCDP(CDP_URL, { timeout: 30_000 });
-    const context = browser.contexts()[0];
-    const page = await waitForPage(context, 30_000);
-    await page.waitForLoadState('domcontentloaded');
-
-    // A. Window renders + preload bridge is present.
-    try {
-      await page.locator('[data-testid="finance-workspace"]').waitFor({ timeout: 20_000 });
-      const hasBridge = await page.evaluate(() => Boolean(window.electronAPI));
-      if (!hasBridge) throw new Error('window.electronAPI is not exposed (preload failed).');
-      pass('A: workbench renders + preload bridge present');
-    } catch (error) {
-      fail('A: workbench renders + preload bridge present', error);
-    }
-
-    // B. Skills load from the packaged resources.
-    try {
-      const result = await evaluateIpC(page, 'window.electronAPI.skills.list()');
-      if (!result?.ok) throw new Error(`skills:list failed: ${JSON.stringify(result)}`);
-      const skills = result.data;
-      if (!Array.isArray(skills) || skills.length < 10) {
-        throw new Error(`expected >=10 skills, got ${skills?.length}`);
-      }
-      console.log(`  skills loaded: ${skills.length}`);
-      pass('B: skills:list returns >=10 skills');
-    } catch (error) {
-      fail('B: skills:list returns >=10 skills', error);
-    }
-
-    // C. Agent tools include finance tools.
-    try {
-      const result = await evaluateIpC(page, 'window.electronAPI.agent.getTools()');
-      if (!result?.ok) throw new Error(`agent:getTools failed: ${JSON.stringify(result)}`);
-      const inner = result.data;
-      const tools = Array.isArray(inner) ? inner : inner?.data;
-      if (!Array.isArray(tools)) throw new Error(`agent:getTools returned no tools: ${JSON.stringify(result)}`);
-      const names = new Set(tools.map((tool) => tool.name));
-      for (const expected of ['get_quote', 'get_portfolio', 'get_market_depth', 'get_financials', 'get_calendar_events']) {
-        if (!names.has(expected)) {
-          throw new Error(`finance tool missing: ${expected}; have [${[...names].join(', ')}]`);
-        }
-      }
-      console.log(`  tools: ${names.size} (${[...names].slice(0, 8).join(', ')}${names.size > 8 ? ', …' : ''})`);
-      pass('C: agent:getTools includes finance tools');
-    } catch (error) {
-      fail('C: agent:getTools includes finance tools', error);
-    }
-
-    // D. Create a session and run a local agent run to completion.
-    try {
-      const created = await evaluateIpC(page, 'window.electronAPI.kernel.createSession("Smoke")');
-      if (!created?.ok) throw new Error(`sessions:create failed: ${JSON.stringify(created)}`);
-      const sessionId = created.data?.id;
-      if (!sessionId) throw new Error(`sessions:create returned no id: ${JSON.stringify(created)}`);
-
-      const started = await evaluateIpC(
-        page,
-        `window.electronAPI.kernel.startRun({ sessionId: ${JSON.stringify(sessionId)}, content: 'Hello, are you there?' })`
-      );
-      if (!started?.ok) throw new Error(`runs:start failed: ${JSON.stringify(started)}`);
-      const runId = started.data?.id;
-      if (!runId) throw new Error(`runs:start returned no run id: ${JSON.stringify(started)}`);
-
-      // Poll listRuns until the run settles (completed/failed/cancelled).
-      const deadline = Date.now() + 30_000;
-      let run = null;
-      while (Date.now() < deadline) {
-        const runs = await evaluateIpC(
-          page,
-          `window.electronAPI.kernel.listRuns(${JSON.stringify(sessionId)})`
-        );
-        const candidate = runs?.ok && Array.isArray(runs.data) ? runs.data.find((r) => r.id === runId) : undefined;
-        if (candidate && candidate.status !== 'running') {
-          run = candidate;
-          break;
-        }
-        await new Promise((resolve) => setTimeout(resolve, 250));
-      }
-      if (!run) throw new Error('run did not settle within 30s');
-      if (run.status !== 'completed') {
-        throw new Error(`run settled as ${run.status}: ${JSON.stringify(run.error ?? run.answer ?? '')}`);
-      }
-      console.log(`  run ${run.id} completed: "${String(run.answer).slice(0, 80)}"`);
-      pass('D: sessions:create + local run completes');
-    } catch (error) {
-      fail('D: sessions:create + local run completes', error);
-    }
-  } catch (error) {
-    fail('harness setup', error);
-  } finally {
-    await browser?.close().catch(() => undefined);
-    shutdown(appProcess)
-  }
-
-  if (failures > 0) {
-    console.error(`Package smoke failed: ${failures} step(s).`);
-    process.exit(1);
-  }
-  console.log('Packaged app smoke passed.');
-}
-
-main();
+  console.log('PASS C: finance tool registrations');
+  const session = await page.evaluate(() => window.electronAPI.kernel.createSession('Package smoke'));
+  assert.equal(session.ok, true);
+  const started = await page.evaluate(sessionId => window.electronAPI.kernel.startRun({ sessionId, content: 'Hello, are you there?' }), session.data.id);
+  assert.equal(started.ok, true);
+  const evidence = await waitForValue(() => page.evaluate(async ({ sessionId, runId }) => {
+    const result = await window.electronAPI.kernel.listRuns(sessionId);
+    if (!result.ok) throw new Error('Packaged run inventory failed');
+    const run = result.data.find(run => run.id === runId);
+    if (!run || run.status === 'running') return false;
+    const messages = await window.electronAPI.kernel.getMessages(sessionId);
+    if (!messages.ok) throw new Error('Packaged message inventory failed');
+    if (run.status === 'completed' && !messages.data.some(message => message.role === 'assistant' && message.content?.trim() === run.answer?.trim())) return false;
+    return { run, messages: messages.data };
+  }, { sessionId: session.data.id, runId: started.data.id }), { label: 'packaged Agent answer persistence' });
+  assert.equal(hasCompletedAssistantAnswer(evidence.run, evidence.messages), true, 'local run completed with a persisted assistant answer');
+  console.log('PASS D: local Agent completes with nonempty answer');
+} finally { await app.close(); }
+console.log('Packaged app smoke passed; no live provider calls.');

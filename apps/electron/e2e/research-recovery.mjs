@@ -98,9 +98,9 @@ try {
   assert.equal(interrupted.status, 'interrupted');
   assert.equal(interrupted.recoverable, true);
   await page.evaluate(() => {
-    localStorage.setItem('folio.onboarding.completed.v1', '1');
-    localStorage.setItem('folio.onboarding.disclaimersAccepted.v1', '1');
-    localStorage.setItem('folio.prefs.navSection', JSON.stringify('research'));
+    localStorage.setItem('yansivra.onboarding.completed.v1', '1');
+    localStorage.setItem('yansivra.onboarding.disclaimersAccepted.v1', '1');
+    localStorage.setItem('yansivra.prefs.navSection', JSON.stringify('research'));
   });
   await page.reload();
   await page.getByTestId('research-recovery').first().waitFor();

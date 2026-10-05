@@ -1,3 +1,4 @@
+import '../lib/branding-migration.ts';
 import { atom } from 'jotai';
 
 /**
@@ -12,8 +13,8 @@ import { atom } from 'jotai';
  * test environment (where `localStorage` is installed after module import).
  */
 
-export const ONBOARDING_STORAGE_KEY = 'folio.onboarding.completed.v1';
-export const DISCLAIMER_STORAGE_KEY = 'folio.onboarding.disclaimersAccepted.v1';
+export const ONBOARDING_STORAGE_KEY = 'yansivra.onboarding.completed.v1';
+export const DISCLAIMER_STORAGE_KEY = 'yansivra.onboarding.disclaimersAccepted.v1';
 
 export interface StorageLike {
   getItem(key: string): string | null;

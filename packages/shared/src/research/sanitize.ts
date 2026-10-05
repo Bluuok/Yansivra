@@ -38,10 +38,10 @@ export const NEWS_SUMMARY_MAX_LENGTH = 1000;
 const FILTERED = '[filtered]';
 const TRUNCATED_SUFFIX = '…[truncated]';
 
-/** Structural tokens that could forge Folio prompt furniture or fence out of the data block. */
+/** Structural tokens that could forge Yansivra prompt furniture or fence out of the data block. */
 const FAKE_DELIMITERS: RegExp[] = [
   /```/g,
-  /\[FOLIO_CHECKPOINT[A-Z0-9_]*\]/g,
+  /\[YANSIVRA_CHECKPOINT[A-Z0-9_]*\]/g,
   /\bDATA\s*:/g,
   /\bEVIDENCE\s*:/g,
   /⟦/g,

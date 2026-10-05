@@ -1,4 +1,4 @@
-// Folio V9 DOM audit — dumps visible structure (headings, buttons, empty/error
+// Yansivra V9 DOM audit — dumps visible structure (headings, buttons, empty/error
 // states, alerts) for each major view so UX can be reviewed textually.
 import { execSync, spawn } from 'node:child_process';
 import { seedLocale } from './seed-locale.mjs';

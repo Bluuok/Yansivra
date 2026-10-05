@@ -60,13 +60,13 @@ try {
   for (const size of sizes) {
     await application.evaluate(({ BrowserWindow }, s) => {
       // Retain the resize promise while CDP awaits a hidden-window frame.
-      globalThis.__folioResize = new Promise((resolve) => {
+      globalThis.__yansivraResize = new Promise((resolve) => {
         const target = BrowserWindow.getAllWindows()[0];
         target.setSize(s.width, s.height);
         target.webContents.setZoomFactor(s.zoom);
         setTimeout(() => resolve(true), 100);
       });
-      return globalThis.__folioResize;
+      return globalThis.__yansivraResize;
     }, size);
     await page.waitForTimeout(250);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
@@ -82,9 +82,9 @@ try {
     await page.locator('[data-testid="assistant-toggle"]').click();
     if (size.zoom === 1) {
       const capture = await application.evaluate(async ({ BrowserWindow }) => {
-        globalThis.__folioCapture = BrowserWindow.getAllWindows()[0].capturePage(undefined, { stayHidden: true, stayAwake: true });
-        try { return (await globalThis.__folioCapture).toPNG().toString('base64'); }
-        finally { delete globalThis.__folioCapture; }
+        globalThis.__yansivraCapture = BrowserWindow.getAllWindows()[0].capturePage(undefined, { stayHidden: true, stayAwake: true });
+        try { return (await globalThis.__yansivraCapture).toPNG().toString('base64'); }
+        finally { delete globalThis.__yansivraCapture; }
       });
       assert.ok(capture.length > 1000, 'nonempty hidden-window capture');
       writeFileSync(join(outputRoot, `desktop-${size.name}.png`), Buffer.from(capture, 'base64'));

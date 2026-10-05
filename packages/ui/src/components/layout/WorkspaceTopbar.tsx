@@ -15,7 +15,7 @@ const TABS: Array<{ labelKey: string; view: WorkspaceView }> = [
 ];
 
 /** Stitch's persistent center-column header: asset tabs stay available while
- * the existing Folio navigation controls the actual page surface below. */
+ * the existing Yansivra navigation controls the actual page surface below. */
 export const WorkspaceTopbar: React.FC = () => {
   const { t } = useTranslation();
   const activeSymbol = useAtomValue(activeSymbolAtom);
@@ -34,18 +34,18 @@ export const WorkspaceTopbar: React.FC = () => {
   };
 
   return (
-    <header className="folio-workspace-topbar flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-6">
+    <header className="yansivra-workspace-topbar flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-6">
       <div className="flex min-w-0 items-center gap-7">
-        <div className="folio-workspace-topbar-title shrink-0">{t(`navigation.${titleKey}`)}</div>
+        <div className="yansivra-workspace-topbar-title shrink-0">{t(`navigation.${titleKey}`)}</div>
         {showAssetTabs && (
-          <nav aria-label={t('navigation.workspaceTabs')} className="folio-workspace-topbar-tabs flex h-full items-center gap-5">
+          <nav aria-label={t('navigation.workspaceTabs')} className="yansivra-workspace-topbar-tabs flex h-full items-center gap-5">
             {TABS.map((tab) => (
               <button
                 key={tab.labelKey}
                 type="button"
                 aria-pressed={activeSymbol != null && navSection === 'watchlist' && activeView === tab.view}
                 onClick={() => selectTab(tab.view)}
-                className={`folio-workspace-topbar-tab ${activeSymbol != null && navSection === 'watchlist' && activeView === tab.view ? 'folio-workspace-topbar-tab--active' : ''}`}
+                className={`yansivra-workspace-topbar-tab ${activeSymbol != null && navSection === 'watchlist' && activeView === tab.view ? 'yansivra-workspace-topbar-tab--active' : ''}`}
               >
                 {t(`navigation.${tab.labelKey}`)}
               </button>
@@ -54,7 +54,7 @@ export const WorkspaceTopbar: React.FC = () => {
         )}
       </div>
       <div className="flex shrink-0 items-center gap-3">
-        <span className="folio-local-label text-xs text-text-muted">{t('navigation.localFirst')}</span>
+        <span className="yansivra-local-label text-xs text-text-muted">{t('navigation.localFirst')}</span>
         <button type="button" onClick={() => setMode(mode === 'dark' ? 'light' : 'dark')} aria-label={t('navigation.toggleTheme')} className="rounded-lg p-2 text-text-muted hover:bg-surface-hover">{mode === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}</button>
         <button type="button" data-testid="assistant-toggle" onClick={() => { setAssistantOpen(!(assistantOpen && inspectorMode === 'assistant')); setInspectorMode('assistant'); }} aria-pressed={assistantOpen && inspectorMode === 'assistant'} aria-label={t('navigation.agentPanelLabel')} className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-xs text-text-muted hover:bg-surface-hover"><PanelRight className="h-4 w-4" /><span>{t('navigation.agentPanel')}</span></button>
       </div>

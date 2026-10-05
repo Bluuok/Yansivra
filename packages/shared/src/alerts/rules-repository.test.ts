@@ -7,7 +7,7 @@ import { JsonFileStore } from '../storage/json-file-store.ts';
 import { AlertRuleRepository, migrateAlerts } from './rules-repository.ts';
 
 function tempStore(): JsonFileStore {
-  return new JsonFileStore(mkdtempSync(join(tmpdir(), 'folio-alerts-repo-')));
+  return new JsonFileStore(mkdtempSync(join(tmpdir(), 'yansivra-alerts-repo-')));
 }
 
 describe('migrateAlerts', () => {
@@ -64,7 +64,7 @@ describe('migrateAlerts', () => {
 
 describe('AlertRuleRepository migration on load', () => {
   it('migrates a V1 file on list() and writes the new schema back', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'folio-alerts-migrate-'));
+    const dir = mkdtempSync(join(tmpdir(), 'yansivra-alerts-migrate-'));
     writeFileSync(
       join(dir, 'alerts.json'),
       JSON.stringify([
@@ -83,7 +83,7 @@ describe('AlertRuleRepository migration on load', () => {
   });
 
   it('treats a corrupt file as empty and never throws', async () => {
-    const dir = mkdtempSync(join(tmpdir(), 'folio-alerts-corrupt-'));
+    const dir = mkdtempSync(join(tmpdir(), 'yansivra-alerts-corrupt-'));
     writeFileSync(join(dir, 'alerts.json'), '{ definitely not json');
     const repository = new AlertRuleRepository(new JsonFileStore(dir));
     await expect(repository.list()).resolves.toEqual([]);

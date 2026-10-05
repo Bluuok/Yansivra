@@ -43,8 +43,8 @@ bun test --isolate packages/shared/src/research packages/ui/src/components/resea
 ## Live Electron acceptance
 
 1. Install dependencies, build Electron and renderer, and install the official [Longbridge CLI](https://open.longbridge.com/docs/cli/install).
-2. Create a separate test profile via `FINAGENT_USER_DATA_DIR`. In Folio Settings, configure and test a real model provider; select the model. Connect Longbridge and verify real news retrieval. Account registration, agreements, and authentication must be completed by the account owner.
-3. Close that Folio instance. Run with the same profile, using Node and the built application:
+2. Create a separate test profile via `FINAGENT_USER_DATA_DIR`. In Yansivra Settings, configure and test a real model provider; select the model. Connect Longbridge and verify real news retrieval. Account registration, agreements, and authentication must be completed by the account owner.
+3. Close that Yansivra instance. Run with the same profile, using Node and the built application:
 
 ```sh
 FINAGENT_RECOVERY_USER_DATA=/absolute/path/to/test-profile \

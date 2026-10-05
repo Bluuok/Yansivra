@@ -2,7 +2,7 @@
 //
 // The agent receives a compact skill metadata index in its system prompt and
 // loads SKILL.md bodies / references on demand through these tools. Resources
-// live in the directory named by FINAGENT_SKILLS_DIR (set by the Folio main
+// live in the directory named by FINAGENT_SKILLS_DIR (set by the Yansivra main
 // process when spawning the runtime).
 
 import { Type } from '@sinclair/typebox';

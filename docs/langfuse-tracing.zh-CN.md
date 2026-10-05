@@ -1,6 +1,6 @@
 # Langfuse 追踪（Agent / 深度研究）
 
-Folio 通过统一边界 `LangfuseEvaluationBackend` 把 Copilot 与深度研究运行导出到
+Yansivra 通过统一边界 `LangfuseEvaluationBackend` 把 Copilot 与深度研究运行导出到
 Langfuse。业务代码不直接依赖 Langfuse 事件类型。Langfuse 关闭、未配置或不可达时，
 Agent 主流程仍会完成，并留下可诊断日志。
 
@@ -17,16 +17,16 @@ Agent 主流程仍会完成，并留下可诊断日志。
 
 ## Trace / span 结构
 
-一次 Folio run 对应 **一条** Langfuse trace，而不是单个 LLM span。
+一次 Yansivra run 对应 **一条** Langfuse trace，而不是单个 LLM span。
 
-### Copilot（`folio.agent_run`）
+### Copilot（`yansivra.agent_run`）
 
 - 根 trace：用户输入 + 最终回答、tags、metadata
 - 每个工具一次 `tool.<name>` span
 - 在可知模型 / token 用量时写入 `agent.generation`
 - 失败时写入 `agent.error`
 
-### 深度研究（`folio.deep_research`）
+### 深度研究（`yansivra.deep_research`）
 
 - 根 trace：标的 / 查询 + 报告摘要
 - `research.input`
@@ -38,13 +38,13 @@ Agent 主流程仍会完成，并留下可诊断日志。
 
 可过滤 tags：
 
-- `folio`
+- `yansivra`
 - `run_kind:normal` / `run_kind:evaluation`
 - `gold_case:<id>`
 - `dataset:<id>@<version>`
 - `model:<id>` / `provider:<id>` / `strategy:<id>` / `agent:<version>`
 
-根 metadata 至少包含 `folioRunId` 与 `runKind`；评测运行还会带上 gold case /
+根 metadata 至少包含 `yansivraRunId` 与 `runKind`；评测运行还会带上 gold case /
 dataset / model。
 
 ## Score schema

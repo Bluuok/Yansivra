@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run vite:dev",
+    "dev": "node scripts/desktop-dev.mjs",
     "vite:dev": "cd apps/electron && bunx vite",
     "build": "bun run build:packages && bun run build:electron",
     "build:packages": "bun run --filter './packages/*' build",
@@ -16,7 +16,6 @@
     "test:desktop": "node apps/electron/e2e/desktop-smoke.mjs && node apps/electron/e2e/journal-ipc.mjs && node apps/electron/e2e/journal-flow.mjs && node apps/electron/e2e/desktop-market.mjs",
     "test:windows-package": "node apps/electron/e2e/windows-package.mjs",
     "typecheck": "bun run --filter './**' typecheck",
-    "lint": "bun run --filter './**' lint",
     "test:unit": "bun test --isolate",
     "test:integration": "bun test --isolate && bun run typecheck",
     "eval:smoke": "bun scripts/eval/run.ts --smoke",
@@ -24,7 +23,7 @@
     "eval:langfuse": "bun scripts/eval/langfuse-live.ts",
     "test:ui": "bun test --isolate packages/ui",
     "test:e2e": "cd apps/electron && bun run test:e2e",
-    "test:e2e:visible": "cd apps/electron && FINAGENT_E2E_VISIBLE=1 bun run test:e2e",
+    "test:e2e:visible": "node apps/electron/e2e/run.mjs --visible",
     "test:package-smoke": "cd apps/electron && bun run test:package-smoke",
     "test:release": "bun run release:check",
     "release:check": "bun run scripts/release-check.mjs",
